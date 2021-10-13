@@ -1,37 +1,20 @@
 import Field from "./field.js";
 export default class Tetris {
     constructor() {
-        this.canvas = document.getElementById('canvas');
-        this.context = this.canvas.getContext("2d");
-        this.field = new Field();
-        Tetris.tetris = this;
-        this.startGame();
+        Tetris.startGame();
     }
-    static getTetris() {
-        return Tetris.tetris;
+    static startGame() {
+        setInterval(() => Tetris.process(), 15);
     }
-    getContext() {
-        return this.context;
-    }
-    getField() {
-        return this.field;
-    }
-    fixCanvasContextScaling() {
-        const scaling = 1;
-        this.canvas.style.width = this.canvas.offsetWidth + "px";
-        this.canvas.style.height = this.canvas.offsetHeight + "px";
-        this.canvas.width = this.canvas.offsetWidth * scaling;
-        this.canvas.height = this.canvas.offsetHeight * scaling;
-        this.context.setTransform(scaling, 0, 0, scaling, 0, 0);
-    }
-    startGame() {
-        //this.fixCanvasContextScaling();
-        setInterval(() => this.process(), 15);
-    }
-    process() {
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.field.draw();
+    static process() {
+        Tetris.context.clearRect(0, 0, Tetris.canvas.width, Tetris.canvas.height);
+        Tetris.field.draw();
     }
 }
+Tetris.canvas = document.getElementById('canvas');
+Tetris.context = Tetris.canvas.getContext("2d");
+Tetris.field = new Field();
+Tetris.window_width = Tetris.canvas.width;
+Tetris.window_height = Tetris.canvas.height;
 new Tetris();
 //# sourceMappingURL=tetris.js.map

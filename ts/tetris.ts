@@ -2,45 +2,24 @@ import Field from "./field.js";
 
 export default class Tetris {
 
-  private static tetris: Tetris;
-  private readonly canvas: HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement;
-  private readonly context: CanvasRenderingContext2D = this.canvas.getContext("2d") as CanvasRenderingContext2D;
-  private readonly field: Field = new Field();
+  public static readonly canvas: HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement;
+  public static readonly context: CanvasRenderingContext2D = Tetris.canvas.getContext("2d") as CanvasRenderingContext2D;
+  public static readonly field: Field = new Field();
+
+  public static readonly window_width: number = Tetris.canvas.width;
+  public static readonly window_height: number = Tetris.canvas.height;
 
   constructor() {
-    Tetris.tetris = this;
-    this.startGame();
+    Tetris.startGame();
   }
 
-  public static getTetris() {
-    return Tetris.tetris;
+  private static startGame(): void {
+    setInterval(() => Tetris.process(), 15);
   }
 
-  public getContext(): CanvasRenderingContext2D {
-    return this.context;
-  }
-
-  public getField(): Field {
-    return this.field;
-  }
-
-  private fixCanvasContextScaling() {
-    const scaling = 1;
-    this.canvas.style.width = this.canvas.offsetWidth + "px";
-    this.canvas.style.height = this.canvas.offsetHeight + "px";
-    this.canvas.width = this.canvas.offsetWidth * scaling;
-    this.canvas.height = this.canvas.offsetHeight * scaling;
-    this.context.setTransform(scaling, 0, 0, scaling, 0, 0);
-  }
-
-  private startGame(): void {
-    //this.fixCanvasContextScaling();
-    setInterval(() => this.process(), 15);
-  }
-
-  private process(): void {
-    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.field.draw();
+  private static process(): void {
+    Tetris.context.clearRect(0, 0, Tetris.canvas.width, Tetris.canvas.height);
+    Tetris.field.draw();
   }
 }
 
