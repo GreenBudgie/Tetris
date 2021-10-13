@@ -1,32 +1,42 @@
+import Block from "./block.js";
 /**
- * A figure is a collection of parts.
- * Figure has its own section position (x and y), and all parts has coordinates relative to this section
+ * A figure is a collection of blocks.
  */
 export class Figure {
-    Figure(...blocks) {
-        this.block = blocks;
+    constructor(...blocks) {
+        this.blocks = blocks;
     }
     /**
-     * Moves the figure in any direction by the given deltas if possible.
-     * If the figure ends up being outside the field or hits another figure it moves by the maximum amount of sections and stops.
-     * @param dx Amount of sections to move the figure by x axis, may be negative
-     * @param dy Amount of sections to move the figure by y axis, may be negative
+     * Creates a figure based on section coordinates.
+     * 0, 0 represents the top-left corner of the figure.
+     * @param sections An array of tuples in which the first element is relative section x, the second is relative section y coordinate
+     * @returns A figure with currently defined blocks
      */
+    static createByRelativeBlockSections(...sections) {
+        const blocks = [];
+        for (let section of sections) {
+            blocks.push(new Block(section[0], section[1]));
+        }
+        return new Figure(...blocks);
+    }
+    moveRight() {
+        this.move(1, 0);
+    }
+    moveLeft() {
+        this.move(-1, 0);
+    }
+    fall() {
+        this.move(0, 1);
+    }
     move(dx, dy) {
+        for (let block of this.blocks) {
+            block.move(block.section_x + dx, block.section_y + dy);
+        }
     }
-    /**
-     * Gets the section of the given figure part
-     * @param part The given part
-     * @returns Absoulte part section coordinates, x and y
-     */
-    getPartAbsoluteSection(block) {
-        return { x: this.x + block.section_x, y: this.y + block.section_y };
-    }
-    /**
-     * Checks whether this figure is currently outside the field
-     */
-    isOutside() {
-        return true;
+    draw() {
+        for (let block of this.blocks) {
+            block.draw();
+        }
     }
 }
 //# sourceMappingURL=figure.js.map

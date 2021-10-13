@@ -1,4 +1,5 @@
 import Block, { BlockColor } from "./block.js";
+import { Figure } from "./figure.js";
 import Tetris from "./tetris.js";
 
 /**
@@ -13,8 +14,6 @@ export default class Field {
   public readonly blocks: Block[] = [];
 
   constructor() {
-    this.blocks.push(new Block(1, 1));
-    this.blocks.push(new Block(5, 7));
   }
 
   public getRealFieldX() {

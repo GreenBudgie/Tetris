@@ -1,4 +1,5 @@
 import Field from "./field.js";
+import { Figure } from "./figure.js";
 
 export default class Tetris {
 
@@ -9,17 +10,26 @@ export default class Tetris {
   public static readonly window_width: number = Tetris.canvas.width;
   public static readonly window_height: number = Tetris.canvas.height;
 
+  private static figure = Figure.createByRelativeBlockSections(
+    [0, 0],
+    [1, 0],
+    [1, 1]
+  );
+
   constructor() {
     Tetris.startGame();
   }
 
   private static startGame(): void {
-    setInterval(() => Tetris.process(), 15);
+    
+    setInterval(() => Tetris.process(), 1000);
   }
 
   private static process(): void {
     Tetris.context.clearRect(0, 0, Tetris.window_width, Tetris.window_height);
     Tetris.field.draw();
+    Tetris.figure.draw();
+    Tetris.figure.fall();
   }
 }
 

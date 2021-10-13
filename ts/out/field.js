@@ -1,4 +1,3 @@
-import Block from "./block.js";
 import Tetris from "./tetris.js";
 /**
  * A field is a game element that stores and renders all the blocks and figures inside it
@@ -9,8 +8,6 @@ export default class Field {
         this.sections_y = 20;
         this.real_section_size = 28;
         this.blocks = [];
-        this.blocks.push(new Block(1, 1));
-        this.blocks.push(new Block(5, 7));
     }
     getRealFieldX() {
         return Tetris.window_width / 2 - Tetris.field.getRealFieldWidth() / 2;
