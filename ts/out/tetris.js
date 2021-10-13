@@ -7,7 +7,7 @@ export default class Tetris {
         setInterval(() => Tetris.process(), 15);
     }
     static process() {
-        Tetris.context.clearRect(0, 0, Tetris.canvas.width, Tetris.canvas.height);
+        Tetris.context.clearRect(0, 0, Tetris.window_width, Tetris.window_height);
         Tetris.field.draw();
     }
 }

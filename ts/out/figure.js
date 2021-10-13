@@ -21,7 +21,7 @@ export class Figure {
      * @returns Absoulte part section coordinates, x and y
      */
     getPartAbsoluteSection(block) {
-        return { x: this.x + block.x, y: this.y + block.y };
+        return { x: this.x + block.section_x, y: this.y + block.section_y };
     }
     /**
      * Checks whether this figure is currently outside the field
@@ -30,4 +30,4 @@ export class Figure {
         return true;
     }
 }
-//# sourceMappingURL=figures.js.map
+//# sourceMappingURL=figure.js.map

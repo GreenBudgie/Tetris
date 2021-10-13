@@ -32,7 +32,7 @@ export class Figure {
    * @returns Absoulte part section coordinates, x and y
    */
   public getPartAbsoluteSection(block: Block): {x: number, y: number} {
-    return {x: this.x + block.x, y: this.y + block.y};
+    return {x: this.x + block.section_x, y: this.y + block.section_y};
   }
 
   /**

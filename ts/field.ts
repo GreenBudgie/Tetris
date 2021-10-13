@@ -10,7 +10,7 @@ export default class Field {
   public readonly sections_y: number = 20;
   public readonly real_section_size: number = 28;
 
-  private blocks: Block[] = [];
+  public readonly blocks: Block[] = [];
 
   constructor() {
     this.blocks.push(new Block(1, 1));
@@ -31,6 +31,10 @@ export default class Field {
 
   public getRealFieldHeight(): number {
     return this.real_section_size * this.sections_y;
+  }
+
+  public isSectionInside(section_x: number, section_y: number): boolean {
+    return section_x >= 0 && section_x <= this.sections_x && section_y >= 0 && section_y <= this.sections_y;
   }
 
   public draw() {

@@ -18,7 +18,7 @@ export default class Tetris {
   }
 
   private static process(): void {
-    Tetris.context.clearRect(0, 0, Tetris.canvas.width, Tetris.canvas.height);
+    Tetris.context.clearRect(0, 0, Tetris.window_width, Tetris.window_height);
     Tetris.field.draw();
   }
 }
