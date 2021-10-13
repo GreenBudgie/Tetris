@@ -8,7 +8,7 @@ export default class Tetris {
         this.startGame();
     }
     static getTetris() {
-        return this.tetris;
+        return Tetris.tetris;
     }
     getContext() {
         return this.context;
@@ -16,10 +16,17 @@ export default class Tetris {
     getField() {
         return this.field;
     }
+    fixCanvasContextScaling() {
+        const scaling = 1;
+        this.canvas.style.width = this.canvas.offsetWidth + "px";
+        this.canvas.style.height = this.canvas.offsetHeight + "px";
+        this.canvas.width = this.canvas.offsetWidth * scaling;
+        this.canvas.height = this.canvas.offsetHeight * scaling;
+        this.context.setTransform(scaling, 0, 0, scaling, 0, 0);
+    }
     startGame() {
-        //const scaling = window.devicePixelRatio;
-        //context.scale(scaling, scaling);
-        setInterval(this.process, 15);
+        //this.fixCanvasContextScaling();
+        setInterval(() => this.process(), 15);
     }
     process() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
