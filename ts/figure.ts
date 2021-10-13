@@ -9,10 +9,8 @@ export class Figure {
   private x: number;
   private y: number;
   private block: Block[]
-  private field: Field;
   
-  public Figure(field: Field, ...blocks: Block[]) {
-    this.field = field;
+  public Figure(...blocks: Block[]) {
     this.block = blocks;
   }
 

@@ -21,27 +21,58 @@ export default class Block {
         }
         this.color = colors[Math.floor(Math.random() * colors.length)];
     }
-    overlaps(another_block) {
-        return this.section_x == another_block.section_x && this.section_y == another_block.section_y;
-    }
+    /**
+     * Checks whether the block is able to move right
+     * @returns ALLOW if the block is able to move right, BOUNDARY if a wall obstructs the movement, BLOCK if a block obstructs the movement
+     */
     checkMoveRight() {
-        return this.checkHorizontalMove(this.section_x + 1);
+        return this.checkMove(this.section_x + 1, this.section_y);
     }
+    /**
+     * Checks whether the block is able to move left
+     * @returns ALLOW if the block is able to move left, BOUNDARY if a wall obstructs the movement, BLOCK if a block obstructs the movement
+     */
     checkMoveLeft() {
-        return this.checkHorizontalMove(this.section_x - 1);
+        return this.checkMove(this.section_x - 1, this.section_y);
     }
-    checkHorizontalMove(new_section_x) {
-        for (let block of Tetris.field.blocks) {
-            if (block.overlaps(this))
-                return HorizontalMoveResult.BLOCK_TOUCH;
-        }
-        if (Tetris.field.isSectionInside(new_section_x, this.section_y))
-            return HorizontalMoveResult.ALLOW;
-        return HorizontalMoveResult.WALL;
-    }
+    /**
+     * Checks whether the block is able to move down
+     * @returns ALLOW if the block is able to move down, BOUNDARY if a floor obstructs the movement, BLOCK if a block obstructs the movement
+     */
     checkMoveDown() {
-        if (Tetris.field.isSectionInside(this.section_x, this.section_y + 1))
-            return VerticalMoveResult.ALLOW;
+        return this.checkMove(this.section_x, this.section_y + 1);
+    }
+    /**
+     * Checks whether the block is able to move to the specified section
+     * @returns ALLOW if the block is able to move to the section, BOUNDARY if a floor obstructs the movement, BLOCK if a block obstructs the movement
+     */
+    checkMove(new_section_x, new_section_y) {
+        for (let block of Tetris.field.blocks) {
+            if (new_section_x == block.section_x && new_section_y == block.section_y)
+                return MoveResult.BLOCK;
+        }
+        if (Tetris.field.isSectionInside(new_section_x, new_section_y))
+            return MoveResult.ALLOW;
+        return MoveResult.BOUNDARY;
+    }
+    moveRight() {
+        this.move(this.section_x + 1, this.section_y);
+    }
+    moveLeft() {
+        this.move(this.section_x - 1, this.section_y);
+    }
+    fall() {
+        this.move(this.section_x, this.section_y + 1);
+    }
+    /**
+     * Moves the block regardless of movement restrictions.
+     * This method must only be called after the movement checks.
+     * @param new_section_x The x section coordinate to move the block into
+     * @param new_section_y The y section coordinate to move the block into
+     */
+    move(new_section_x, new_section_y) {
+        this.section_x = new_section_x;
+        this.section_y = new_section_y;
     }
     draw() {
         const context = Tetris.context;
@@ -70,16 +101,19 @@ export var BlockColor;
     BlockColor["YELLOW"] = "rgb(255, 251, 97)";
     BlockColor["ORANGE"] = "rgb(255, 151, 70)";
 })(BlockColor || (BlockColor = {}));
-export var HorizontalMoveResult;
-(function (HorizontalMoveResult) {
-    HorizontalMoveResult[HorizontalMoveResult["ALLOW"] = 0] = "ALLOW";
-    HorizontalMoveResult[HorizontalMoveResult["WALL"] = 1] = "WALL";
-    HorizontalMoveResult[HorizontalMoveResult["BLOCK_TOUCH"] = 2] = "BLOCK_TOUCH";
-})(HorizontalMoveResult || (HorizontalMoveResult = {}));
-export var VerticalMoveResult;
-(function (VerticalMoveResult) {
-    VerticalMoveResult[VerticalMoveResult["ALLOW"] = 0] = "ALLOW";
-    VerticalMoveResult[VerticalMoveResult["FLOOR"] = 1] = "FLOOR";
-    VerticalMoveResult[VerticalMoveResult["BLOCK_LAND"] = 2] = "BLOCK_LAND";
-})(VerticalMoveResult || (VerticalMoveResult = {}));
+export var MoveResult;
+(function (MoveResult) {
+    /**
+     * Block is able to move
+     */
+    MoveResult[MoveResult["ALLOW"] = 0] = "ALLOW";
+    /**
+     * Movement is obstructed by a wall or a floor
+     */
+    MoveResult[MoveResult["BOUNDARY"] = 1] = "BOUNDARY";
+    /**
+     * Movement is obstucted by another block
+     */
+    MoveResult[MoveResult["BLOCK"] = 2] = "BLOCK";
+})(MoveResult || (MoveResult = {}));
 //# sourceMappingURL=block.js.map

@@ -3,8 +3,7 @@
  * Figure has its own section position (x and y), and all parts has coordinates relative to this section
  */
 export class Figure {
-    Figure(field, ...blocks) {
-        this.field = field;
+    Figure(...blocks) {
         this.block = blocks;
     }
     /**

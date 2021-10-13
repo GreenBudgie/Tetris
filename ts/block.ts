@@ -27,28 +27,63 @@ import Tetris from "./tetris.js";
     this.color = colors[Math.floor(Math.random() * colors.length)];
   }
 
-  public overlaps(another_block: Block): boolean {
-    return this.section_x == another_block.section_x && this.section_y == another_block.section_y;
+  /**
+   * Checks whether the block is able to move right
+   * @returns ALLOW if the block is able to move right, BOUNDARY if a wall obstructs the movement, BLOCK if a block obstructs the movement
+   */
+  public checkMoveRight(): MoveResult {
+    return this.checkMove(this.section_x + 1, this.section_y);
   }
 
-  public checkMoveRight(): HorizontalMoveResult {
-    return this.checkHorizontalMove(this.section_x + 1);
+  /**
+   * Checks whether the block is able to move left
+   * @returns ALLOW if the block is able to move left, BOUNDARY if a wall obstructs the movement, BLOCK if a block obstructs the movement
+   */
+  public checkMoveLeft(): MoveResult {
+    return this.checkMove(this.section_x - 1, this.section_y);
   }
 
-  public checkMoveLeft(): HorizontalMoveResult {
-    return this.checkHorizontalMove(this.section_x - 1);
+  /**
+   * Checks whether the block is able to move down
+   * @returns ALLOW if the block is able to move down, BOUNDARY if a floor obstructs the movement, BLOCK if a block obstructs the movement
+   */
+  public checkMoveDown(): MoveResult {
+    return this.checkMove(this.section_x, this.section_y + 1);
   }
 
-  private checkHorizontalMove(new_section_x: number): HorizontalMoveResult {
+  /**
+   * Checks whether the block is able to move to the specified section
+   * @returns ALLOW if the block is able to move to the section, BOUNDARY if a floor obstructs the movement, BLOCK if a block obstructs the movement
+   */
+  public checkMove(new_section_x: number, new_section_y: number): MoveResult {
     for(let block of Tetris.field.blocks) {
-      if(block.overlaps(this)) return HorizontalMoveResult.BLOCK_TOUCH;
+      if(new_section_x == block.section_x && new_section_y == block.section_y) return MoveResult.BLOCK;
     }
-    if(Tetris.field.isSectionInside(new_section_x, this.section_y)) return HorizontalMoveResult.ALLOW;
-    return HorizontalMoveResult.WALL; 
+    if(Tetris.field.isSectionInside(new_section_x, new_section_y)) return MoveResult.ALLOW;
+    return MoveResult.BOUNDARY; 
   }
 
-  public checkMoveDown(): VerticalMoveResult {
-    if(Tetris.field.isSectionInside(this.section_x, this.section_y + 1)) return VerticalMoveResult.ALLOW;
+  public moveRight() {
+    this.move(this.section_x + 1, this.section_y);
+  }
+
+  public moveLeft() {
+    this.move(this.section_x - 1, this.section_y);
+  }
+
+  public fall() {
+    this.move(this.section_x, this.section_y + 1);
+  }
+
+  /**
+   * Moves the block regardless of movement restrictions.
+   * This method must only be called after the movement checks.
+   * @param new_section_x The x section coordinate to move the block into
+   * @param new_section_y The y section coordinate to move the block into
+   */
+  public move(new_section_x: number, new_section_y: number) {
+    this.section_x = new_section_x;
+    this.section_y = new_section_y;
   }
 
   public draw() {
@@ -80,14 +115,17 @@ export enum BlockColor {
   ORANGE = "rgb(255, 151, 70)"
 }
 
-export enum HorizontalMoveResult {
+export enum MoveResult {
+  /**
+   * Block is able to move
+   */
   ALLOW,
-  WALL,
-  BLOCK_TOUCH
-}
-
-export enum VerticalMoveResult {
-  ALLOW,
-  FLOOR,
-  BLOCK_LAND
+  /**
+   * Movement is obstructed by a wall or a floor
+   */
+  BOUNDARY,
+  /**
+   * Movement is obstucted by another block
+   */
+  BLOCK
 }

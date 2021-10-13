@@ -10,7 +10,7 @@ export default class Field {
         this.real_section_size = 28;
         this.blocks = [];
         this.blocks.push(new Block(1, 1));
-        this.blocks.push(new Block(1, 3));
+        this.blocks.push(new Block(5, 7));
     }
     getRealFieldX() {
         return Tetris.window_width / 2 - Tetris.field.getRealFieldWidth() / 2;

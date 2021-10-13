@@ -14,7 +14,7 @@ export default class Field {
 
   constructor() {
     this.blocks.push(new Block(1, 1));
-    this.blocks.push(new Block(1, 3));
+    this.blocks.push(new Block(5, 7));
   }
 
   public getRealFieldX() {
