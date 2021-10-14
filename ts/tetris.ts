@@ -23,18 +23,15 @@ export default class Tetris {
 
   private static fixCanvasScaling() {
     const scaling = window.devicePixelRatio;
-    let initWidth = Tetris.canvas.offsetWidth;
-    let initHeight = Tetris.canvas.offsetHeight;
-    Tetris.canvas.width = initWidth * scaling;
-    Tetris.canvas.height = initHeight * scaling;
-    Tetris.canvas.style.width = initWidth + "px";
-    Tetris.canvas.style.height = initHeight + "px";
+    Tetris.canvas.style.width = Tetris.canvas.offsetWidth + "px";
+    Tetris.canvas.style.height = Tetris.canvas.offsetHeight + "px";
+    Tetris.canvas.width *= scaling;
+    Tetris.canvas.height *= scaling;
     Tetris.context.transform(scaling, 0, 0, scaling, 0, 0);
   }
 
   private static startGame(): void {
     this.fixCanvasScaling();
-    
     setInterval(() => Tetris.process(), 15);
   }
 
