@@ -24,6 +24,9 @@ export default class Field {
     isSectionInside(section_x, section_y) {
         return section_x >= 0 && section_x <= this.sections_x && section_y >= 0 && section_y <= this.sections_y;
     }
+    isSectionInsideOrAbove(section_x, section_y) {
+        return section_x >= 0 && section_x <= this.sections_x && section_y <= this.sections_y;
+    }
     draw() {
         this.drawSections();
         this.drawBlocks();

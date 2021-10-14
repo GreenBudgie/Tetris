@@ -26,27 +26,29 @@ export default class Block {
      * @returns ALLOW if the block is able to move right, BOUNDARY if a wall obstructs the movement, BLOCK if a block obstructs the movement
      */
     checkMoveRight() {
-        return this.checkMove(this.section_x + 1, this.section_y);
+        return this.checkMove(1, 0);
     }
     /**
      * Checks whether the block is able to move left
      * @returns ALLOW if the block is able to move left, BOUNDARY if a wall obstructs the movement, BLOCK if a block obstructs the movement
      */
     checkMoveLeft() {
-        return this.checkMove(this.section_x - 1, this.section_y);
+        return this.checkMove(-1, 0);
     }
     /**
      * Checks whether the block is able to move down
      * @returns ALLOW if the block is able to move down, BOUNDARY if a floor obstructs the movement, BLOCK if a block obstructs the movement
      */
     checkMoveDown() {
-        return this.checkMove(this.section_x, this.section_y + 1);
+        return this.checkMove(0, 1);
     }
     /**
-     * Checks whether the block is able to move to the specified section
-     * @returns ALLOW if the block is able to move to the section, BOUNDARY if a floor obstructs the movement, BLOCK if a block obstructs the movement
+     * Checks whether the block is able to move by specified deltas
+     * @returns ALLOW if the block is able to move by specified deltas, BOUNDARY if a floor obstructs the movement, BLOCK if a block obstructs the movement
      */
-    checkMove(new_section_x, new_section_y) {
+    checkMove(dx, dy) {
+        const new_section_x = this.section_x + dx;
+        const new_section_y = this.section_y + dy;
         for (let block of Tetris.field.blocks) {
             if (new_section_x == block.section_x && new_section_y == block.section_y)
                 return MoveResult.BLOCK;
@@ -56,23 +58,23 @@ export default class Block {
         return MoveResult.BOUNDARY;
     }
     moveRight() {
-        this.move(this.section_x + 1, this.section_y);
+        this.move(1, 0);
     }
     moveLeft() {
-        this.move(this.section_x - 1, this.section_y);
+        this.move(-1, 0);
     }
     fall() {
-        this.move(this.section_x, this.section_y + 1);
+        this.move(0, 1);
     }
     /**
      * Moves the block regardless of movement restrictions.
-     * This method must only be called after the movement checks.
-     * @param new_section_x The x section coordinate to move the block into
-     * @param new_section_y The y section coordinate to move the block into
+     * This method should be called after the movement checks.
+     * @param dx X movement
+     * @param dy Y movement
      */
-    move(new_section_x, new_section_y) {
-        this.section_x = new_section_x;
-        this.section_y = new_section_y;
+    move(dx, dy) {
+        this.section_x += dx;
+        this.section_y += dy;
     }
     draw() {
         const context = Tetris.context;
@@ -89,7 +91,7 @@ export default class Block {
         context.strokeStyle = 'black';
         context.fillStyle = this.color;
         context.stroke();
-        //context.fill();
+        context.fill();
     }
 }
 export var BlockColor;

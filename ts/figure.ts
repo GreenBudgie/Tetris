@@ -3,15 +3,18 @@ import Field from "./field.js";
 import Tetris from "./tetris.js";
 
 /**
- * A figure is a collection of blocks.
+ * A figure is a collection of single blocks.
+ * The figure itself does not contain a location, the blocks do. 
  */
 export class Figure {
   private blocks: Block[];
+  private falling: boolean;
   
   /**
    * Creates a figure based on section coordinates.
    * 0, 0 represents the top-left corner of the figure.
    * @param sections An array of tuples in which the first element is relative section x, the second is relative section y coordinate
+   * @example An input "[0, 0], [1, 0], [2, 0], [1, 1]" will create a T-shaped figure
    * @returns A figure with currently defined blocks
    */
   public static createByRelativeBlockSections(...sections: [number, number][]): Figure {
@@ -27,21 +30,52 @@ export class Figure {
   }
 
   public moveRight() {
-    this.move(1, 0);
+    this.moveIfPossibleOrStop(1, 0);
   }
 
   public moveLeft() {
-    this.move(-1, 0);
+    this.moveIfPossibleOrStop(-1, 0);
   }
 
-  public fall() {
-    this.move(0, 1);
+  public moveDownOrStop() {
+    this.moveIfPossibleOrStop(0, 1);
   }
 
-  public move(dx: number, dy: number): void {
+  /**
+   * Moves all blocks of the figure by the specified deltas.
+   * Vertical movement obstruction will interrupt figure falling.
+   * Horizontal movement obstruction will not interrupt the falling, but the figure won't be moved.
+   * @param dx X movement, from -1 to 1
+   * @param dy Y movement, from -1 to 1
+   */
+  public moveIfPossibleOrStop(dx: number, dy: number) {
+    const isVerticalMovement = dy > 0;
+    for(let block of this.blocks) {
+      const moveResult = block.checkMove(dx, dy);
+      if(moveResult != MoveResult.ALLOW) {
+        if(isVerticalMovement) this.stop();
+        return;
+      }
+    }
+    this.moveNoRestrictions(dx, dy);
+  }
+
+  /**
+   * Moves all blocks of the figure by the specified deltas ignoring movement restrictions.
+   * @param dx X movement
+   * @param dy Y movement
+   */
+  public moveNoRestrictions(dx: number, dy: number) {
     for(let block of this.blocks) {
       block.move(block.section_x + dx, block.section_y + dy);
     }
+  }
+
+  /**
+   * Interrupts the falling
+   */
+  public stop() {
+
   }
 
   public draw() {
