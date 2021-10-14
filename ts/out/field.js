@@ -10,10 +10,10 @@ export default class Field {
         this.blocks = [];
     }
     getRealFieldX() {
-        return Tetris.window_width / 2 - Tetris.field.getRealFieldWidth() / 2;
+        return Math.round(Tetris.window_width / 2 - Tetris.field.getRealFieldWidth() / 2);
     }
     getRealFieldY() {
-        return Tetris.window_height / 2 - Tetris.field.getRealFieldHeight() / 2;
+        return Math.round(Tetris.window_height / 2 - Tetris.field.getRealFieldHeight() / 2);
     }
     getRealFieldWidth() {
         return this.real_section_size * this.sections_x;

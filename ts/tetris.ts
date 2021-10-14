@@ -13,23 +13,35 @@ export default class Tetris {
   private static figure = Figure.createByRelativeBlockSections(
     [0, 0],
     [1, 0],
-    [1, 1]
+    [1, 1],
+    [2, 2]
   );
 
   constructor() {
     Tetris.startGame();
   }
 
+  private static fixCanvasScaling() {
+    const scaling = window.devicePixelRatio;
+    let initWidth = Tetris.canvas.offsetWidth;
+    let initHeight = Tetris.canvas.offsetHeight;
+    Tetris.canvas.width = initWidth * scaling;
+    Tetris.canvas.height = initHeight * scaling;
+    Tetris.canvas.style.width = initWidth + "px";
+    Tetris.canvas.style.height = initHeight + "px";
+    Tetris.context.transform(scaling, 0, 0, scaling, 0, 0);
+  }
+
   private static startGame(): void {
+    this.fixCanvasScaling();
     
-    setInterval(() => Tetris.process(), 1000);
+    setInterval(() => Tetris.process(), 15);
   }
 
   private static process(): void {
     Tetris.context.clearRect(0, 0, Tetris.window_width, Tetris.window_height);
     Tetris.field.draw();
     Tetris.figure.draw();
-    Tetris.figure.fall();
   }
 }
 

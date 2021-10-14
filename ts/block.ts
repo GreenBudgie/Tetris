@@ -101,7 +101,7 @@ import Tetris from "./tetris.js";
     context.strokeStyle = 'black';
     context.fillStyle = this.color;
     context.stroke();
-    context.fill();
+    //context.fill();
   }
 
 }

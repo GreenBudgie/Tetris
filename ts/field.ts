@@ -17,11 +17,11 @@ export default class Field {
   }
 
   public getRealFieldX() {
-    return Tetris.window_width / 2 - Tetris.field.getRealFieldWidth() / 2;
+    return Math.round(Tetris.window_width / 2 - Tetris.field.getRealFieldWidth() / 2);
   }
 
   public getRealFieldY() {
-    return Tetris.window_height / 2 - Tetris.field.getRealFieldHeight() / 2;
+    return Math.round(Tetris.window_height / 2 - Tetris.field.getRealFieldHeight() / 2);
   }
 
   public getRealFieldWidth(): number {

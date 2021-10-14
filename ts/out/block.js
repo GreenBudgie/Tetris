@@ -89,7 +89,7 @@ export default class Block {
         context.strokeStyle = 'black';
         context.fillStyle = this.color;
         context.stroke();
-        context.fill();
+        //context.fill();
     }
 }
 export var BlockColor;
