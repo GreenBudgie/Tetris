@@ -1,5 +1,4 @@
 import Block, { BlockColor } from "./block.js";
-import { Figure } from "./figure.js";
 import Tetris from "./tetris.js";
 
 /**
@@ -17,11 +16,11 @@ export default class Field {
   }
 
   public getRealFieldX() {
-    return Math.round(Tetris.window_width / 2 - Tetris.field.getRealFieldWidth() / 2);
+    return Math.round(Tetris.instance.window_width / 2 - Tetris.instance.field.getRealFieldWidth() / 2);
   }
 
   public getRealFieldY() {
-    return Math.round(Tetris.window_height / 2 - Tetris.field.getRealFieldHeight() / 2);
+    return Math.round(Tetris.instance.window_height / 2 - Tetris.instance.field.getRealFieldHeight() / 2);
   }
 
   public getRealFieldWidth(): number {
@@ -46,7 +45,7 @@ export default class Field {
   }
 
   private drawSections() {
-    const context = Tetris.context;
+    const context = Tetris.instance.context;
     const start_x = this.getRealFieldX();
     const start_y = this.getRealFieldY();
     context.strokeStyle = 'rgb(189, 189, 189)';

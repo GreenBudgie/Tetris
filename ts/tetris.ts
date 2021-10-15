@@ -1,16 +1,18 @@
 import Field from "./field.js";
-import { Figure } from "./figure.js";
+import Figure from "./figure.js";
 
 export default class Tetris {
 
-  public static readonly canvas: HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement;
-  public static readonly context: CanvasRenderingContext2D = Tetris.canvas.getContext("2d") as CanvasRenderingContext2D;
-  public static readonly field: Field = new Field();
+  public readonly canvas: HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement;
+  public readonly context: CanvasRenderingContext2D = this.canvas.getContext("2d") as CanvasRenderingContext2D;
+  public readonly field: Field = new Field();
 
-  public static readonly window_width: number = Tetris.canvas.width;
-  public static readonly window_height: number = Tetris.canvas.height;
+  public readonly window_width: number = this.canvas.width;
+  public readonly window_height: number = this.canvas.height;
 
-  private static figure = Figure.createByRelativeBlockSections(
+  private static _instance: Tetris;
+
+  private figure = Figure.createByRelativeBlockSections(
     [0, 0],
     [1, 0],
     [1, 1],
@@ -18,28 +20,34 @@ export default class Tetris {
   );
 
   constructor() {
-    Tetris.startGame();
+    Tetris._instance = this;
+    this.startGame();
   }
 
-  private static fixCanvasScaling() {
+  static get instance(): Tetris {
+    return this._instance;
+  }
+
+  private fixCanvasScaling() {
     const scaling = window.devicePixelRatio;
-    Tetris.canvas.style.width = Tetris.canvas.offsetWidth + "px";
-    Tetris.canvas.style.height = Tetris.canvas.offsetHeight + "px";
-    Tetris.canvas.width *= scaling;
-    Tetris.canvas.height *= scaling;
-    Tetris.context.transform(scaling, 0, 0, scaling, 0, 0);
+    this.canvas.style.width = this.canvas.offsetWidth + "px";
+    this.canvas.style.height = this.canvas.offsetHeight + "px";
+    this.canvas.width *= scaling;
+    this.canvas.height *= scaling;
+    this.context.transform(scaling, 0, 0, scaling, 0, 0);
   }
 
-  private static startGame(): void {
+  private startGame(): void {
     this.fixCanvasScaling();
-    setInterval(() => Tetris.process(), 15);
+    setInterval(() => this.process(), 15);
   }
 
-  private static process(): void {
-    Tetris.context.clearRect(0, 0, Tetris.window_width, Tetris.window_height);
-    Tetris.field.draw();
-    Tetris.figure.draw();
+  private process(): void {
+    this.context.clearRect(0, 0, this.window_width, this.window_height);
+    this.field.draw();
+    this.figure.draw();
   }
+
 }
 
 new Tetris();

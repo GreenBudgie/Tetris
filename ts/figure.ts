@@ -6,7 +6,7 @@ import Tetris from "./tetris.js";
  * A figure is a collection of single blocks.
  * The figure itself does not contain a location, the blocks do. 
  */
-export class Figure {
+export default class Figure {
   private blocks: Block[];
   private falling: boolean;
   

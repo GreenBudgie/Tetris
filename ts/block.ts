@@ -58,10 +58,10 @@ import Tetris from "./tetris.js";
   public checkMove(dx: number, dy: number): MoveResult {
     const new_section_x = this.section_x + dx;
     const new_section_y = this.section_y + dy;
-    for(let block of Tetris.field.blocks) {
+    for(let block of Tetris.instance.field.blocks) {
       if(new_section_x == block.section_x && new_section_y == block.section_y) return MoveResult.BLOCK;
     }
-    if(Tetris.field.isSectionInside(new_section_x, new_section_y)) return MoveResult.ALLOW;
+    if(Tetris.instance.field.isSectionInside(new_section_x, new_section_y)) return MoveResult.ALLOW;
     return MoveResult.BOUNDARY; 
   }
 
@@ -89,10 +89,10 @@ import Tetris from "./tetris.js";
   }
 
   public draw() {
-    const context = Tetris.context;
-    const section_size = Tetris.field.real_section_size;
-    const start_x = Tetris.field.getRealFieldX() + this.section_x * section_size + 0.5;
-    const start_y = Tetris.field.getRealFieldY() + this.section_y * section_size + 0.5;
+    const context = Tetris.instance.context;
+    const section_size = Tetris.instance.field.real_section_size;
+    const start_x = Tetris.instance.field.getRealFieldX() + this.section_x * section_size + 0.5;
+    const start_y = Tetris.instance.field.getRealFieldY() + this.section_y * section_size + 0.5;
     context.beginPath();
     context.moveTo(start_x, start_y);
     context.lineTo(start_x + section_size, start_y);
