@@ -3,7 +3,7 @@ import Block, { MoveResult } from "./block.js";
  * A figure is a collection of single blocks.
  * The figure itself does not contain a location, the blocks do.
  */
-export class Figure {
+export default class Figure {
     constructor(...blocks) {
         this.blocks = blocks;
     }

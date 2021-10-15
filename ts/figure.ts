@@ -1,6 +1,4 @@
 import Block, { MoveResult } from "./block.js";
-import Field from "./field.js";
-import Tetris from "./tetris.js";
 
 /**
  * A figure is a collection of single blocks.

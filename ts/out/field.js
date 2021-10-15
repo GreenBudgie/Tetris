@@ -10,10 +10,10 @@ export default class Field {
         this.blocks = [];
     }
     getRealFieldX() {
-        return Math.round(Tetris.window_width / 2 - Tetris.field.getRealFieldWidth() / 2);
+        return Math.round(Tetris.instance.window_width / 2 - Tetris.instance.field.getRealFieldWidth() / 2);
     }
     getRealFieldY() {
-        return Math.round(Tetris.window_height / 2 - Tetris.field.getRealFieldHeight() / 2);
+        return Math.round(Tetris.instance.window_height / 2 - Tetris.instance.field.getRealFieldHeight() / 2);
     }
     getRealFieldWidth() {
         return this.real_section_size * this.sections_x;
@@ -32,7 +32,7 @@ export default class Field {
         this.drawBlocks();
     }
     drawSections() {
-        const context = Tetris.context;
+        const context = Tetris.instance.context;
         const start_x = this.getRealFieldX();
         const start_y = this.getRealFieldY();
         context.strokeStyle = 'rgb(189, 189, 189)';

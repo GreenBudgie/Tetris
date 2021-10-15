@@ -1,5 +1,6 @@
 import Field from "./field.js";
 import Figure from "./figure.js";
+import InputHandler from "./input_handler.js";
 
 export default class Tetris {
 
@@ -39,6 +40,7 @@ export default class Tetris {
 
   private startGame(): void {
     this.fixCanvasScaling();
+    InputHandler.getHandler().registerListeners();
     setInterval(() => this.process(), 15);
   }
 
