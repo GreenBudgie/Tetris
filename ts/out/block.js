@@ -53,7 +53,7 @@ export default class Block {
             if (new_section_x == block.section_x && new_section_y == block.section_y)
                 return MoveResult.BLOCK;
         }
-        if (Tetris.instance.field.isSectionInside(new_section_x, new_section_y))
+        if (Tetris.instance.field.isSectionInsideOrAbove(new_section_x, new_section_y))
             return MoveResult.ALLOW;
         return MoveResult.BOUNDARY;
     }

@@ -34,16 +34,12 @@ export default class Field {
 		return this.real_section_size * this.sections_y;
 	}
 
-	public getFigureSpawnSectionDeltaX(): number {
-		return
-	}
-
 	public isSectionInside(section_x: number, section_y: number): boolean {
-		return section_x >= 0 && section_x <= this.sections_x && section_y >= 0 && section_y <= this.sections_y;
+		return section_x >= 0 && section_x < this.sections_x && section_y >= 0 && section_y < this.sections_y;
 	}
 
 	public isSectionInsideOrAbove(section_x: number, section_y: number) {
-		return section_x >= 0 && section_x <= this.sections_x && section_y <= this.sections_y;
+		return section_x >= 0 && section_x < this.sections_x && section_y < this.sections_y;
 	}
 
 	public update() {
