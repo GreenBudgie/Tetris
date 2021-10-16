@@ -20,7 +20,7 @@ export default class Field {
 	 */
 	public readonly real_section_size: number = 28;
 	/**
-	 * The amount of sections that make the player lose if he crosses them 
+	 * The amount of sections above the playable area
 	 */
 	public readonly limit_sections = 3;
 
@@ -28,7 +28,7 @@ export default class Field {
 	public fallingFigure: Figure;
 
 	constructor() {
-		this.fallingFigure = Figure.createByRelativeBlockSections([0, 0], [1, 0], [0, 1]);
+		this.createFallingFigure(Figure.createByRelativeBlockSections([0, 0], [1, 0], [0, 1]));
 	}
 
 	public getRealFieldX() {
@@ -47,11 +47,18 @@ export default class Field {
 		return this.real_section_size * this.sections_y;
 	}
 
+	public createFallingFigure(figure: Figure) {
+		const halfFigureWidth = Math.floor(figure.getCurrentWidth() / 2);
+		const halfFieldWidth = Math.floor(this.sections_x / 2);
+		figure.moveNoRestrictions(halfFieldWidth - halfFigureWidth, 0)
+		this.fallingFigure = figure;
+	}
+
 	public isSectionInside(section_x: number, section_y: number): boolean {
 		return section_x >= 0 && section_x < this.sections_x && section_y >= 0 && section_y < this.sections_y;
 	}
 
-	public isSectionInsideOrAbove(section_x: number, section_y: number) {
+	public isSectionInsideOrAbove(section_x: number, section_y: number): boolean {
 		return section_x >= 0 && section_x < this.sections_x && section_y < this.sections_y;
 	}
 
@@ -69,7 +76,7 @@ export default class Field {
 		const context = Tetris.instance.context;
 		const start_x = this.getRealFieldX();
 		const start_y = this.getRealFieldY();
-		context.strokeStyle = 'rgb(189, 189, 189)';
+		context.strokeStyle = "rgb(189, 189, 189)";
 		context.lineWidth = 1;
 		context.beginPath();
 		for(let x_section: number = 0; x_section <= this.sections_x; x_section++) {
@@ -85,9 +92,7 @@ export default class Field {
 	}
 
 	private drawBlocks() {
-		for(let block of this.blocks) {
-			block.draw();
-		}
+		this.blocks.forEach(block => block.draw());
 	}
 
 }

@@ -7,7 +7,7 @@ import Tetris from "./tetris.js";
  */
 export default class Figure {
     constructor(...blocks) {
-        this.max_falling_time = 60;
+        this.max_falling_time = 45;
         this.falling_timer = this.max_falling_time;
         this.blocks = blocks;
         this.selectRandomColor();
@@ -25,6 +25,36 @@ export default class Figure {
             blocks.push(new Block(section[0], section[1]));
         }
         return new Figure(...blocks);
+    }
+    /**
+     * Gets the current width with respect to figure rotation
+     * @returns The width of the figure
+     */
+    getCurrentWidth() {
+        let minBlockX = 999;
+        let maxBlockX = 0;
+        for (const block of this.blocks) {
+            if (block.section_x > maxBlockX)
+                maxBlockX = block.section_x;
+            if (block.section_x < minBlockX)
+                minBlockX = block.section_x;
+        }
+        return maxBlockX - minBlockX + 1;
+    }
+    /**
+     * Gets the current height with respect to figure rotation
+     * @returns The height of the figure
+     */
+    getCurrentHeight() {
+        let minBlockY = 999;
+        let maxBlockY = 0;
+        for (const block of this.blocks) {
+            if (block.section_y > maxBlockY)
+                maxBlockY = block.section_y;
+            if (block.section_y < minBlockY)
+                minBlockY = block.section_x;
+        }
+        return maxBlockY - minBlockY + 1;
     }
     selectRandomColor() {
         let colors = [];
