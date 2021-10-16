@@ -3,26 +3,57 @@
  */
 export default class InputHandler {
     constructor() {
-        this.bindings = {
-            KeyBinding, : .FIGURE_MOVE_RIGHT, new: KeyMapping("ArrowRight", "KeyD"),
-            FIGURE_MOVE_LEFT: new KeyMapping("ArrowLeft", "KeyA"),
-            FIGURE_MOVE_DOWN: new KeyMapping("ArrowDown", "KeyS"),
-        };
+        this.justPressedBindings = [];
+        this.justReleasedBindings = [];
+        this.activeBindings = [];
     }
     static getHandler() {
         if (this.instance == null)
-            return new InputHandler();
+            this.instance = new InputHandler();
         return this.instance;
     }
     registerListeners() {
-        document.addEventListener('keydown', this.onKeyPress);
+        document.addEventListener('keydown', (event) => this.onKeyPress(event));
+        document.addEventListener('keyup', (event) => this.onKeyRelease(event));
+    }
+    clearCurrentFrameBindings() {
+        this.justPressedBindings = [];
+        this.justReleasedBindings = [];
     }
     onKeyPress(event) {
         if (!event.repeat) {
+            for (const binding of KeyBindings.getBindingsByKeyCode(event.code)) {
+                this.justPressedBindings.push(binding);
+                this.activeBindings.push(binding);
+            }
         }
     }
+    onKeyRelease(event) {
+        for (const binding of KeyBindings.getBindingsByKeyCode(event.code)) {
+            this.justReleasedBindings.push(binding);
+        }
+        this.activeBindings.filter(binding => !binding.isMapped(event.code));
+    }
+    /**
+     * Checks whether one of the keys that are related to the current binding have been just pressed
+     */
+    isKeyBindingPressed(binding) {
+        return this.justPressedBindings.includes(binding);
+    }
+    /**
+     * Checks whether one of the keys that are related to the current binding have been just released
+     */
+    isKeyBindingReleased(binding) {
+        return this.justReleasedBindings.includes(binding);
+    }
+    /**
+     * Checks whether one of the keys that are related to the current binding is currently held
+     */
+    isKeyBindingDown(binding) {
+        return this.activeBindings.includes(binding);
+    }
 }
-export class KeyMapping {
+export class KeyBinding {
     constructor(...keyboardCodes) {
         this.keyboardCodes = keyboardCodes;
     }
@@ -34,10 +65,31 @@ export class KeyMapping {
         return this.keyboardCodes.includes(code);
     }
 }
-export var KeyBinding;
-(function (KeyBinding) {
-    KeyBinding[KeyBinding["FIGURE_MOVE_RIGHT"] = 0] = "FIGURE_MOVE_RIGHT";
-    KeyBinding[KeyBinding["FIGURE_MOVE_LEFT"] = 1] = "FIGURE_MOVE_LEFT";
-    KeyBinding[KeyBinding["FIGURE_MOVE_DOWN"] = 2] = "FIGURE_MOVE_DOWN";
-})(KeyBinding || (KeyBinding = {}));
+export class KeyBindings {
+    constructor() { }
+    static register(mapping) {
+        KeyBindings.keyBindings.push(mapping);
+        return mapping;
+    }
+    static getBindings() {
+        return KeyBindings.keyBindings;
+    }
+    /**
+     * Gets all key bindings that are mapped to the current key code
+     * @param code Key code
+     * @returns An array of key bindings that are mapped to the current key code, or an empty array if nothing found
+     */
+    static getBindingsByKeyCode(code) {
+        const mappedBindings = [];
+        for (const binding of this.keyBindings) {
+            if (binding.isMapped(code))
+                mappedBindings.push(binding);
+        }
+        return mappedBindings;
+    }
+}
+KeyBindings.keyBindings = [];
+KeyBindings.FIGURE_MOVE_RIGHT = KeyBindings.register(new KeyBinding("ArrowRight", "KeyD"));
+KeyBindings.FIGURE_MOVE_LEFT = KeyBindings.register(new KeyBinding("ArrowLeft", "KeyA"));
+KeyBindings.FIGURE_MOVE_DOWN = KeyBindings.register(new KeyBinding("ArrowDown", "KeyS"));
 //# sourceMappingURL=input_handler.js.map

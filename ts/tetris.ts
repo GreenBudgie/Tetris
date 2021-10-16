@@ -13,13 +13,6 @@ export default class Tetris {
 
   private static _instance: Tetris;
 
-  private figure = Figure.createByRelativeBlockSections(
-    [0, 0],
-    [1, 0],
-    [1, 1],
-    [2, 2]
-  );
-
   constructor() {
     Tetris._instance = this;
     this.startGame();
@@ -45,9 +38,12 @@ export default class Tetris {
   }
 
   private process(): void {
+    this.field.update();
+
     this.context.clearRect(0, 0, this.window_width, this.window_height);
     this.field.draw();
-    this.figure.draw();
+
+    InputHandler.getHandler().clearCurrentFrameBindings();
   }
 
 }

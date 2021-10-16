@@ -5,37 +5,68 @@ export default class InputHandler {
 
     private static instance: InputHandler;
 
-    private readonly bindings = {
-        FIGURE_MOVE_RIGHT: new KeyMapping("ArrowRight", "KeyD"),
-        FIGURE_MOVE_LEFT: new KeyMapping("ArrowLeft", "KeyA"),
-        FIGURE_MOVE_DOWN: new KeyMapping("ArrowDown", "KeyS"),
-    }
+    private justPressedBindings: KeyBinding[] = [];
+    private justReleasedBindings: KeyBinding[] = [];
+    private activeBindings: KeyBinding[] = [];
 
-    private constructor() {
-    }
+    private constructor() {}
 
     public static getHandler(): InputHandler {
-        if(this.instance == null) return new InputHandler();
+        if(this.instance == null) this.instance = new InputHandler();
         return this.instance;
     }
 
     public registerListeners() {
-        document.addEventListener('keydown', this.onKeyPress);
+        document.addEventListener('keydown', (event) => this.onKeyPress(event));
+        document.addEventListener('keyup', (event) => this.onKeyRelease(event));
+    }
+
+    public clearCurrentFrameBindings() {
+        this.justPressedBindings = [];
+        this.justReleasedBindings = [];
     }
 
     private onKeyPress(event: KeyboardEvent) {
         if(!event.repeat) {
-            
+            for(const binding of KeyBindings.getBindingsByKeyCode(event.code)) {
+                this.justPressedBindings.push(binding);
+                
+                this.activeBindings.push(binding);
+            }
         }
     }
 
-    private onBindingActivate(binding: KeyMapping) {
+    private onKeyRelease(event: KeyboardEvent) {
+        for(const binding of KeyBindings.getBindingsByKeyCode(event.code)) {
+            this.justReleasedBindings.push(binding);
+        }
+        this.activeBindings.filter(binding => !binding.isMapped(event.code));
+    }
 
+    /**
+     * Checks whether one of the keys that are related to the current binding have been just pressed
+     */
+    public isKeyBindingPressed(binding: KeyBinding): boolean {
+        return this.justPressedBindings.includes(binding);
+    }
+
+    /**
+     * Checks whether one of the keys that are related to the current binding have been just released
+     */
+    public isKeyBindingReleased(binding: KeyBinding): boolean {
+        return this.justReleasedBindings.includes(binding);
+    }
+
+    /**
+     * Checks whether one of the keys that are related to the current binding is currently held
+     */
+    public isKeyBindingDown(binding: KeyBinding): boolean {
+        return this.activeBindings.includes(binding);
     }
 
 }
 
-export class KeyMapping {
+export class KeyBinding {
     
     private keyboardCodes: string[];
 
@@ -53,8 +84,36 @@ export class KeyMapping {
 
 }
 
-export enum KeyBinding {
-    FIGURE_MOVE_RIGHT,
-    FIGURE_MOVE_LEFT,
-    FIGURE_MOVE_DOWN
+export class KeyBindings {
+
+    private static readonly keyBindings: KeyBinding[] = [];
+
+    public static readonly FIGURE_MOVE_RIGHT: KeyBinding = KeyBindings.register(new KeyBinding("ArrowRight", "KeyD"));
+    public static readonly FIGURE_MOVE_LEFT: KeyBinding = KeyBindings.register(new KeyBinding("ArrowLeft", "KeyA"));
+    public static readonly FIGURE_MOVE_DOWN: KeyBinding = KeyBindings.register(new KeyBinding("ArrowDown", "KeyS"));
+
+    private constructor() {}
+
+    private static register(mapping: KeyBinding): KeyBinding {
+        KeyBindings.keyBindings.push(mapping);
+        return mapping;
+    }
+
+    public static getBindings(): KeyBinding[] {
+        return KeyBindings.keyBindings;
+    }
+
+    /**
+     * Gets all key bindings that are mapped to the current key code
+     * @param code Key code
+     * @returns An array of key bindings that are mapped to the current key code, or an empty array if nothing found
+     */
+    public static getBindingsByKeyCode(code: string): KeyBinding[] {
+        const mappedBindings: KeyBinding[] = []; 
+        for(const binding of this.keyBindings) {
+            if(binding.isMapped(code)) mappedBindings.push(binding);
+        }
+        return mappedBindings;
+    }
+
 }

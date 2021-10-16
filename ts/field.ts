@@ -1,4 +1,5 @@
 import Block, { BlockColor } from "./block.js";
+import Figure from "./figure.js";
 import Tetris from "./tetris.js";
 
 /**
@@ -11,8 +12,10 @@ export default class Field {
   public readonly real_section_size: number = 28;
 
   public readonly blocks: Block[] = [];
+  public fallingFigure: Figure;
 
   constructor() {
+		this.fallingFigure = Figure.createByRelativeBlockSections([0, 0], [1, 0], [0, 1]);
   }
 
   public getRealFieldX() {
@@ -39,9 +42,14 @@ export default class Field {
     return section_x >= 0 && section_x <= this.sections_x && section_y <= this.sections_y;
   }
 
+  public update() {
+		if(this.fallingFigure != null) this.fallingFigure.update();
+  }
+
   public draw() {
     this.drawSections();
     this.drawBlocks();
+		if(this.fallingFigure != null) this.fallingFigure.draw();
   }
 
   private drawSections() {

@@ -1,5 +1,4 @@
 import Field from "./field.js";
-import Figure from "./figure.js";
 import InputHandler from "./input_handler.js";
 export default class Tetris {
     constructor() {
@@ -8,7 +7,6 @@ export default class Tetris {
         this.field = new Field();
         this.window_width = this.canvas.width;
         this.window_height = this.canvas.height;
-        this.figure = Figure.createByRelativeBlockSections([0, 0], [1, 0], [1, 1], [2, 2]);
         Tetris._instance = this;
         this.startGame();
     }
@@ -29,9 +27,10 @@ export default class Tetris {
         setInterval(() => this.process(), 15);
     }
     process() {
+        this.field.update();
         this.context.clearRect(0, 0, this.window_width, this.window_height);
         this.field.draw();
-        this.figure.draw();
+        InputHandler.getHandler().clearCurrentFrameBindings();
     }
 }
 new Tetris();

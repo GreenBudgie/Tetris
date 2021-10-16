@@ -1,4 +1,5 @@
 import Block, { MoveResult } from "./block.js";
+import InputHandler, { KeyBindings } from "./input_handler.js";
 
 /**
  * A figure is a collection of single blocks.
@@ -47,6 +48,7 @@ export default class Figure {
    * @param dy Y movement, from -1 to 1
    */
   public moveIfPossibleOrStop(dx: number, dy: number) {
+    console.log(`Move: ${dx} ${dy}`);
     const isVerticalMovement = dy > 0;
     for(let block of this.blocks) {
       const moveResult = block.checkMove(dx, dy);
@@ -74,6 +76,19 @@ export default class Figure {
    */
   public stop() {
 
+  }
+
+  public update() {
+    this.movementHandle();
+  }
+
+  private movementHandle() {
+    if(InputHandler.getHandler().isKeyBindingPressed(KeyBindings.FIGURE_MOVE_LEFT)) {
+      this.moveLeft();
+    }
+    if(InputHandler.getHandler().isKeyBindingPressed(KeyBindings.FIGURE_MOVE_RIGHT)) {
+      this.moveRight();
+    }
   }
 
   public draw() {
