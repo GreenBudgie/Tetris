@@ -7,7 +7,7 @@ import Tetris from "./tetris.js";
  * The figure itself does not contain a location, the blocks do. 
  */
 export default class Figure {
-	private blocks: Block[];
+	private _blocks: Block[];
 	private falling: boolean;
 	private readonly max_falling_time: number = 45;
 	private falling_timer: number = this.max_falling_time;
@@ -29,8 +29,12 @@ export default class Figure {
 	}
 
 	constructor(...blocks: Block[]) {
-		this.blocks = blocks;
+		this._blocks = blocks;
 		this.selectRandomColor();
+	}
+
+	get blocks() {
+		return this._blocks;
 	}
 
 	/**
@@ -40,7 +44,7 @@ export default class Figure {
 	public getCurrentWidth(): number {
 		let minBlockX = 999;
 		let maxBlockX = 0;
-		for(const block of this.blocks) {
+		for(const block of this._blocks) {
 			if(block.section_x > maxBlockX) maxBlockX = block.section_x;
 			if(block.section_x < minBlockX) minBlockX = block.section_x;
 		}
@@ -54,7 +58,7 @@ export default class Figure {
 	 public getCurrentHeight(): number {
 		let minBlockY = 999;
 		let maxBlockY = 0;
-		for(const block of this.blocks) {
+		for(const block of this._blocks) {
 			if(block.section_y > maxBlockY) maxBlockY = block.section_y;
 			if(block.section_y < minBlockY) minBlockY = block.section_x;
 		}
@@ -67,7 +71,7 @@ export default class Figure {
 			colors.push(FigureColor[figureColor]);
 		}
 		this.color = colors[Math.floor(Math.random() * colors.length)];
-		this.blocks.forEach(block => block.color = this.color);
+		this._blocks.forEach(block => block.color = this.color);
 	}
 
 	public moveRight() {
@@ -91,10 +95,10 @@ export default class Figure {
 	 */
 	public moveIfPossibleOrStop(dx: number, dy: number) {
 		const isVerticalMovement = dy > 0;
-		for(const block of this.blocks) {
+		for(const block of this._blocks) {
 			const moveResult = block.checkMove(dx, dy);
 			if(moveResult != MoveResult.ALLOW) {
-				if(isVerticalMovement) this.stop();
+				if(isVerticalMovement) this.land();
 				return;
 			}
 		}
@@ -107,7 +111,7 @@ export default class Figure {
 	 * @param dy Y movement
 	 */
 	public moveNoRestrictions(dx: number, dy: number) {
-		for(const block of this.blocks) {
+		for(const block of this._blocks) {
 			block.move(dx, dy);
 		}
 	}
@@ -115,8 +119,8 @@ export default class Figure {
 	/**
 	 * Interrupts the falling
 	 */
-	public stop() {
-
+	public land() {
+		Tetris.instance.field.landFigure();
 	}
 
 	public update(delta: number) {
@@ -138,7 +142,7 @@ export default class Figure {
 	}
 
 	public draw() {
-		for(let block of this.blocks) {
+		for(let block of this._blocks) {
 			block.draw();
 		}
 	}

@@ -9,7 +9,7 @@ export default class Figure {
     constructor(...blocks) {
         this.max_falling_time = 45;
         this.falling_timer = this.max_falling_time;
-        this.blocks = blocks;
+        this._blocks = blocks;
         this.selectRandomColor();
     }
     /**
@@ -26,6 +26,9 @@ export default class Figure {
         }
         return new Figure(...blocks);
     }
+    get blocks() {
+        return this._blocks;
+    }
     /**
      * Gets the current width with respect to figure rotation
      * @returns The width of the figure
@@ -33,7 +36,7 @@ export default class Figure {
     getCurrentWidth() {
         let minBlockX = 999;
         let maxBlockX = 0;
-        for (const block of this.blocks) {
+        for (const block of this._blocks) {
             if (block.section_x > maxBlockX)
                 maxBlockX = block.section_x;
             if (block.section_x < minBlockX)
@@ -48,7 +51,7 @@ export default class Figure {
     getCurrentHeight() {
         let minBlockY = 999;
         let maxBlockY = 0;
-        for (const block of this.blocks) {
+        for (const block of this._blocks) {
             if (block.section_y > maxBlockY)
                 maxBlockY = block.section_y;
             if (block.section_y < minBlockY)
@@ -62,7 +65,7 @@ export default class Figure {
             colors.push(FigureColor[figureColor]);
         }
         this.color = colors[Math.floor(Math.random() * colors.length)];
-        this.blocks.forEach(block => block.color = this.color);
+        this._blocks.forEach(block => block.color = this.color);
     }
     moveRight() {
         this.moveIfPossibleOrStop(1, 0);
@@ -82,11 +85,11 @@ export default class Figure {
      */
     moveIfPossibleOrStop(dx, dy) {
         const isVerticalMovement = dy > 0;
-        for (const block of this.blocks) {
+        for (const block of this._blocks) {
             const moveResult = block.checkMove(dx, dy);
             if (moveResult != MoveResult.ALLOW) {
                 if (isVerticalMovement)
-                    this.stop();
+                    this.land();
                 return;
             }
         }
@@ -98,14 +101,15 @@ export default class Figure {
      * @param dy Y movement
      */
     moveNoRestrictions(dx, dy) {
-        for (const block of this.blocks) {
+        for (const block of this._blocks) {
             block.move(dx, dy);
         }
     }
     /**
      * Interrupts the falling
      */
-    stop() {
+    land() {
+        Tetris.instance.field.landFigure();
     }
     update(delta) {
         this.movementHandle();
@@ -124,7 +128,7 @@ export default class Figure {
         }
     }
     draw() {
-        for (let block of this.blocks) {
+        for (let block of this._blocks) {
             block.draw();
         }
     }

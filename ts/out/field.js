@@ -22,7 +22,8 @@ export default class Field {
          */
         this.limit_sections = 3;
         this.blocks = [];
-        this.createFallingFigure(Figure.createByRelativeBlockSections([0, 0], [1, 0], [0, 1]));
+        this.max_time_to_create_new_figure = 15;
+        this.time_to_create_new_figure = this.max_time_to_create_new_figure;
     }
     getRealFieldX() {
         return Math.round(Tetris.instance.window_width / 2 - Tetris.instance.field.getRealFieldWidth() / 2);
@@ -40,7 +41,14 @@ export default class Field {
         const halfFigureWidth = Math.floor(figure.getCurrentWidth() / 2);
         const halfFieldWidth = Math.floor(this.sections_x / 2);
         figure.moveNoRestrictions(halfFieldWidth - halfFigureWidth, 0);
-        this.fallingFigure = figure;
+        this.falling_figure = figure;
+    }
+    landFigure() {
+        for (const block of this.falling_figure.blocks) {
+            this.blocks.push(block);
+        }
+        this.falling_figure = null;
+        this.time_to_create_new_figure = this.max_time_to_create_new_figure;
     }
     isSectionInside(section_x, section_y) {
         return section_x >= 0 && section_x < this.sections_x && section_y >= 0 && section_y < this.sections_y;
@@ -49,14 +57,21 @@ export default class Field {
         return section_x >= 0 && section_x < this.sections_x && section_y < this.sections_y;
     }
     update(delta) {
-        if (this.fallingFigure != null)
-            this.fallingFigure.update(delta);
+        if (this.falling_figure != null) {
+            this.falling_figure.update(delta);
+        }
+        else {
+            this.time_to_create_new_figure -= delta * Tetris.FPS;
+            if (this.time_to_create_new_figure <= 0) {
+                this.createFallingFigure(Figure.createByRelativeBlockSections([0, 0], [1, 0], [0, 1]));
+            }
+        }
     }
     draw() {
         this.drawSections();
         this.drawBlocks();
-        if (this.fallingFigure != null)
-            this.fallingFigure.draw();
+        if (this.falling_figure != null)
+            this.falling_figure.draw();
     }
     drawSections() {
         const context = Tetris.instance.context;

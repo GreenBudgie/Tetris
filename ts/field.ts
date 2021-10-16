@@ -25,10 +25,11 @@ export default class Field {
 	public readonly limit_sections = 3;
 
 	public readonly blocks: Block[] = [];
-	public fallingFigure: Figure;
+	public falling_figure: Figure;
+	private readonly max_time_to_create_new_figure = 15;
+	private time_to_create_new_figure = this.max_time_to_create_new_figure;
 
 	constructor() {
-		this.createFallingFigure(Figure.createByRelativeBlockSections([0, 0], [1, 0], [0, 1]));
 	}
 
 	public getRealFieldX() {
@@ -51,7 +52,15 @@ export default class Field {
 		const halfFigureWidth = Math.floor(figure.getCurrentWidth() / 2);
 		const halfFieldWidth = Math.floor(this.sections_x / 2);
 		figure.moveNoRestrictions(halfFieldWidth - halfFigureWidth, 0)
-		this.fallingFigure = figure;
+		this.falling_figure = figure;
+	}
+
+	public landFigure() {
+		for(const block of this.falling_figure.blocks) {
+			this.blocks.push(block);
+		}
+		this.falling_figure = null;
+		this.time_to_create_new_figure = this.max_time_to_create_new_figure;
 	}
 
 	public isSectionInside(section_x: number, section_y: number): boolean {
@@ -63,13 +72,20 @@ export default class Field {
 	}
 
 	public update(delta: number) {
-		if(this.fallingFigure != null) this.fallingFigure.update(delta);
+		if(this.falling_figure != null) {
+			this.falling_figure.update(delta);
+		} else {
+			this.time_to_create_new_figure -= delta * Tetris.FPS;
+			if(this.time_to_create_new_figure <= 0) {
+				this.createFallingFigure(Figure.createByRelativeBlockSections([0, 0], [1, 0], [0, 1]));
+			}
+		}
 	}
 
 	public draw() {
 		this.drawSections();
 		this.drawBlocks();
-		if(this.fallingFigure != null) this.fallingFigure.draw();
+		if(this.falling_figure != null) this.falling_figure.draw();
 	}
 
 	private drawSections() {
