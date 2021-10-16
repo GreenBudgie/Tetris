@@ -101,6 +101,7 @@ export class KeyBindings {
     public static readonly FIGURE_MOVE_RIGHT: KeyBinding = KeyBindings.register(new KeyBinding("ArrowRight", "KeyD"));
     public static readonly FIGURE_MOVE_LEFT: KeyBinding = KeyBindings.register(new KeyBinding("ArrowLeft", "KeyA"));
     public static readonly FIGURE_MOVE_DOWN: KeyBinding = KeyBindings.register(new KeyBinding("ArrowDown", "KeyS"));
+    public static readonly FIGURE_ROTATE: KeyBinding = KeyBindings.register(new KeyBinding("ArrowUp", "KeyW"));
 
     private constructor() {}
 

@@ -38,7 +38,7 @@ export default class Field {
         return this.real_section_size * this.sections_y;
     }
     createFallingFigure(figure) {
-        const halfFigureWidth = Math.floor(figure.getCurrentWidth() / 2);
+        const halfFigureWidth = Math.floor(figure.getWidth() / 2);
         const halfFieldWidth = Math.floor(this.sections_x / 2);
         figure.moveNoRestrictions(halfFieldWidth - halfFigureWidth, 0);
         this.falling_figure = figure;

@@ -30,34 +30,47 @@ export default class Figure {
         return this._blocks;
     }
     /**
+     * Gets absolute section positions with uttermost blocks with respect to figure rotation.
+     * This method uses raw section coordinates, so the boundaries might be shifted to a float value.
+     * @returns An object containing absolute section positions with uttermost blocks
+     */
+    getBoundaries() {
+        let minBlockX = 999;
+        let maxBlockX = 0;
+        let minBlockY = 999;
+        let maxBlockY = 0;
+        for (const block of this._blocks) {
+            if (block.getRawSectionX() > maxBlockX)
+                maxBlockX = block.getRawSectionX();
+            if (block.getRawSectionX() < minBlockX)
+                minBlockX = block.getRawSectionX();
+            if (block.getRawSectionY() > maxBlockY)
+                maxBlockY = block.getRawSectionY();
+            if (block.getRawSectionY() < minBlockY)
+                minBlockY = block.getRawSectionY();
+        }
+        return {
+            left: minBlockX,
+            top: minBlockY,
+            right: maxBlockX,
+            bottom: maxBlockY
+        };
+    }
+    /**
      * Gets the current width with respect to figure rotation
      * @returns The width of the figure
      */
-    getCurrentWidth() {
-        let minBlockX = 999;
-        let maxBlockX = 0;
-        for (const block of this._blocks) {
-            if (block.section_x > maxBlockX)
-                maxBlockX = block.section_x;
-            if (block.section_x < minBlockX)
-                minBlockX = block.section_x;
-        }
-        return maxBlockX - minBlockX + 1;
+    getWidth() {
+        const boundaries = this.getBoundaries();
+        return boundaries.right - boundaries.left + 1;
     }
     /**
      * Gets the current height with respect to figure rotation
      * @returns The height of the figure
      */
-    getCurrentHeight() {
-        let minBlockY = 999;
-        let maxBlockY = 0;
-        for (const block of this._blocks) {
-            if (block.section_y > maxBlockY)
-                maxBlockY = block.section_y;
-            if (block.section_y < minBlockY)
-                minBlockY = block.section_x;
-        }
-        return maxBlockY - minBlockY + 1;
+    getHeight() {
+        const boundaries = this.getBoundaries();
+        return boundaries.bottom - boundaries.top + 1;
     }
     selectRandomColor() {
         let colors = [];
@@ -66,6 +79,19 @@ export default class Figure {
         }
         this.color = colors[Math.floor(Math.random() * colors.length)];
         this._blocks.forEach(block => block.color = this.color);
+    }
+    rotate() {
+        const boundaries = this.getBoundaries();
+        const center_x = (boundaries.left + boundaries.right) / 2;
+        const center_y = (boundaries.bottom + boundaries.top) / 2;
+        for (const block of this._blocks) {
+            const origin_x = block.getRawSectionX() - center_x;
+            const origin_y = block.getRawSectionY() - center_y;
+            const rotated_origin_x = -origin_y;
+            const rotated_origin_y = origin_x;
+            block.setSectionX(rotated_origin_x + center_x);
+            block.setSectionY(rotated_origin_y + center_y);
+        }
     }
     moveRight() {
         this.moveIfPossibleOrStop(1, 0);
@@ -130,6 +156,9 @@ export default class Figure {
         }
         if (handler.isKeyBindingPressedOrRepeats(KeyBindings.FIGURE_MOVE_DOWN)) {
             this.moveDownOrStop();
+        }
+        if (handler.isKeyBindingPressedOrRepeats(KeyBindings.FIGURE_ROTATE)) {
+            this.rotate();
         }
     }
     draw() {

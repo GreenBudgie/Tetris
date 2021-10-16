@@ -49,7 +49,7 @@ export default class Field {
 	}
 
 	public createFallingFigure(figure: Figure) {
-		const halfFigureWidth = Math.floor(figure.getCurrentWidth() / 2);
+		const halfFigureWidth = Math.floor(figure.getWidth() / 2);
 		const halfFieldWidth = Math.floor(this.sections_x / 2);
 		figure.moveNoRestrictions(halfFieldWidth - halfFigureWidth, 0)
 		this.falling_figure = figure;

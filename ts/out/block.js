@@ -11,6 +11,42 @@ export default class Block {
         this.section_y = section_y;
     }
     /**
+     * Gets the raw value of X section position. This might not be an integer value.
+     * @returns Raw X section position
+     */
+    getRawSectionX() {
+        return this.section_x;
+    }
+    /**
+     * Gets the raw value of Y section position. This might not be an integer value.
+     * @returns Raw Y section position
+     */
+    getRawSectionY() {
+        return this.section_y;
+    }
+    /**
+     * Gets the real value of X section position (always an integer value).
+     * The block will be drawn inside this section.
+     * @returns Real X section position
+     */
+    getRealSectionX() {
+        return Math.floor(this.section_x);
+    }
+    /**
+     * Gets the real value of Y section position (always an integer value).
+     * The block will be drawn inside this section.
+     * @returns Real Y section position
+     */
+    getRealSectionY() {
+        return Math.ceil(this.section_y);
+    }
+    setSectionX(x) {
+        this.section_x = x;
+    }
+    setSectionY(y) {
+        this.section_y = y;
+    }
+    /**
      * Checks whether the block is able to move right
      * @returns ALLOW if the block is able to move right, BOUNDARY if a wall obstructs the movement, BLOCK if a block obstructs the movement
      */
@@ -36,10 +72,10 @@ export default class Block {
      * @returns ALLOW if the block is able to move by specified deltas, BOUNDARY if a floor obstructs the movement, BLOCK if a block obstructs the movement
      */
     checkMove(dx, dy) {
-        const new_section_x = this.section_x + dx;
-        const new_section_y = this.section_y + dy;
+        const new_section_x = this.getRealSectionX() + dx;
+        const new_section_y = this.getRealSectionY() + dy;
         for (let block of Tetris.instance.field.blocks) {
-            if (new_section_x == block.section_x && new_section_y == block.section_y)
+            if (new_section_x == block.getRealSectionX() && new_section_y == block.getRealSectionY())
                 return MoveResult.BLOCK;
         }
         if (Tetris.instance.field.isSectionInside(new_section_x, new_section_y))
@@ -68,8 +104,8 @@ export default class Block {
     draw() {
         const context = Tetris.instance.context;
         const section_size = Tetris.instance.field.real_section_size;
-        const start_x = Tetris.instance.field.getRealFieldX() + this.section_x * section_size + 0.5;
-        const start_y = Tetris.instance.field.getRealFieldY() + this.section_y * section_size + 0.5;
+        const start_x = Tetris.instance.field.getRealFieldX() + this.getRealSectionX() * section_size + 0.5;
+        const start_y = Tetris.instance.field.getRealFieldY() + this.getRealSectionY() * section_size + 0.5;
         context.beginPath();
         context.moveTo(start_x, start_y);
         context.lineTo(start_x + section_size, start_y);
