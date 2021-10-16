@@ -1,5 +1,6 @@
 import Block, {MoveResult} from "./block.js";
 import InputHandler, {KeyBindings} from "./input_handler.js";
+import Tetris from "./tetris.js";
 
 /**
  * A figure is a collection of single blocks.
@@ -8,6 +9,8 @@ import InputHandler, {KeyBindings} from "./input_handler.js";
 export default class Figure {
 	private blocks: Block[];
 	private falling: boolean;
+	private readonly max_falling_time: number = 60;
+	private falling_timer: number = this.max_falling_time;
 	private color: FigureColor;
 
 	/**
@@ -88,8 +91,13 @@ export default class Figure {
 
 	}
 
-	public update() {
+	public update(delta: number) {
 		this.movementHandle();
+		this.falling_timer -= delta * Tetris.FPS;
+		if(this.falling_timer <= 0) {
+			this.moveDownOrStop();
+			this.falling_timer = this.max_falling_time;
+		}
 	}
 
 	private movementHandle() {

@@ -7,6 +7,7 @@ export default class Tetris {
         this.field = new Field();
         this.window_width = this.canvas.width;
         this.window_height = this.canvas.height;
+        this.previousTimestamp = 0;
         Tetris._instance = this;
         this.startGame();
     }
@@ -24,14 +25,19 @@ export default class Tetris {
     startGame() {
         this.fixCanvasScaling();
         InputHandler.getHandler().registerListeners();
-        setInterval(() => this.process(), 15);
+        requestAnimationFrame((timestamp) => this.gameLoop(timestamp));
     }
-    process() {
-        this.field.update();
+    gameLoop(timestamp) {
+        const delta = (timestamp - this.previousTimestamp) / 1000;
+        this.previousTimestamp = timestamp;
+        this.field.update(delta);
         this.context.clearRect(0, 0, this.window_width, this.window_height);
+        this.context.strokeText(Math.round(1 / delta).toString(), 50, 50);
         this.field.draw();
         InputHandler.getHandler().clearCurrentFrameBindings();
+        requestAnimationFrame((timestamp) => this.gameLoop(timestamp));
     }
 }
+Tetris.FPS = 60;
 new Tetris();
 //# sourceMappingURL=tetris.js.map

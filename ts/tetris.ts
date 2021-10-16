@@ -3,6 +3,8 @@ import InputHandler from "./input_handler.js";
 
 export default class Tetris {
 
+	public static readonly FPS: number = 60;
+
 	public readonly canvas: HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement;
 	public readonly context: CanvasRenderingContext2D = this.canvas.getContext("2d") as CanvasRenderingContext2D;
 	public readonly field: Field = new Field();
@@ -30,19 +32,27 @@ export default class Tetris {
 		this.context.transform(scaling, 0, 0, scaling, 0, 0);
 	}
 
-	private startGame(): void {
+	private startGame() {
 		this.fixCanvasScaling();
 		InputHandler.getHandler().registerListeners();
-		setInterval(() => this.process(), 15);
+		requestAnimationFrame((timestamp) => this.gameLoop(timestamp));
 	}
 
-	private process(): void {
-		this.field.update();
+	private previousTimestamp = 0;
+
+	private gameLoop(timestamp: number): void {
+		const delta = (timestamp - this.previousTimestamp) / 1000;
+		this.previousTimestamp = timestamp;
+
+		this.field.update(delta);
 
 		this.context.clearRect(0, 0, this.window_width, this.window_height);
+		this.context.strokeText(Math.round(1 / delta).toString(), 50, 50);
 		this.field.draw();
 
 		InputHandler.getHandler().clearCurrentFrameBindings();
+
+		requestAnimationFrame((timestamp) => this.gameLoop(timestamp));
 	}
 
 }

@@ -1,11 +1,14 @@
 import Block, { MoveResult } from "./block.js";
 import InputHandler, { KeyBindings } from "./input_handler.js";
+import Tetris from "./tetris.js";
 /**
  * A figure is a collection of single blocks.
  * The figure itself does not contain a location, the blocks do.
  */
 export default class Figure {
     constructor(...blocks) {
+        this.max_falling_time = 60;
+        this.falling_timer = this.max_falling_time;
         this.blocks = blocks;
         this.selectRandomColor();
     }
@@ -74,8 +77,13 @@ export default class Figure {
      */
     stop() {
     }
-    update() {
+    update(delta) {
         this.movementHandle();
+        this.falling_timer -= delta * Tetris.FPS;
+        if (this.falling_timer <= 0) {
+            this.moveDownOrStop();
+            this.falling_timer = this.max_falling_time;
+        }
     }
     movementHandle() {
         if (InputHandler.getHandler().isKeyBindingPressedOrRepeats(KeyBindings.FIGURE_MOVE_LEFT)) {

@@ -7,9 +7,22 @@ import Tetris from "./tetris.js";
  */
 export default class Field {
 
+	/**
+	 * Determines how wide in terms of sections the field is
+	 */
 	public readonly sections_x: number = 12;
+	/**
+	 * Determines how deep in terms of sections the field is
+	 */
 	public readonly sections_y: number = 20;
+	/**
+	 * The actual size of each section measured in pixels
+	 */
 	public readonly real_section_size: number = 28;
+	/**
+	 * The amount of sections that make the player lose if he crosses them 
+	 */
+	public readonly limit_sections = 3;
 
 	public readonly blocks: Block[] = [];
 	public fallingFigure: Figure;
@@ -42,8 +55,8 @@ export default class Field {
 		return section_x >= 0 && section_x < this.sections_x && section_y < this.sections_y;
 	}
 
-	public update() {
-		if(this.fallingFigure != null) this.fallingFigure.update();
+	public update(delta: number) {
+		if(this.fallingFigure != null) this.fallingFigure.update(delta);
 	}
 
 	public draw() {

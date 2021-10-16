@@ -5,9 +5,22 @@ import Tetris from "./tetris.js";
  */
 export default class Field {
     constructor() {
+        /**
+         * Determines how wide in terms of sections the field is
+         */
         this.sections_x = 12;
+        /**
+         * Determines how deep in terms of sections the field is
+         */
         this.sections_y = 20;
+        /**
+         * The actual size of each section measured in pixels
+         */
         this.real_section_size = 28;
+        /**
+         * The amount of sections that make the player lose if he crosses them
+         */
+        this.limit_sections = 3;
         this.blocks = [];
         this.fallingFigure = Figure.createByRelativeBlockSections([0, 0], [1, 0], [0, 1]);
     }
@@ -29,9 +42,9 @@ export default class Field {
     isSectionInsideOrAbove(section_x, section_y) {
         return section_x >= 0 && section_x < this.sections_x && section_y < this.sections_y;
     }
-    update() {
+    update(delta) {
         if (this.fallingFigure != null)
-            this.fallingFigure.update();
+            this.fallingFigure.update(delta);
     }
     draw() {
         this.drawSections();
