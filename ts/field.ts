@@ -1,4 +1,4 @@
-import Block, {BlockColor} from "./block.js";
+import Block from "./block.js";
 import Figure from "./figure.js";
 import Tetris from "./tetris.js";
 

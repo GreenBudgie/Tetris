@@ -7,6 +7,7 @@ import InputHandler, { KeyBindings } from "./input_handler.js";
 export default class Figure {
     constructor(...blocks) {
         this.blocks = blocks;
+        this.selectRandomColor();
     }
     /**
      * Creates a figure based on section coordinates.
@@ -21,6 +22,14 @@ export default class Figure {
             blocks.push(new Block(section[0], section[1]));
         }
         return new Figure(...blocks);
+    }
+    selectRandomColor() {
+        let colors = [];
+        for (const figureColor in FigureColor) {
+            colors.push(FigureColor[figureColor]);
+        }
+        this.color = colors[Math.floor(Math.random() * colors.length)];
+        this.blocks.forEach(block => block.color = this.color);
     }
     moveRight() {
         this.moveIfPossibleOrStop(1, 0);
@@ -82,4 +91,13 @@ export default class Figure {
         }
     }
 }
+export var FigureColor;
+(function (FigureColor) {
+    FigureColor["RED"] = "rgb(255, 86, 86)";
+    FigureColor["GREEN"] = "rgb(132, 255, 92)";
+    FigureColor["BLUE"] = "rgb(73, 63, 251)";
+    FigureColor["PINK"] = "rgb(254, 102, 255)";
+    FigureColor["YELLOW"] = "rgb(255, 251, 97)";
+    FigureColor["ORANGE"] = "rgb(255, 151, 70)";
+})(FigureColor || (FigureColor = {}));
 //# sourceMappingURL=figure.js.map

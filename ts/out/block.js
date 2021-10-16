@@ -1,25 +1,14 @@
+import { FigureColor } from "./figure.js";
 import Tetris from "./tetris.js";
 /**
  * A block is either a part of a figure attached to other parts, or a fallen block that fills up the field.
  * The block has coordinates relative to a figure.
  */
 export default class Block {
-    constructor(section_x, section_y, color) {
+    constructor(section_x, section_y) {
+        this.color = FigureColor.RED;
         this.section_x = section_x;
         this.section_y = section_y;
-        if (color == null) {
-            this.selectRandomColor();
-        }
-        else {
-            this.color = color;
-        }
-    }
-    selectRandomColor() {
-        let colors = [];
-        for (let blockColor in BlockColor) {
-            colors.push(BlockColor[blockColor]);
-        }
-        this.color = colors[Math.floor(Math.random() * colors.length)];
     }
     /**
      * Checks whether the block is able to move right
@@ -94,15 +83,6 @@ export default class Block {
         context.fill();
     }
 }
-export var BlockColor;
-(function (BlockColor) {
-    BlockColor["RED"] = "rgb(255, 86, 86)";
-    BlockColor["GREEN"] = "rgb(132, 255, 92)";
-    BlockColor["BLUE"] = "rgb(73, 63, 251)";
-    BlockColor["PINK"] = "rgb(254, 102, 255)";
-    BlockColor["YELLOW"] = "rgb(255, 251, 97)";
-    BlockColor["ORANGE"] = "rgb(255, 151, 70)";
-})(BlockColor || (BlockColor = {}));
 export var MoveResult;
 (function (MoveResult) {
     /**

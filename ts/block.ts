@@ -1,3 +1,4 @@
+import {FigureColor} from "./figure.js";
 import Tetris from "./tetris.js";
 
 /**
@@ -7,24 +8,11 @@ import Tetris from "./tetris.js";
 export default class Block {
 	public section_x: number;
 	public section_y: number;
-	public color: BlockColor;
+	public color: FigureColor = FigureColor.RED;
 
-	constructor(section_x: number, section_y: number, color?: BlockColor) {
+	constructor(section_x: number, section_y: number) {
 		this.section_x = section_x;
 		this.section_y = section_y;
-		if(color == null) {
-			this.selectRandomColor();
-		} else {
-			this.color = color;
-		}
-	}
-
-	private selectRandomColor() {
-		let colors: BlockColor[] = [];
-		for(let blockColor in BlockColor) {
-			colors.push(BlockColor[blockColor]);
-		}
-		this.color = colors[Math.floor(Math.random() * colors.length)];
 	}
 
 	/**
@@ -106,15 +94,6 @@ export default class Block {
 		context.fill();
 	}
 
-}
-
-export enum BlockColor {
-	RED = "rgb(255, 86, 86)",
-	GREEN = "rgb(132, 255, 92)",
-	BLUE = "rgb(73, 63, 251)",
-	PINK = "rgb(254, 102, 255)",
-	YELLOW = "rgb(255, 251, 97)",
-	ORANGE = "rgb(255, 151, 70)"
 }
 
 export enum MoveResult {

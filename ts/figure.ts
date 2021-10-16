@@ -8,6 +8,7 @@ import InputHandler, {KeyBindings} from "./input_handler.js";
 export default class Figure {
 	private blocks: Block[];
 	private falling: boolean;
+	private color: FigureColor;
 
 	/**
 	 * Creates a figure based on section coordinates.
@@ -26,6 +27,16 @@ export default class Figure {
 
 	constructor(...blocks: Block[]) {
 		this.blocks = blocks;
+		this.selectRandomColor();
+	}
+
+	private selectRandomColor() {
+		let colors: FigureColor[] = [];
+		for(const figureColor in FigureColor) {
+			colors.push(FigureColor[figureColor]);
+		}
+		this.color = colors[Math.floor(Math.random() * colors.length)];
+		this.blocks.forEach(block => block.color = this.color);
 	}
 
 	public moveRight() {
@@ -96,4 +107,13 @@ export default class Figure {
 		}
 	}
 
+}
+
+export enum FigureColor {
+	RED = "rgb(255, 86, 86)",
+	GREEN = "rgb(132, 255, 92)",
+	BLUE = "rgb(73, 63, 251)",
+	PINK = "rgb(254, 102, 255)",
+	YELLOW = "rgb(255, 251, 97)",
+	ORANGE = "rgb(255, 151, 70)"
 }
