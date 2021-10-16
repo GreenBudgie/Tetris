@@ -1,4 +1,4 @@
-import Figure from "./figure.js";
+import { Figures } from "./figure.js";
 import Tetris from "./tetris.js";
 /**
  * A field is a game element that stores and renders all the blocks and figures inside it
@@ -53,9 +53,6 @@ export default class Field {
     isSectionInside(section_x, section_y) {
         return section_x >= 0 && section_x < this.sections_x && section_y >= 0 && section_y < this.sections_y;
     }
-    isSectionInsideOrAbove(section_x, section_y) {
-        return section_x >= 0 && section_x < this.sections_x && section_y < this.sections_y;
-    }
     update(delta) {
         if (this.falling_figure != null) {
             this.falling_figure.update(delta);
@@ -63,7 +60,7 @@ export default class Field {
         else {
             this.time_to_create_new_figure -= delta * Tetris.FPS;
             if (this.time_to_create_new_figure <= 0) {
-                this.createFallingFigure(Figure.createByRelativeBlockSections([0, 0], [1, 0], [0, 1]));
+                this.createFallingFigure(Figures.getRandomFigure());
             }
         }
     }

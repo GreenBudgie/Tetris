@@ -1,5 +1,5 @@
 import Block from "./block.js";
-import Figure from "./figure.js";
+import Figure, {Figures} from "./figure.js";
 import Tetris from "./tetris.js";
 
 /**
@@ -67,17 +67,13 @@ export default class Field {
 		return section_x >= 0 && section_x < this.sections_x && section_y >= 0 && section_y < this.sections_y;
 	}
 
-	public isSectionInsideOrAbove(section_x: number, section_y: number): boolean {
-		return section_x >= 0 && section_x < this.sections_x && section_y < this.sections_y;
-	}
-
 	public update(delta: number) {
 		if(this.falling_figure != null) {
 			this.falling_figure.update(delta);
 		} else {
 			this.time_to_create_new_figure -= delta * Tetris.FPS;
 			if(this.time_to_create_new_figure <= 0) {
-				this.createFallingFigure(Figure.createByRelativeBlockSections([0, 0], [1, 0], [0, 1]));
+				this.createFallingFigure(Figures.getRandomFigure());
 			}
 		}
 	}

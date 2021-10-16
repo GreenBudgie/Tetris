@@ -142,4 +142,19 @@ export var FigureColor;
     FigureColor["YELLOW"] = "rgb(255, 251, 97)";
     FigureColor["ORANGE"] = "rgb(255, 151, 70)";
 })(FigureColor || (FigureColor = {}));
+export class Figures {
+    static register(figure) {
+        Figures.figures.push(figure);
+    }
+    static getRandomFigure() {
+        return Figures.figures[Math.floor(Math.random() * Figures.figures.length)];
+    }
+}
+Figures.figures = [];
+Figures.T_SHAPE = Figures.register(Figure.createByRelativeBlockSections([0, 0], [1, 0], [2, 0], [1, 1]));
+Figures.BOX_SHAPE = Figures.register(Figure.createByRelativeBlockSections([0, 0], [1, 0], [0, 1], [1, 1]));
+Figures.L_SHAPE = Figures.register(Figure.createByRelativeBlockSections([0, 1], [1, 1], [2, 0], [0, 2]));
+Figures.I_SHAPE = Figures.register(Figure.createByRelativeBlockSections([0, 0], [1, 0], [2, 0], [3, 0]));
+Figures.Z_SHAPE = Figures.register(Figure.createByRelativeBlockSections([0, 0], [1, 0], [1, 1], [2, 1]));
+Figures.CORNER_SHAPE = Figures.register(Figure.createByRelativeBlockSections([0, 0], [1, 0], [1, 1]));
 //# sourceMappingURL=figure.js.map
