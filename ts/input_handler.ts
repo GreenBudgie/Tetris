@@ -6,6 +6,7 @@ export default class InputHandler {
     private static instance: InputHandler;
 
     private justPressedBindings: KeyBinding[] = [];
+    private repeatedlyPressedBindings: KeyBinding[] = [];
     private justReleasedBindings: KeyBinding[] = [];
     private activeBindings: KeyBinding[] = [];
 
@@ -24,14 +25,16 @@ export default class InputHandler {
     public clearCurrentFrameBindings() {
         this.justPressedBindings = [];
         this.justReleasedBindings = [];
+        this.repeatedlyPressedBindings = [];
     }
 
     private onKeyPress(event: KeyboardEvent) {
-        if(!event.repeat) {
-            for(const binding of KeyBindings.getBindingsByKeyCode(event.code)) {
+        for(const binding of KeyBindings.getBindingsByKeyCode(event.code)) {
+            if(!event.repeat) {
                 this.justPressedBindings.push(binding);
-                
                 this.activeBindings.push(binding);
+            } else {
+                this.repeatedlyPressedBindings.push(binding);
             }
         }
     }
@@ -48,6 +51,13 @@ export default class InputHandler {
      */
     public isKeyBindingPressed(binding: KeyBinding): boolean {
         return this.justPressedBindings.includes(binding);
+    }
+
+    /**
+     * Checks whether one of the keys that are related to the current binding have been just pressed or repeatedly held
+     */
+     public isKeyBindingPressedOrRepeats(binding: KeyBinding): boolean {
+        return this.isKeyBindingPressed(binding) || this.repeatedlyPressedBindings.includes(binding);
     }
 
     /**

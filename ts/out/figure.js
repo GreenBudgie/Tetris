@@ -39,9 +39,8 @@ export default class Figure {
      * @param dy Y movement, from -1 to 1
      */
     moveIfPossibleOrStop(dx, dy) {
-        console.log(`Move: ${dx} ${dy}`);
         const isVerticalMovement = dy > 0;
-        for (let block of this.blocks) {
+        for (const block of this.blocks) {
             const moveResult = block.checkMove(dx, dy);
             if (moveResult != MoveResult.ALLOW) {
                 if (isVerticalMovement)
@@ -57,8 +56,8 @@ export default class Figure {
      * @param dy Y movement
      */
     moveNoRestrictions(dx, dy) {
-        for (let block of this.blocks) {
-            block.move(block.section_x + dx, block.section_y + dy);
+        for (const block of this.blocks) {
+            block.move(dx, dy);
         }
     }
     /**
@@ -70,10 +69,10 @@ export default class Figure {
         this.movementHandle();
     }
     movementHandle() {
-        if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.FIGURE_MOVE_LEFT)) {
+        if (InputHandler.getHandler().isKeyBindingPressedOrRepeats(KeyBindings.FIGURE_MOVE_LEFT)) {
             this.moveLeft();
         }
-        if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.FIGURE_MOVE_RIGHT)) {
+        if (InputHandler.getHandler().isKeyBindingPressedOrRepeats(KeyBindings.FIGURE_MOVE_RIGHT)) {
             this.moveRight();
         }
     }
