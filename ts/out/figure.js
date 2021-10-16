@@ -74,6 +74,7 @@ export default class Figure {
         this.moveIfPossibleOrStop(-1, 0);
     }
     moveDownOrStop() {
+        this.falling_timer = this.max_falling_time;
         this.moveIfPossibleOrStop(0, 1);
     }
     /**
@@ -120,11 +121,15 @@ export default class Figure {
         }
     }
     movementHandle() {
-        if (InputHandler.getHandler().isKeyBindingPressedOrRepeats(KeyBindings.FIGURE_MOVE_LEFT)) {
+        const handler = InputHandler.getHandler();
+        if (handler.isKeyBindingPressedOrRepeats(KeyBindings.FIGURE_MOVE_LEFT)) {
             this.moveLeft();
         }
-        if (InputHandler.getHandler().isKeyBindingPressedOrRepeats(KeyBindings.FIGURE_MOVE_RIGHT)) {
+        if (handler.isKeyBindingPressedOrRepeats(KeyBindings.FIGURE_MOVE_RIGHT)) {
             this.moveRight();
+        }
+        if (handler.isKeyBindingPressedOrRepeats(KeyBindings.FIGURE_MOVE_DOWN)) {
+            this.moveDownOrStop();
         }
     }
     draw() {
@@ -143,18 +148,19 @@ export var FigureColor;
     FigureColor["ORANGE"] = "rgb(255, 151, 70)";
 })(FigureColor || (FigureColor = {}));
 export class Figures {
-    static register(figure) {
-        Figures.figures.push(figure);
+    static register(...shape) {
+        Figures.shapes.push(shape);
+        return shape;
     }
-    static getRandomFigure() {
-        return Figures.figures[Math.floor(Math.random() * Figures.figures.length)];
+    static createRandomFigure() {
+        return Figure.createByRelativeBlockSections(...Figures.shapes[Math.floor(Math.random() * Figures.shapes.length)]);
     }
 }
-Figures.figures = [];
-Figures.T_SHAPE = Figures.register(Figure.createByRelativeBlockSections([0, 0], [1, 0], [2, 0], [1, 1]));
-Figures.BOX_SHAPE = Figures.register(Figure.createByRelativeBlockSections([0, 0], [1, 0], [0, 1], [1, 1]));
-Figures.L_SHAPE = Figures.register(Figure.createByRelativeBlockSections([0, 1], [1, 1], [2, 0], [0, 2]));
-Figures.I_SHAPE = Figures.register(Figure.createByRelativeBlockSections([0, 0], [1, 0], [2, 0], [3, 0]));
-Figures.Z_SHAPE = Figures.register(Figure.createByRelativeBlockSections([0, 0], [1, 0], [1, 1], [2, 1]));
-Figures.CORNER_SHAPE = Figures.register(Figure.createByRelativeBlockSections([0, 0], [1, 0], [1, 1]));
+Figures.shapes = [];
+Figures.T_SHAPE = Figures.register([0, 0], [1, 0], [2, 0], [1, 1]);
+Figures.BOX_SHAPE = Figures.register([0, 0], [1, 0], [0, 1], [1, 1]);
+Figures.L_SHAPE = Figures.register([0, 0], [1, 0], [2, 0], [2, 1]);
+Figures.I_SHAPE = Figures.register([0, 0], [1, 0], [2, 0], [3, 0]);
+Figures.Z_SHAPE = Figures.register([0, 0], [1, 0], [1, 1], [2, 1]);
+Figures.CORNER_SHAPE = Figures.register([0, 0], [1, 0], [1, 1]);
 //# sourceMappingURL=figure.js.map

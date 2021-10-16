@@ -83,6 +83,7 @@ export default class Figure {
 	}
 
 	public moveDownOrStop() {
+		this.falling_timer = this.max_falling_time;
 		this.moveIfPossibleOrStop(0, 1);
 	}
 
@@ -133,11 +134,15 @@ export default class Figure {
 	}
 
 	private movementHandle() {
-		if(InputHandler.getHandler().isKeyBindingPressedOrRepeats(KeyBindings.FIGURE_MOVE_LEFT)) {
+		const handler = InputHandler.getHandler();
+		if(handler.isKeyBindingPressedOrRepeats(KeyBindings.FIGURE_MOVE_LEFT)) {
 			this.moveLeft();
 		}
-		if(InputHandler.getHandler().isKeyBindingPressedOrRepeats(KeyBindings.FIGURE_MOVE_RIGHT)) {
+		if(handler.isKeyBindingPressedOrRepeats(KeyBindings.FIGURE_MOVE_RIGHT)) {
 			this.moveRight();
+		}
+		if(handler.isKeyBindingPressedOrRepeats(KeyBindings.FIGURE_MOVE_DOWN)) {
+			this.moveDownOrStop();
 		}
 	}
 
@@ -160,38 +165,22 @@ export enum FigureColor {
 
 export class Figures {
 
-	public static figures: Figure[] = [];
+	public static shapes: [number, number][][] = [];
 
-	public static readonly T_SHAPE = Figures.register(Figure.createByRelativeBlockSections(
-		[0, 0], [1, 0], [2, 0], [1, 1]
-	));
+	public static readonly T_SHAPE = Figures.register([0, 0], [1, 0], [2, 0], [1, 1]);
+	public static readonly BOX_SHAPE = Figures.register([0, 0], [1, 0], [0, 1], [1, 1]);
+	public static readonly L_SHAPE = Figures.register([0, 0], [1, 0], [2, 0], [2, 1]);
+	public static readonly I_SHAPE = Figures.register([0, 0], [1, 0], [2, 0], [3, 0]);
+	public static readonly Z_SHAPE = Figures.register([0, 0], [1, 0], [1, 1], [2, 1]);
+	public static readonly CORNER_SHAPE = Figures.register([0, 0], [1, 0], [1, 1]);
 
-	public static readonly BOX_SHAPE = Figures.register(Figure.createByRelativeBlockSections(
-		[0, 0], [1, 0], [0, 1], [1, 1]
-	));
-
-	public static readonly L_SHAPE = Figures.register(Figure.createByRelativeBlockSections(
-		[0, 1], [1, 1], [2, 0], [0, 2]
-	));
-
-	public static readonly I_SHAPE = Figures.register(Figure.createByRelativeBlockSections(
-		[0, 0], [1, 0], [2, 0], [3, 0]
-	));
-
-	public static readonly Z_SHAPE = Figures.register(Figure.createByRelativeBlockSections(
-		[0, 0], [1, 0], [1, 1], [2, 1]
-	));
-
-	public static readonly CORNER_SHAPE = Figures.register(Figure.createByRelativeBlockSections(
-		[0, 0], [1, 0], [1, 1]
-	));
-
-	private static register(figure: Figure) {
-		Figures.figures.push(figure);
+	private static register(...shape: [number, number][]): [number, number][] {
+		Figures.shapes.push(shape);
+		return shape;
 	}
 
-	public static getRandomFigure(): Figure {
-		return Figures.figures[Math.floor(Math.random() * Figures.figures.length)];
+	public static createRandomFigure(): Figure {
+		return Figure.createByRelativeBlockSections(...Figures.shapes[Math.floor(Math.random() * Figures.shapes.length)]);
 	}
 
 }

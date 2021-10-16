@@ -60,7 +60,7 @@ export default class Field {
         else {
             this.time_to_create_new_figure -= delta * Tetris.FPS;
             if (this.time_to_create_new_figure <= 0) {
-                this.createFallingFigure(Figures.getRandomFigure());
+                this.createFallingFigure(Figures.createRandomFigure());
             }
         }
     }
