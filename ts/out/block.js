@@ -5,10 +5,11 @@ export class AbstractBlock {
         this.y = y;
     }
     draw() {
+        const field = Tetris.instance.current_level.field;
         const context = Tetris.instance.context;
-        const section_size = Tetris.instance.field.real_section_size;
-        const start_x = Tetris.instance.field.getRealFieldX() + this.getFieldSectionX() * section_size + 0.5;
-        const start_y = Tetris.instance.field.getRealFieldY() + this.getFieldSectionY() * section_size + 0.5;
+        const section_size = field.real_section_size;
+        const start_x = field.getRealFieldX() + this.getFieldSectionX() * section_size + 0.5;
+        const start_y = field.getRealFieldY() + this.getFieldSectionY() * section_size + 0.5;
         context.beginPath();
         context.moveTo(start_x, start_y);
         context.lineTo(start_x + section_size, start_y);
@@ -72,13 +73,14 @@ export class FigureBlock extends AbstractBlock {
      * @returns ALLOW if the block is able to move by specified deltas, BOUNDARY if a floor obstructs the movement, BLOCK if a block obstructs the movement
      */
     checkMove(dx, dy) {
+        const field = Tetris.instance.current_level.field;
         const new_section_x = this.getFieldSectionX() + dx;
         const new_section_y = this.getFieldSectionY() + dy;
-        for (const block of Tetris.instance.field.blocks) {
+        for (const block of field.blocks) {
             if (new_section_x == block.getFieldSectionX() && new_section_y == block.getFieldSectionY())
                 return MoveResult.BLOCK;
         }
-        if (Tetris.instance.field.isSectionInside(new_section_x, new_section_y))
+        if (field.isSectionInside(new_section_x, new_section_y))
             return MoveResult.ALLOW;
         return MoveResult.BOUNDARY;
     }
@@ -89,11 +91,12 @@ export class FigureBlock extends AbstractBlock {
         return this.y + this.figure.section_y;
     }
     checkRotation() {
+        const field = Tetris.instance.current_level.field;
         const rotated_field_x = this.findRotatedRelativeX() + this.figure.section_x;
         const rotated_field_y = this.findRotatedRelativeY() + this.figure.section_y;
-        if (!Tetris.instance.field.isSectionInside(rotated_field_x, rotated_field_y))
+        if (!field.isSectionInside(rotated_field_x, rotated_field_y))
             return MoveResult.BOUNDARY;
-        for (const field_block of Tetris.instance.field.blocks) {
+        for (const field_block of field.blocks) {
             if (field_block.getFieldSectionX() == rotated_field_x && field_block.getFieldSectionY() == rotated_field_y)
                 return MoveResult.BLOCK;
         }

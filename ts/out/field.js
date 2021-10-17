@@ -4,15 +4,7 @@ import Tetris from "./tetris.js";
  * A field is a game element that stores and renders all the blocks and figures inside it
  */
 export default class Field {
-    constructor() {
-        /**
-         * Determines how wide in terms of sections the field is
-         */
-        this.sections_x = 12;
-        /**
-         * Determines how deep in terms of sections the field is
-         */
-        this.sections_y = 20;
+    constructor(sections_x, sections_y) {
         /**
          * The actual size of each section measured in pixels
          */
@@ -24,12 +16,17 @@ export default class Field {
         this.blocks = [];
         this.max_time_to_create_new_figure = 15;
         this.time_to_create_new_figure = this.max_time_to_create_new_figure;
+        this.sections_x = sections_x;
+        this.sections_y = sections_y;
+    }
+    static defaultSizeField() {
+        return new Field(12, 20);
     }
     getRealFieldX() {
-        return Math.round(Tetris.instance.window_width / 2 - Tetris.instance.field.getRealFieldWidth() / 2);
+        return Math.round(Tetris.instance.window_width / 2 - this.getRealFieldWidth() / 2);
     }
     getRealFieldY() {
-        return Math.round(Tetris.instance.window_height / 2 - Tetris.instance.field.getRealFieldHeight() / 2);
+        return Math.round(Tetris.instance.window_height / 2 - this.getRealFieldHeight() / 2);
     }
     getRealFieldWidth() {
         return this.real_section_size * this.sections_x;

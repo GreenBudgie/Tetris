@@ -112,7 +112,7 @@ export default class Figure implements Colorizable {
 	 * Interrupts the falling
 	 */
 	public land() {
-		Tetris.instance.field.landFigure();
+		Tetris.instance.current_level.field.landFigure();
 	}
 
 	public update(delta: number) {

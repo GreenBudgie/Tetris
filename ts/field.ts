@@ -10,11 +10,11 @@ export default class Field {
 	/**
 	 * Determines how wide in terms of sections the field is
 	 */
-	public readonly sections_x: number = 12;
+	public readonly sections_x: number;
 	/**
 	 * Determines how deep in terms of sections the field is
 	 */
-	public readonly sections_y: number = 20;
+	public readonly sections_y: number;
 	/**
 	 * The actual size of each section measured in pixels
 	 */
@@ -29,15 +29,21 @@ export default class Field {
 	private readonly max_time_to_create_new_figure = 15;
 	private time_to_create_new_figure = this.max_time_to_create_new_figure;
 
-	constructor() {
+	public constructor(sections_x: number, sections_y: number) {
+		this.sections_x = sections_x;
+		this.sections_y = sections_y;
+	}
+
+	public static defaultSizeField(): Field {
+		return new Field(12, 20);
 	}
 
 	public getRealFieldX() {
-		return Math.round(Tetris.instance.window_width / 2 - Tetris.instance.field.getRealFieldWidth() / 2);
+		return Math.round(Tetris.instance.window_width / 2 - this.getRealFieldWidth() / 2);
 	}
 
 	public getRealFieldY() {
-		return Math.round(Tetris.instance.window_height / 2 - Tetris.instance.field.getRealFieldHeight() / 2);
+		return Math.round(Tetris.instance.window_height / 2 - this.getRealFieldHeight() / 2);
 	}
 
 	public getRealFieldWidth(): number {

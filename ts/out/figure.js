@@ -93,7 +93,7 @@ export default class Figure {
      * Interrupts the falling
      */
     land() {
-        Tetris.instance.field.landFigure();
+        Tetris.instance.current_level.field.landFigure();
     }
     update(delta) {
         this.movementHandle();
