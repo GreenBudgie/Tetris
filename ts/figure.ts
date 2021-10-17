@@ -60,7 +60,10 @@ export default class Figure implements Colorizable {
 	}
 
 	public rotate() {
-		this._blocks.forEach(block => block.rotateAroundFigureCenter());
+		for(const block of this._blocks) {
+			if(block.checkRotation() != MoveResult.ALLOW) return;
+		}
+		this._blocks.forEach(block => block.rotateNoRestrictions());
 	}
 
 	public moveRight() {

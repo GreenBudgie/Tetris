@@ -45,7 +45,11 @@ export default class Figure {
         return maxRelativeBlockX;
     }
     rotate() {
-        this._blocks.forEach(block => block.rotateAroundFigureCenter());
+        for (const block of this._blocks) {
+            if (block.checkRotation() != MoveResult.ALLOW)
+                return;
+        }
+        this._blocks.forEach(block => block.rotateNoRestrictions());
     }
     moveRight() {
         this.moveIfPossibleOrStop(1, 0);

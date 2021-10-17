@@ -124,13 +124,33 @@ export class FigureBlock extends AbstractBlock {
 		return this.y + this.figure.section_y;
 	}
 
-	public rotateAroundFigureCenter() {
-		const origin_x = this.x - this.figure.rotation_center_x;
+	public checkRotation(): MoveResult {
+		const rotated_field_x = this.findRotatedRelativeX() + this.figure.section_x;
+		const rotated_field_y = this.findRotatedRelativeY() + this.figure.section_y;
+		if(!Tetris.instance.field.isSectionInside(rotated_field_x, rotated_field_y)) return MoveResult.BOUNDARY;
+		for(const field_block of Tetris.instance.field.blocks) {
+			if(field_block.getFieldSectionX() == rotated_field_x && field_block.getFieldSectionY() == rotated_field_y) return MoveResult.BLOCK;
+		}
+		return MoveResult.ALLOW;
+	}
+
+	public findRotatedRelativeX(): number {
 		const origin_y = this.y - this.figure.rotation_center_y;
 		const rotated_origin_x = -origin_y;
+		return rotated_origin_x + this.figure.rotation_center_x;
+	}
+
+	public findRotatedRelativeY(): number {
+		const origin_x = this.x - this.figure.rotation_center_x;
 		const rotated_origin_y = origin_x;
-		this.x = rotated_origin_x + this.figure.rotation_center_x;
-		this.y = rotated_origin_y + this.figure.rotation_center_y;
+		return rotated_origin_y + this.figure.rotation_center_y;
+	}
+
+	public rotateNoRestrictions() {
+		const rotated_x = this.findRotatedRelativeX();
+		const rotated_y = this.findRotatedRelativeY();
+		this.x = rotated_x;
+		this.y = rotated_y;
 	}
 
 	public getFigureRelativeX(): number {
