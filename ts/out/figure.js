@@ -10,7 +10,6 @@ export default class Figure {
     constructor(blocks) {
         this.section_x = 0;
         this.section_y = 0;
-        this.rotation_number = 0;
         this.max_falling_time = 45;
         this.falling_timer = this.max_falling_time;
         blocks.forEach(block => block.figure = this);
@@ -46,7 +45,7 @@ export default class Figure {
         return maxRelativeBlockX;
     }
     rotate() {
-        this.rotation_number = this.rotation_number >= 3 ? 0 : this.rotation_number + 1;
+        this._blocks.forEach(block => block.rotateAroundFigureCenter());
     }
     moveRight() {
         this.moveIfPossibleOrStop(1, 0);

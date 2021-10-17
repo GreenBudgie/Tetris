@@ -12,7 +12,6 @@ export default class Figure implements Colorizable {
 	public section_x: number = 0;
 	public section_y: number = 0;
 
-	public rotation_number: number = 0;
 	public rotation_center_x: number;
 	public rotation_center_y: number;
 
@@ -61,7 +60,7 @@ export default class Figure implements Colorizable {
 	}
 
 	public rotate() {
-		this.rotation_number = this.rotation_number >= 3 ? 0 : this.rotation_number + 1; 
+		this._blocks.forEach(block => block.rotateAroundFigureCenter());
 	}
 
 	public moveRight() {

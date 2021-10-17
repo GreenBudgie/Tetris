@@ -83,22 +83,18 @@ export class FigureBlock extends AbstractBlock {
         return MoveResult.BOUNDARY;
     }
     getFieldSectionX() {
-        return this.getRotatedRelativeCoordinates().x + this.figure.section_x;
+        return this.x + this.figure.section_x;
     }
     getFieldSectionY() {
-        return this.getRotatedRelativeCoordinates().y + this.figure.section_y;
+        return this.y + this.figure.section_y;
     }
-    getRotatedRelativeCoordinates() {
-        const cos = Math.cos(this.figure.rotation_number * Math.PI / 2);
-        const sin = Math.sin(this.figure.rotation_number * Math.PI / 2);
-        const origin_x = this.getFigureRelativeX() - this.figure.rotation_center_x;
-        const origin_y = this.getFigureRelativeY() - this.figure.rotation_center_y;
-        const rotated_origin_x = origin_x * cos - origin_y * sin;
-        const rotated_origin_y = origin_x * sin + origin_y * cos;
-        return {
-            x: rotated_origin_x + this.figure.rotation_center_x,
-            y: rotated_origin_y + this.figure.rotation_center_y
-        };
+    rotateAroundFigureCenter() {
+        const origin_x = this.x - this.figure.rotation_center_x;
+        const origin_y = this.y - this.figure.rotation_center_y;
+        const rotated_origin_x = -origin_y;
+        const rotated_origin_y = origin_x;
+        this.x = rotated_origin_x + this.figure.rotation_center_x;
+        this.y = rotated_origin_y + this.figure.rotation_center_y;
     }
     getFigureRelativeX() {
         return this.x;
