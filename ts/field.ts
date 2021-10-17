@@ -1,4 +1,4 @@
-import Block from "./block.js";
+import {FieldBlock} from "./block.js";
 import Figure, {Figures} from "./figure.js";
 import Tetris from "./tetris.js";
 
@@ -24,7 +24,7 @@ export default class Field {
 	 */
 	public readonly limit_sections = 3;
 
-	public readonly blocks: Block[] = [];
+	public readonly blocks: FieldBlock[] = [];
 	public falling_figure: Figure;
 	private readonly max_time_to_create_new_figure = 15;
 	private time_to_create_new_figure = this.max_time_to_create_new_figure;
@@ -49,15 +49,15 @@ export default class Field {
 	}
 
 	public createFallingFigure(figure: Figure) {
-		const halfFigureWidth = Math.floor(figure.getWidth() / 2);
-		const halfFieldWidth = Math.floor(this.sections_x / 2);
-		figure.moveNoRestrictions(halfFieldWidth - halfFigureWidth, 0)
+		const half_figure_width = Math.floor(figure.getInitialWidth() / 2);
+		const half_field_width = Math.floor(this.sections_x / 2);
+		figure.moveNoRestrictions(half_field_width - half_figure_width, 0)
 		this.falling_figure = figure;
 	}
 
 	public landFigure() {
-		for(const block of this.falling_figure.blocks) {
-			this.blocks.push(block);
+		for(const figure_block of this.falling_figure.blocks) {
+			this.blocks.push(figure_block.toFieldBlock());
 		}
 		this.falling_figure = null;
 		this.time_to_create_new_figure = this.max_time_to_create_new_figure;

@@ -1,50 +1,50 @@
-import { FigureColor } from "./figure.js";
 import Tetris from "./tetris.js";
+export class AbstractBlock {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+    draw() {
+        const context = Tetris.instance.context;
+        const section_size = Tetris.instance.field.real_section_size;
+        const start_x = Tetris.instance.field.getRealFieldX() + this.getFieldSectionX() * section_size + 0.5;
+        const start_y = Tetris.instance.field.getRealFieldY() + this.getFieldSectionY() * section_size + 0.5;
+        context.beginPath();
+        context.moveTo(start_x, start_y);
+        context.lineTo(start_x + section_size, start_y);
+        context.lineTo(start_x + section_size, start_y + section_size);
+        context.lineTo(start_x, start_y + section_size);
+        context.closePath();
+        context.lineWidth = 1;
+        context.strokeStyle = 'black';
+        context.fillStyle = this.getColor();
+        context.stroke();
+        context.fill();
+    }
+}
 /**
- * A block is either a part of a figure attached to other parts, or a fallen block that fills up the field.
- * The block has coordinates relative to a figure.
+ * Represents a block that takes place at the field
  */
-export default class Block {
-    constructor(section_x, section_y) {
-        this.color = FigureColor.RED;
-        this.section_x = section_x;
-        this.section_y = section_y;
+export class FieldBlock extends AbstractBlock {
+    getColor() {
+        return this.color;
     }
-    /**
-     * Gets the raw value of X section position. This might not be an integer value.
-     * @returns Raw X section position
-     */
-    getRawSectionX() {
-        return this.section_x;
+    moveDown() {
+        this.y++;
     }
-    /**
-     * Gets the raw value of Y section position. This might not be an integer value.
-     * @returns Raw Y section position
-     */
-    getRawSectionY() {
-        return this.section_y;
+    getFieldSectionX() {
+        return this.x;
     }
-    /**
-     * Gets the real value of X section position (always an integer value).
-     * The block will be drawn inside this section.
-     * @returns Real X section position
-     */
-    getRealSectionX() {
-        return Math.floor(this.section_x);
+    getFieldSectionY() {
+        return this.y;
     }
-    /**
-     * Gets the real value of Y section position (always an integer value).
-     * The block will be drawn inside this section.
-     * @returns Real Y section position
-     */
-    getRealSectionY() {
-        return Math.ceil(this.section_y);
-    }
-    setSectionX(x) {
-        this.section_x = x;
-    }
-    setSectionY(y) {
-        this.section_y = y;
+}
+/**
+ * Represents a block that is attached to a figure
+ */
+export class FigureBlock extends AbstractBlock {
+    getColor() {
+        return this.figure.color;
     }
     /**
      * Checks whether the block is able to move right
@@ -72,51 +72,48 @@ export default class Block {
      * @returns ALLOW if the block is able to move by specified deltas, BOUNDARY if a floor obstructs the movement, BLOCK if a block obstructs the movement
      */
     checkMove(dx, dy) {
-        const new_section_x = this.getRealSectionX() + dx;
-        const new_section_y = this.getRealSectionY() + dy;
-        for (let block of Tetris.instance.field.blocks) {
-            if (new_section_x == block.getRealSectionX() && new_section_y == block.getRealSectionY())
+        const new_section_x = this.getFieldSectionX() + dx;
+        const new_section_y = this.getFieldSectionY() + dy;
+        for (const block of Tetris.instance.field.blocks) {
+            if (new_section_x == block.getFieldSectionX() && new_section_y == block.getFieldSectionY())
                 return MoveResult.BLOCK;
         }
         if (Tetris.instance.field.isSectionInside(new_section_x, new_section_y))
             return MoveResult.ALLOW;
         return MoveResult.BOUNDARY;
     }
-    moveRight() {
-        this.move(1, 0);
+    getFieldSectionX() {
+        return this.getRotatedRelativeCoordinates().x + this.figure.section_x;
     }
-    moveLeft() {
-        this.move(-1, 0);
+    getFieldSectionY() {
+        return this.getRotatedRelativeCoordinates().y + this.figure.section_y;
     }
-    fall() {
-        this.move(0, 1);
+    getRotatedRelativeCoordinates() {
+        const cos = Math.cos(this.figure.rotation_number * Math.PI / 2);
+        const sin = Math.sin(this.figure.rotation_number * Math.PI / 2);
+        const origin_x = this.getFigureRelativeX() - this.figure.rotation_center_x;
+        const origin_y = this.getFigureRelativeY() - this.figure.rotation_center_y;
+        const rotated_origin_x = origin_x * cos - origin_y * sin;
+        const rotated_origin_y = origin_x * sin + origin_y * cos;
+        return {
+            x: rotated_origin_x + this.figure.rotation_center_x,
+            y: rotated_origin_y + this.figure.rotation_center_y
+        };
+    }
+    getFigureRelativeX() {
+        return this.x;
+    }
+    getFigureRelativeY() {
+        return this.y;
     }
     /**
-     * Moves the block regardless of movement restrictions.
-     * This method should be called after the movement checks.
-     * @param dx X movement
-     * @param dy Y movement
+     * Creates a field block with the same coordinates and color
+     * @returns A new field block
      */
-    move(dx, dy) {
-        this.section_x += dx;
-        this.section_y += dy;
-    }
-    draw() {
-        const context = Tetris.instance.context;
-        const section_size = Tetris.instance.field.real_section_size;
-        const start_x = Tetris.instance.field.getRealFieldX() + this.getRealSectionX() * section_size + 0.5;
-        const start_y = Tetris.instance.field.getRealFieldY() + this.getRealSectionY() * section_size + 0.5;
-        context.beginPath();
-        context.moveTo(start_x, start_y);
-        context.lineTo(start_x + section_size, start_y);
-        context.lineTo(start_x + section_size, start_y + section_size);
-        context.lineTo(start_x, start_y + section_size);
-        context.closePath();
-        context.lineWidth = 1;
-        context.strokeStyle = 'black';
-        context.fillStyle = this.color;
-        context.stroke();
-        context.fill();
+    toFieldBlock() {
+        const field_block = new FieldBlock(this.getFieldSectionX(), this.getFieldSectionY());
+        field_block.color = this.getColor();
+        return field_block;
     }
 }
 export var MoveResult;

@@ -1,4 +1,5 @@
-import Block, { MoveResult } from "./block.js";
+import { FigureBlock, MoveResult } from "./block.js";
+import { getRandomColor } from "./color.js";
 import InputHandler, { KeyBindings } from "./input_handler.js";
 import Tetris from "./tetris.js";
 /**
@@ -6,11 +7,15 @@ import Tetris from "./tetris.js";
  * The figure itself does not contain a location, the blocks do.
  */
 export default class Figure {
-    constructor(...blocks) {
+    constructor(blocks) {
+        this.section_x = 0;
+        this.section_y = 0;
+        this.rotation_number = 0;
         this.max_falling_time = 45;
         this.falling_timer = this.max_falling_time;
+        blocks.forEach(block => block.figure = this);
         this._blocks = blocks;
-        this.selectRandomColor();
+        this.color = getRandomColor();
     }
     /**
      * Creates a figure based on section coordinates.
@@ -22,76 +27,26 @@ export default class Figure {
     static createByRelativeBlockSections(...sections) {
         const blocks = [];
         for (let section of sections) {
-            blocks.push(new Block(section[0], section[1]));
+            blocks.push(new FigureBlock(section[0], section[1]));
         }
-        return new Figure(...blocks);
+        return new Figure(blocks);
+    }
+    getColor() {
+        return this.color;
     }
     get blocks() {
         return this._blocks;
     }
-    /**
-     * Gets absolute section positions with uttermost blocks with respect to figure rotation.
-     * This method uses raw section coordinates, so the boundaries might be shifted to a float value.
-     * @returns An object containing absolute section positions with uttermost blocks
-     */
-    getBoundaries() {
-        let minBlockX = 999;
-        let maxBlockX = 0;
-        let minBlockY = 999;
-        let maxBlockY = 0;
+    getInitialWidth() {
+        let maxRelativeBlockX = 0;
         for (const block of this._blocks) {
-            if (block.getRawSectionX() > maxBlockX)
-                maxBlockX = block.getRawSectionX();
-            if (block.getRawSectionX() < minBlockX)
-                minBlockX = block.getRawSectionX();
-            if (block.getRawSectionY() > maxBlockY)
-                maxBlockY = block.getRawSectionY();
-            if (block.getRawSectionY() < minBlockY)
-                minBlockY = block.getRawSectionY();
+            if (block.getFigureRelativeX() > maxRelativeBlockX)
+                maxRelativeBlockX = block.getFigureRelativeX();
         }
-        return {
-            left: minBlockX,
-            top: minBlockY,
-            right: maxBlockX,
-            bottom: maxBlockY
-        };
-    }
-    /**
-     * Gets the current width with respect to figure rotation
-     * @returns The width of the figure
-     */
-    getWidth() {
-        const boundaries = this.getBoundaries();
-        return boundaries.right - boundaries.left + 1;
-    }
-    /**
-     * Gets the current height with respect to figure rotation
-     * @returns The height of the figure
-     */
-    getHeight() {
-        const boundaries = this.getBoundaries();
-        return boundaries.bottom - boundaries.top + 1;
-    }
-    selectRandomColor() {
-        let colors = [];
-        for (const figureColor in FigureColor) {
-            colors.push(FigureColor[figureColor]);
-        }
-        this.color = colors[Math.floor(Math.random() * colors.length)];
-        this._blocks.forEach(block => block.color = this.color);
+        return maxRelativeBlockX;
     }
     rotate() {
-        const boundaries = this.getBoundaries();
-        const center_x = (boundaries.left + boundaries.right) / 2;
-        const center_y = (boundaries.bottom + boundaries.top) / 2;
-        for (const block of this._blocks) {
-            const origin_x = block.getRawSectionX() - center_x;
-            const origin_y = block.getRawSectionY() - center_y;
-            const rotated_origin_x = -origin_y;
-            const rotated_origin_y = origin_x;
-            block.setSectionX(rotated_origin_x + center_x);
-            block.setSectionY(rotated_origin_y + center_y);
-        }
+        this.rotation_number = this.rotation_number >= 3 ? 0 : this.rotation_number + 1;
     }
     moveRight() {
         this.moveIfPossibleOrStop(1, 0);
@@ -104,7 +59,7 @@ export default class Figure {
         this.moveIfPossibleOrStop(0, 1);
     }
     /**
-     * Moves all blocks of the figure by the specified deltas.
+     * Moves the figure by the specified deltas.
      * Vertical movement obstruction will interrupt figure falling.
      * Horizontal movement obstruction will not interrupt the falling, but the figure won't be moved.
      * @param dx X movement, from -1 to 1
@@ -128,9 +83,8 @@ export default class Figure {
      * @param dy Y movement
      */
     moveNoRestrictions(dx, dy) {
-        for (const block of this._blocks) {
-            block.move(dx, dy);
-        }
+        this.section_x += dx;
+        this.section_y += dy;
     }
     /**
      * Interrupts the falling
@@ -167,29 +121,42 @@ export default class Figure {
         }
     }
 }
-export var FigureColor;
-(function (FigureColor) {
-    FigureColor["RED"] = "rgb(255, 86, 86)";
-    FigureColor["GREEN"] = "rgb(132, 255, 92)";
-    FigureColor["BLUE"] = "rgb(73, 63, 251)";
-    FigureColor["PINK"] = "rgb(254, 102, 255)";
-    FigureColor["YELLOW"] = "rgb(255, 251, 97)";
-    FigureColor["ORANGE"] = "rgb(255, 151, 70)";
-})(FigureColor || (FigureColor = {}));
-export class Figures {
-    static register(...shape) {
-        Figures.shapes.push(shape);
-        return shape;
+export class FigurePattern {
+    constructor() {
+        this.shape = [];
     }
-    static createRandomFigure() {
-        return Figure.createByRelativeBlockSections(...Figures.shapes[Math.floor(Math.random() * Figures.shapes.length)]);
+    static builder() {
+        return new FigurePattern();
+    }
+    block(relative_x, relative_y) {
+        this.shape.push([relative_x, relative_y]);
+        return this;
+    }
+    rotationCenter(relative_x, relative_y) {
+        this.rotation_center = [relative_x, relative_y];
+        return this;
+    }
+    createFigure() {
+        const figure = Figure.createByRelativeBlockSections(...this.shape);
+        figure.rotation_center_x = this.rotation_center[0];
+        figure.rotation_center_y = this.rotation_center[1];
+        return figure;
     }
 }
-Figures.shapes = [];
-Figures.T_SHAPE = Figures.register([0, 0], [1, 0], [2, 0], [1, 1]);
-Figures.BOX_SHAPE = Figures.register([0, 0], [1, 0], [0, 1], [1, 1]);
-Figures.L_SHAPE = Figures.register([0, 0], [1, 0], [2, 0], [2, 1]);
-Figures.I_SHAPE = Figures.register([0, 0], [1, 0], [2, 0], [3, 0]);
-Figures.Z_SHAPE = Figures.register([0, 0], [1, 0], [1, 1], [2, 1]);
-Figures.CORNER_SHAPE = Figures.register([0, 0], [1, 0], [1, 1]);
+export class Figures {
+    static register(pattern) {
+        Figures.patterns.push(pattern);
+        return pattern;
+    }
+    static createRandomFigure() {
+        return Figures.patterns[Math.floor(Math.random() * Figures.patterns.length)].createFigure();
+    }
+}
+Figures.patterns = [];
+Figures.T_SHAPE = Figures.register(FigurePattern.builder().block(0, 0).block(1, 0).block(2, 0).block(1, 1).rotationCenter(1, 0));
+Figures.BOX_SHAPE = Figures.register(FigurePattern.builder().block(0, 0).block(1, 0).block(0, 1).block(1, 1).rotationCenter(0.5, 0.5));
+Figures.L_SHAPE = Figures.register(FigurePattern.builder().block(0, 0).block(1, 0).block(2, 0).block(2, 1).rotationCenter(1, 0));
+Figures.I_SHAPE = Figures.register(FigurePattern.builder().block(0, 0).block(1, 0).block(2, 0).block(3, 0).rotationCenter(1.5, 0.5));
+Figures.Z_SHAPE = Figures.register(FigurePattern.builder().block(0, 0).block(1, 0).block(1, 1).block(2, 1).rotationCenter(1, 0));
+Figures.CORNER_SHAPE = Figures.register(FigurePattern.builder().block(0, 0).block(1, 0).block(1, 1).rotationCenter(0.5, 0.5));
 //# sourceMappingURL=figure.js.map

@@ -38,14 +38,14 @@ export default class Field {
         return this.real_section_size * this.sections_y;
     }
     createFallingFigure(figure) {
-        const halfFigureWidth = Math.floor(figure.getWidth() / 2);
-        const halfFieldWidth = Math.floor(this.sections_x / 2);
-        figure.moveNoRestrictions(halfFieldWidth - halfFigureWidth, 0);
+        const half_figure_width = Math.floor(figure.getInitialWidth() / 2);
+        const half_field_width = Math.floor(this.sections_x / 2);
+        figure.moveNoRestrictions(half_field_width - half_figure_width, 0);
         this.falling_figure = figure;
     }
     landFigure() {
-        for (const block of this.falling_figure.blocks) {
-            this.blocks.push(block);
+        for (const figure_block of this.falling_figure.blocks) {
+            this.blocks.push(figure_block.toFieldBlock());
         }
         this.falling_figure = null;
         this.time_to_create_new_figure = this.max_time_to_create_new_figure;
