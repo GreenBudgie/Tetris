@@ -56,7 +56,7 @@ export default class Figure implements Colorizable {
 		for(const block of this._blocks) {
 			if(block.getFigureRelativeX() > maxRelativeBlockX) maxRelativeBlockX = block.getFigureRelativeX();
 		}
-		return maxRelativeBlockX;
+		return maxRelativeBlockX + 1;
 	}
 
 	public rotate() {

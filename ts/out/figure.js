@@ -42,7 +42,7 @@ export default class Figure {
             if (block.getFigureRelativeX() > maxRelativeBlockX)
                 maxRelativeBlockX = block.getFigureRelativeX();
         }
-        return maxRelativeBlockX;
+        return maxRelativeBlockX + 1;
     }
     rotate() {
         for (const block of this._blocks) {

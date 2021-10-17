@@ -24,7 +24,7 @@ export default class Field {
 	 */
 	public readonly limit_sections = 3;
 
-	public readonly blocks: FieldBlock[] = [];
+	public blocks: FieldBlock[] = [];
 	public falling_figure: Figure;
 	private readonly max_time_to_create_new_figure = 15;
 	private time_to_create_new_figure = this.max_time_to_create_new_figure;
@@ -61,6 +61,30 @@ export default class Field {
 		}
 		this.falling_figure = null;
 		this.time_to_create_new_figure = this.max_time_to_create_new_figure;
+		this.removeFullRows();
+	}
+
+	public removeFullRows() {
+		row_loop: 
+		for(let y = 0; y < this.sections_y; y++) {
+			for(let x = 0; x < this.sections_x; x++) {
+				const field_block = this.getBlockAt(x, y);
+				if(field_block == null) {
+					continue row_loop;
+				}
+			}
+			this.blocks = this.blocks.filter(block => block.getFieldSectionY() != y);
+			for(const block of this.blocks) {
+				if(block.getFieldSectionY() < y) block.moveDown();
+			}
+		}
+	}
+
+	public getBlockAt(section_x: number, section_y: number): FieldBlock | null {
+		for(const block of this.blocks) {
+			if(block.getFieldSectionX() == section_x && block.getFieldSectionY() == section_y) return block;
+		}
+		return null;
 	}
 
 	public isSectionInside(section_x: number, section_y: number): boolean {
