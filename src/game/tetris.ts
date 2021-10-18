@@ -6,7 +6,7 @@ export default class Tetris {
 
 	public static readonly FPS: number = 60;
 
-	public readonly canvas: HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement;
+	public readonly canvas: HTMLCanvasElement = document.getElementById("canvas") as HTMLCanvasElement;
 	public readonly context: CanvasRenderingContext2D = this.canvas.getContext("2d") as CanvasRenderingContext2D;
 
 	public readonly window_width: number = this.canvas.width;
@@ -51,12 +51,20 @@ export default class Tetris {
 		this.current_level.update(delta);
 
 		this.context.clearRect(0, 0, this.window_width, this.window_height);
-		this.context.strokeText(Math.round(1 / delta).toString(), 50, 50);
+		this.drawFps(Math.round(1 / delta).toString());
 		this.current_level.draw();
 
 		InputHandler.getHandler().clearCurrentFrameBindings();
 
 		requestAnimationFrame((timestamp) => this.gameLoop(timestamp));
+	}
+
+	private drawFps(fps: string) {
+		this.context.font = "20px homespun";
+        this.context.fillStyle = "gray";
+        this.context.textBaseline = "top";
+        this.context.textAlign = "left";
+        this.context.fillText(fps, 5, 0);
 	}
 
 }

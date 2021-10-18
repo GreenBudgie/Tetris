@@ -2,7 +2,7 @@ import InputHandler from "./input_handler.js";
 import Levels from "../level/levels.js";
 export default class Tetris {
     constructor() {
-        this.canvas = document.getElementById('canvas');
+        this.canvas = document.getElementById("canvas");
         this.context = this.canvas.getContext("2d");
         this.window_width = this.canvas.width;
         this.window_height = this.canvas.height;
@@ -33,10 +33,17 @@ export default class Tetris {
         this.previousTimestamp = timestamp;
         this.current_level.update(delta);
         this.context.clearRect(0, 0, this.window_width, this.window_height);
-        this.context.strokeText(Math.round(1 / delta).toString(), 50, 50);
+        this.drawFps(Math.round(1 / delta).toString());
         this.current_level.draw();
         InputHandler.getHandler().clearCurrentFrameBindings();
         requestAnimationFrame((timestamp) => this.gameLoop(timestamp));
+    }
+    drawFps(fps) {
+        this.context.font = "20px homespun";
+        this.context.fillStyle = "gray";
+        this.context.textBaseline = "top";
+        this.context.textAlign = "left";
+        this.context.fillText(fps, 5, 0);
     }
 }
 Tetris.FPS = 60;

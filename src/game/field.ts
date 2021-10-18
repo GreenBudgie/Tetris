@@ -67,10 +67,10 @@ export default class Field {
 		}
 		this.falling_figure = null;
 		this.time_to_create_new_figure = this.max_time_to_create_new_figure;
-		this.removeFullRows();
+		this.removeFullRowsAndGrantPoints();
 	}
 
-	public removeFullRows() {
+	public removeFullRowsAndGrantPoints() {
 		row_loop: 
 		for(let y = 0; y < this.sections_y; y++) {
 			for(let x = 0; x < this.sections_x; x++) {
@@ -79,6 +79,8 @@ export default class Field {
 					continue row_loop;
 				}
 			}
+			Tetris.instance.current_level.points += this.sections_x;
+			Tetris.instance.current_level.filled_rows++;
 			this.blocks = this.blocks.filter(block => block.getFieldSectionY() != y);
 			for(const block of this.blocks) {
 				if(block.getFieldSectionY() < y) block.moveDown();
