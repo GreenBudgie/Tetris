@@ -1,5 +1,5 @@
 import InputHandler from "./input_handler.js";
-import Levels from "./level/levels.js";
+import Levels from "../level/levels.js";
 export default class Tetris {
     constructor() {
         this.canvas = document.getElementById('canvas');

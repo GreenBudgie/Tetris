@@ -1,7 +1,6 @@
-import Field from "./field.js";
 import InputHandler from "./input_handler.js";
-import Level from "./level/level.js";
-import Levels from "./level/levels.js";
+import Level from "../level/level.js";
+import Levels from "../level/levels.js";
 
 export default class Tetris {
 
