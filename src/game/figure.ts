@@ -51,12 +51,20 @@ export default class Figure implements Colorizable {
 		return this._blocks;
 	}
 
-	public getInitialWidth(): number {
+	public getCurrentWidth(): number {
 		let maxRelativeBlockX: number = 0;
 		for(const block of this._blocks) {
 			if(block.getFigureRelativeX() > maxRelativeBlockX) maxRelativeBlockX = block.getFigureRelativeX();
 		}
 		return maxRelativeBlockX + 1;
+	}
+
+	public getCurrentHeight(): number {
+		let maxRelativeBlockY: number = 0;
+		for(const block of this._blocks) {
+			if(block.getFigureRelativeY() > maxRelativeBlockY) maxRelativeBlockY = block.getFigureRelativeY();
+		}
+		return maxRelativeBlockY + 1;
 	}
 
 	public rotate() {

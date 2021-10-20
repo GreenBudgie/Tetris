@@ -36,13 +36,21 @@ export default class Figure {
     get blocks() {
         return this._blocks;
     }
-    getInitialWidth() {
+    getCurrentWidth() {
         let maxRelativeBlockX = 0;
         for (const block of this._blocks) {
             if (block.getFigureRelativeX() > maxRelativeBlockX)
                 maxRelativeBlockX = block.getFigureRelativeX();
         }
         return maxRelativeBlockX + 1;
+    }
+    getCurrentHeight() {
+        let maxRelativeBlockY = 0;
+        for (const block of this._blocks) {
+            if (block.getFigureRelativeY() > maxRelativeBlockY)
+                maxRelativeBlockY = block.getFigureRelativeY();
+        }
+        return maxRelativeBlockY + 1;
     }
     rotate() {
         for (const block of this._blocks) {

@@ -200,11 +200,19 @@ export class FigureBlock extends AbstractBlock {
 		return field_block;
 	}
 
-	public draw() {
-		const shadow_real_x = this.getRealFieldX() + 0.5;
-		const shadow_real_y = this.getRealShadowY() + 0.5;
-		this.drawOutlineAndFill(shadow_real_x, shadow_real_y, "rgb(230, 230, 230)");
+	public override draw() {
+		this.drawShadow();
 		super.draw();
+	}
+
+	private drawShadow() {
+		const shadow_section_y = this.getFieldShadowSectionY();
+		const current_section_y = this.getFieldSectionY();
+		if(shadow_section_y != current_section_y) {
+			const shadow_real_x = this.getRealFieldX() + 0.5;
+			const shadow_real_y = this.getRealShadowY() + 0.5;
+			this.drawOutlineAndFill(shadow_real_x, shadow_real_y, "rgb(230, 230, 230)");
+		}
 	}
 
 }
