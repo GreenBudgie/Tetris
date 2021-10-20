@@ -1,4 +1,4 @@
-import {FieldBlock} from "./block.js";
+import {FieldBlock, MoveResult} from "./block.js";
 import Figure, {Figures} from "./figure.js";
 import Tetris from "./tetris.js";
 

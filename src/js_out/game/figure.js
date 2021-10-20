@@ -119,8 +119,17 @@ export default class Figure {
         }
     }
     draw() {
-        for (let block of this._blocks) {
+        for (const block of this._blocks) {
             block.draw();
+        }
+    }
+    getShadowSectionY() {
+        for (let y_shift = 1;; y_shift++) {
+            for (const block of this._blocks) {
+                if (block.checkMove(0, y_shift) != MoveResult.ALLOW) {
+                    return this.section_y + y_shift - 1;
+                }
+            }
         }
     }
 }

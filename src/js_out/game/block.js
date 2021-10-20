@@ -4,12 +4,24 @@ export class AbstractBlock {
         this.x = x;
         this.y = y;
     }
+    getRealFieldX() {
+        return Tetris.instance.current_level.field.getRealFieldX() +
+            this.getFieldSectionX() * Tetris.instance.current_level.field.real_section_size;
+    }
+    getRealFieldY() {
+        return Tetris.instance.current_level.field.getRealFieldY() +
+            this.getFieldSectionY() * Tetris.instance.current_level.field.real_section_size;
+    }
     draw() {
         const field = Tetris.instance.current_level.field;
-        const context = Tetris.instance.context;
         const section_size = field.real_section_size;
-        const start_x = field.getRealFieldX() + this.getFieldSectionX() * section_size + 0.5;
-        const start_y = field.getRealFieldY() + this.getFieldSectionY() * section_size + 0.5;
+        const block_start_x = this.getRealFieldX() + 0.5;
+        const block_start_y = this.getRealFieldY() + 0.5;
+        this.drawOutlineAndFill(block_start_x, block_start_y, this.getColor());
+    }
+    drawOutlineAndFill(start_x, start_y, color) {
+        const context = Tetris.instance.context;
+        const section_size = Tetris.instance.current_level.field.real_section_size;
         context.beginPath();
         context.moveTo(start_x, start_y);
         context.lineTo(start_x + section_size, start_y);
@@ -18,7 +30,7 @@ export class AbstractBlock {
         context.closePath();
         context.lineWidth = 1;
         context.strokeStyle = 'black';
-        context.fillStyle = this.getColor();
+        context.fillStyle = color;
         context.stroke();
         context.fill();
     }
@@ -90,6 +102,13 @@ export class FigureBlock extends AbstractBlock {
     getFieldSectionY() {
         return this.y + this.figure.section_y;
     }
+    getFieldShadowSectionY() {
+        return this.y + this.figure.getShadowSectionY();
+    }
+    getRealShadowY() {
+        return Tetris.instance.current_level.field.getRealFieldY() +
+            this.getFieldShadowSectionY() * Tetris.instance.current_level.field.real_section_size;
+    }
     checkRotation() {
         const field = Tetris.instance.current_level.field;
         const rotated_field_x = this.findRotatedRelativeX() + this.figure.section_x;
@@ -132,6 +151,12 @@ export class FigureBlock extends AbstractBlock {
         const field_block = new FieldBlock(this.getFieldSectionX(), this.getFieldSectionY());
         field_block.color = this.getColor();
         return field_block;
+    }
+    draw() {
+        const shadow_real_x = this.getRealFieldX() + 0.5;
+        const shadow_real_y = this.getRealShadowY() + 0.5;
+        this.drawOutlineAndFill(shadow_real_x, shadow_real_y, "rgb(230, 230, 230)");
+        super.draw();
     }
 }
 export var MoveResult;
