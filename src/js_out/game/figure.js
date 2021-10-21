@@ -160,11 +160,14 @@ export default class Figure {
 export class FigurePattern {
     constructor() {
         this.shape = [];
+        this.maxX = 0;
     }
     static builder() {
         return new FigurePattern();
     }
     block(relative_x, relative_y) {
+        if (relative_x > this.maxX)
+            this.maxX = relative_x;
         this.shape.push([relative_x, relative_y]);
         return this;
     }
@@ -173,7 +176,17 @@ export class FigurePattern {
         return this;
     }
     createFigure() {
-        const figure = Figure.createByRelativeBlockSections(...this.shape);
+        const doFlip = Math.random() < 0.5;
+        let finalShape = [];
+        this.shape.forEach((coords) => {
+            finalShape.push([coords[0], coords[1]]);
+        });
+        if (doFlip) {
+            finalShape.forEach((coords) => {
+                coords[0] = this.maxX - coords[0];
+            });
+        }
+        const figure = Figure.createByRelativeBlockSections(...finalShape);
         figure.rotation_center_x = this.rotation_center[0];
         figure.rotation_center_y = this.rotation_center[1];
         return figure;

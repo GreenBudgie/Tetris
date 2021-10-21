@@ -187,6 +187,8 @@ export class FigurePattern {
 	private shape: [number, number][] = [];
 	private rotation_center: [number, number];
 
+	private maxX = 0;
+
 	private constructor() {}
 
 	public static builder(): FigurePattern {
@@ -194,6 +196,7 @@ export class FigurePattern {
 	}
 
 	public block(relative_x: number, relative_y: number): FigurePattern {
+		if(relative_x > this.maxX) this.maxX = relative_x;
 		this.shape.push([relative_x, relative_y]);
 		return this;
 	}
@@ -204,7 +207,17 @@ export class FigurePattern {
 	}
 
 	public createFigure(): Figure {
-		const figure = Figure.createByRelativeBlockSections(...this.shape);
+		const doFlip = Math.random() < 0.5;
+		let finalShape: [number, number][] = [];
+		this.shape.forEach((coords) => {
+			finalShape.push([coords[0], coords[1]]);
+		});
+		if(doFlip) {
+			finalShape.forEach((coords) => {
+				coords[0] = this.maxX - coords[0];
+			});
+		}
+		const figure = Figure.createByRelativeBlockSections(...finalShape);
 		figure.rotation_center_x = this.rotation_center[0];
 		figure.rotation_center_y = this.rotation_center[1];
 		return figure;

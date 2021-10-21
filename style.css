@@ -9,6 +9,10 @@
   box-sizing: border-box;
 }
 
+html {
+  overflow-y: hidden;
+}
+
 .wrapper {
   padding: 10px;
   display: flex;
