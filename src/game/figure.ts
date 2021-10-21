@@ -38,9 +38,11 @@ export default class Figure implements Colorizable {
 	}
 
 	constructor(blocks: FigureBlock[]) {
-		blocks.forEach(block => block.figure = this);
 		this._blocks = blocks;
 		this.color = getRandomColor();
+		this._blocks.forEach(block => {
+			block.figure = this;
+		});
 	}
 
 	public getColor(): Color {
@@ -54,7 +56,7 @@ export default class Figure implements Colorizable {
 	public getCurrentWidth(): number {
 		let maxRelativeBlockX: number = 0;
 		for(const block of this._blocks) {
-			if(block.getFigureRelativeX() > maxRelativeBlockX) maxRelativeBlockX = block.getFigureRelativeX();
+			if(block.getRelativeX() > maxRelativeBlockX) maxRelativeBlockX = block.getRelativeX();
 		}
 		return maxRelativeBlockX + 1;
 	}
@@ -62,7 +64,7 @@ export default class Figure implements Colorizable {
 	public getCurrentHeight(): number {
 		let maxRelativeBlockY: number = 0;
 		for(const block of this._blocks) {
-			if(block.getFigureRelativeY() > maxRelativeBlockY) maxRelativeBlockY = block.getFigureRelativeY();
+			if(block.getRelativeY() > maxRelativeBlockY) maxRelativeBlockY = block.getRelativeY();
 		}
 		return maxRelativeBlockY + 1;
 	}
@@ -149,9 +151,23 @@ export default class Figure implements Colorizable {
 	}
 
 	public draw() {
+		const drawShadow = this.needsToDrawShadow();
 		for(const block of this._blocks) {
 			block.draw();
+			if(drawShadow) {
+				block.drawShadow();
+			}
 		}
+	}
+
+	private needsToDrawShadow(): boolean {
+		for(const currentBlock of this._blocks) {
+			const shadowY = currentBlock.getShadowSectionY();
+			for(const blockToCheck of this._blocks) {
+				if(blockToCheck.getSectionY() >= shadowY) return false;
+			}
+		}
+		return true;
 	}
 
 	public getShadowSectionY(): number {

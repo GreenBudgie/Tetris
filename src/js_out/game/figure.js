@@ -12,9 +12,11 @@ export default class Figure {
         this.section_y = 0;
         this.max_falling_time = 45;
         this.falling_timer = this.max_falling_time;
-        blocks.forEach(block => block.figure = this);
         this._blocks = blocks;
         this.color = getRandomColor();
+        this._blocks.forEach(block => {
+            block.figure = this;
+        });
     }
     /**
      * Creates a figure based on section coordinates.
@@ -39,16 +41,16 @@ export default class Figure {
     getCurrentWidth() {
         let maxRelativeBlockX = 0;
         for (const block of this._blocks) {
-            if (block.getFigureRelativeX() > maxRelativeBlockX)
-                maxRelativeBlockX = block.getFigureRelativeX();
+            if (block.getRelativeX() > maxRelativeBlockX)
+                maxRelativeBlockX = block.getRelativeX();
         }
         return maxRelativeBlockX + 1;
     }
     getCurrentHeight() {
         let maxRelativeBlockY = 0;
         for (const block of this._blocks) {
-            if (block.getFigureRelativeY() > maxRelativeBlockY)
-                maxRelativeBlockY = block.getFigureRelativeY();
+            if (block.getRelativeY() > maxRelativeBlockY)
+                maxRelativeBlockY = block.getRelativeY();
         }
         return maxRelativeBlockY + 1;
     }
@@ -127,9 +129,23 @@ export default class Figure {
         }
     }
     draw() {
+        const drawShadow = this.needsToDrawShadow();
         for (const block of this._blocks) {
             block.draw();
+            if (drawShadow) {
+                block.drawShadow();
+            }
         }
+    }
+    needsToDrawShadow() {
+        for (const currentBlock of this._blocks) {
+            const shadowY = currentBlock.getShadowSectionY();
+            for (const blockToCheck of this._blocks) {
+                if (blockToCheck.getSectionY() >= shadowY)
+                    return false;
+            }
+        }
+        return true;
     }
     getShadowSectionY() {
         for (let y_shift = 1;; y_shift++) {
