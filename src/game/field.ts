@@ -32,6 +32,7 @@ export default class Field {
 	public constructor(sections_x: number, sections_y: number) {
 		this.sections_x = sections_x;
 		this.sections_y = sections_y;
+		this.createFallingFigure(Figures.createRandomFigure());
 	}
 
 	public static defaultSizeField(): Field {
@@ -105,7 +106,8 @@ export default class Field {
 		} else {
 			this.time_to_create_new_figure -= delta * Tetris.FPS;
 			if(this.time_to_create_new_figure <= 0) {
-				this.createFallingFigure(Figures.createRandomFigure());
+				Tetris.instance.current_level.createNextFigureAtField();
+				Tetris.instance.current_level.selectNextFigure();
 			}
 		}
 	}

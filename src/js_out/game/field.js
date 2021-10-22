@@ -18,6 +18,7 @@ export default class Field {
         this.time_to_create_new_figure = this.max_time_to_create_new_figure;
         this.sections_x = sections_x;
         this.sections_y = sections_y;
+        this.createFallingFigure(Figures.createRandomFigure());
     }
     static defaultSizeField() {
         return new Field(12, 20);
@@ -82,7 +83,8 @@ export default class Field {
         else {
             this.time_to_create_new_figure -= delta * Tetris.FPS;
             if (this.time_to_create_new_figure <= 0) {
-                this.createFallingFigure(Figures.createRandomFigure());
+                Tetris.instance.current_level.createNextFigureAtField();
+                Tetris.instance.current_level.selectNextFigure();
             }
         }
     }

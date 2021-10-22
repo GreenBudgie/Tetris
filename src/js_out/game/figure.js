@@ -3,8 +3,7 @@ import { getRandomColor } from "./color.js";
 import InputHandler, { KeyBindings } from "./input_handler.js";
 import Tetris from "./tetris.js";
 /**
- * A figure is a collection of single blocks.
- * The figure itself does not contain a location, the blocks do.
+ * A figure is a collection of single blocks
  */
 export default class Figure {
     constructor(blocks) {
@@ -31,6 +30,13 @@ export default class Figure {
             blocks.push(new FigureBlock(section[0], section[1]));
         }
         return new Figure(blocks);
+    }
+    getPreviewRealX() {
+        return Tetris.instance.current_level.getLeftSideMiddle() -
+            (this.getCurrentWidth() * Tetris.instance.current_level.field.real_section_size) / 2;
+    }
+    getPreviewRealY() {
+        return Tetris.instance.current_level.field.getRealFieldY() + 60;
     }
     getColor() {
         return this.color;
@@ -126,6 +132,11 @@ export default class Figure {
         }
         if (handler.isKeyBindingPressedOrRepeats(KeyBindings.FIGURE_ROTATE)) {
             this.rotate();
+        }
+    }
+    drawAsPreview() {
+        for (const block of this._blocks) {
+            block.drawAsPreview();
         }
     }
     draw() {

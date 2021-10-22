@@ -4,8 +4,7 @@ import InputHandler, {KeyBindings} from "./input_handler.js";
 import Tetris from "./tetris.js";
 
 /**
- * A figure is a collection of single blocks.
- * The figure itself does not contain a location, the blocks do. 
+ * A figure is a collection of single blocks
  */
 export default class Figure implements Colorizable {
 	
@@ -43,6 +42,15 @@ export default class Figure implements Colorizable {
 		this._blocks.forEach(block => {
 			block.figure = this;
 		});
+	}
+
+	public getPreviewRealX() {
+		return Tetris.instance.current_level.getLeftSideMiddle() - 
+			(this.getCurrentWidth() * Tetris.instance.current_level.field.real_section_size) / 2;
+	}
+
+	public getPreviewRealY() {
+		return Tetris.instance.current_level.field.getRealFieldY() + 60;
 	}
 
 	public getColor(): Color {
@@ -147,6 +155,12 @@ export default class Figure implements Colorizable {
 		}
 		if(handler.isKeyBindingPressedOrRepeats(KeyBindings.FIGURE_ROTATE)) {
 			this.rotate();
+		}
+	}
+
+	public drawAsPreview() {
+		for(const block of this._blocks) {
+			block.drawAsPreview();
 		}
 	}
 

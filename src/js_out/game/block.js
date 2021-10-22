@@ -169,6 +169,12 @@ export class FigureBlock extends AbstractBlock {
     getRelativeY() {
         return this.y;
     }
+    getPreviewRealX() {
+        return this.x * Tetris.instance.current_level.field.real_section_size + this.figure.getPreviewRealX();
+    }
+    getPreviewRealY() {
+        return this.y * Tetris.instance.current_level.field.real_section_size + this.figure.getPreviewRealY();
+    }
     /**
      * Creates a field block with the same coordinates and color
      * @returns A new field block
@@ -177,6 +183,13 @@ export class FigureBlock extends AbstractBlock {
         const field_block = new FieldBlock(this.getSectionX(), this.getSectionY());
         field_block.color = this.getColor();
         return field_block;
+    }
+    drawAsPreview() {
+        const startX = this.getPreviewRealX() + 0.5;
+        const startY = this.getPreviewRealY() + 0.5;
+        this.prepareContextPath(startX, startY);
+        this.fillBlock(this.getColor());
+        this.outlineBlock();
     }
     draw() {
         super.draw();
