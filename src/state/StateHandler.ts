@@ -6,21 +6,25 @@ export default class StateHandler implements Processable {
 
     public readonly GAME: State = new StateGame();
 
-    private currentState: State = this.GAME;
+    private _currentState: State = this.GAME;
     private static instance: StateHandler = null;
 
     private constructor() {}
 
     public update(delta: number): void {
-        this.currentState.update(delta);
+        this._currentState.update(delta);
     }
 
     public draw(context: CanvasRenderingContext2D): void {
-        this.currentState.draw(context);
+        this._currentState.draw(context);
     }
 
-    public setCurrentState(state: State) {
-        this.currentState = state;
+    public get currentState(): State {
+        return this._currentState;
+    }
+
+    public set currentState(state: State) {
+        this._currentState = state;
     }
 
     public static getHandler(): StateHandler {

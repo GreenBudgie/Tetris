@@ -11,12 +11,16 @@ export default abstract class State implements Processable {
     public onEnd(): void {};
 
     public begin(): void {
-        StateHandler.getHandler().setCurrentState(this);
+        StateHandler.getHandler().currentState = this;
         this.onBegin();
     }
 
     public end(): void {
         this.onEnd();
+    }
+
+    public isRunning(): boolean {
+        return this == StateHandler.getHandler().currentState;
     }
 
 }
