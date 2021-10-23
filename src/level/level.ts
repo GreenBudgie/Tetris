@@ -1,8 +1,9 @@
 import Field from "../game/field.js";
 import Figure, {Figures} from "../game/figure.js";
 import Tetris from "../game/tetris.js";
+import Processable from "../util/Processable.js";
 
-export default class Level {
+export default class Level implements Processable {
 
     public field: Field;
     public filled_rows: number = 0;
@@ -27,10 +28,10 @@ export default class Level {
         this.field.update(delta);
     }
 
-    public draw() {
-        this.field.draw();
-        this.drawPoints();
-        this.drawNextFigurePreview();
+    public draw(context: CanvasRenderingContext2D) {
+        this.field.draw(context);
+        this.drawPoints(context);
+        this.drawNextFigurePreview(context);
     }
 
     public getRightSideMiddle() {
@@ -42,8 +43,7 @@ export default class Level {
         return this.field.getRealFieldX() / 2;
     }
 
-    private drawNextFigurePreview() {
-        const context = Tetris.instance.context;
+    private drawNextFigurePreview(context: CanvasRenderingContext2D) {
         context.font = "36px homespun";
         context.fillStyle = "black";
         context.textBaseline = "top";
@@ -54,12 +54,11 @@ export default class Level {
         context.fillText("- Next -", leftMiddle, this.field.getRealFieldY());
 
         if(this.nextFigure != null) {
-            this.nextFigure.drawAsPreview();
+            this.nextFigure.drawAsPreview(context);
         }
     }
 
-    private drawPoints() {
-        const context = Tetris.instance.context;
+    private drawPoints(context: CanvasRenderingContext2D) {
         context.font = "36px homespun";
         context.fillStyle = "black";
         context.textBaseline = "top";

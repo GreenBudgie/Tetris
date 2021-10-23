@@ -1,8 +1,10 @@
+import StateHandler from "../state/StateHandler.js";
+import Processable from "../util/Processable.js";
 import Colorizable, {Color} from "./color.js";
 import Figure from "./figure.js";
 import Tetris from "./tetris.js";
 
-export abstract class AbstractBlock implements Colorizable {
+export abstract class AbstractBlock implements Colorizable, Processable {
 	protected x: number;
 	protected y: number;
 	
@@ -10,6 +12,8 @@ export abstract class AbstractBlock implements Colorizable {
 		this.x = x;
 		this.y = y;
 	}
+
+	public update(delta: number): void {}
 
 	public abstract getColor(): Color;
 
@@ -23,17 +27,16 @@ export abstract class AbstractBlock implements Colorizable {
 	 */
 	public abstract getRealY(): number;
 
-	public draw() {
+	public draw(context: CanvasRenderingContext2D) {
 		const block_start_x = this.getRealX() + 0.5;
 		const block_start_y = this.getRealY() + 0.5;
-		this.prepareContextPath(block_start_x, block_start_y);
-		this.fillBlock(this.getColor());
-		this.outlineBlock();
+		this.prepareContextPath(block_start_x, block_start_y, context);
+		this.fillBlock(this.getColor(), context);
+		this.outlineBlock(context);
 	}
 
-	protected prepareContextPath(start_x: number, start_y: number) {
-		const context = Tetris.instance.context;
-		const section_size = Tetris.instance.current_level.field.real_section_size;
+	protected prepareContextPath(start_x: number, start_y: number, context: CanvasRenderingContext2D) {
+		const section_size = StateHandler.getHandler().GAME.level.field.real_section_size;
 		context.beginPath();
 		context.moveTo(start_x, start_y);
 		context.lineTo(start_x + section_size, start_y);
@@ -42,15 +45,13 @@ export abstract class AbstractBlock implements Colorizable {
 		context.closePath();
 	}
 
-	protected outlineBlock() {
-		const context = Tetris.instance.context;
+	protected outlineBlock(context: CanvasRenderingContext2D) {
 		context.lineWidth = 1;
 		context.strokeStyle = 'black';
 		context.stroke();
 	}
 
-	protected fillBlock(color: string) {
-		const context = Tetris.instance.context;
+	protected fillBlock(color: string, context: CanvasRenderingContext2D) {
 		context.fillStyle = color;
 		context.fill();
 	}
@@ -90,13 +91,13 @@ export class FieldBlock extends AbstractBlock {
 	}
 
 	public calculateRealX() {
-		this.realX = Tetris.instance.current_level.field.getRealFieldX() + 
-				this.getFieldSectionX() * Tetris.instance.current_level.field.real_section_size;
+		const level = StateHandler.getHandler().GAME.level;
+		this.realX = level.field.getRealFieldX() + this.getFieldSectionX() * level.field.real_section_size;
 	}
 
 	public calculateRealY() {
-		this.realY = Tetris.instance.current_level.field.getRealFieldY() + 
-				this.getFieldSectionY() * Tetris.instance.current_level.field.real_section_size;
+		const level = StateHandler.getHandler().GAME.level;
+		this.realY = level.field.getRealFieldY() + this.getFieldSectionY() * level.field.real_section_size;
 	}
 
 	public getRealX(): number {
@@ -149,7 +150,7 @@ export class FigureBlock extends AbstractBlock {
 	 * @returns ALLOW if the block is able to move by specified deltas, BOUNDARY if a floor obstructs the movement, BLOCK if a block obstructs the movement
 	 */
 	public checkMove(dx: number, dy: number): MoveResult {
-		const field = Tetris.instance.current_level.field;
+		const field = StateHandler.getHandler().GAME.level.field;
 		const new_section_x = this.getSectionX() + dx;
 		const new_section_y = this.getSectionY() + dy;
 		for(const block of field.blocks) {
@@ -160,13 +161,13 @@ export class FigureBlock extends AbstractBlock {
 	}
 
 	public getRealX(): number {
-		return this.getSectionX() * Tetris.instance.current_level.field.real_section_size + 
-				Tetris.instance.current_level.field.getRealFieldX();
+		const level = StateHandler.getHandler().GAME.level;
+		return this.getSectionX() * level.field.real_section_size + level.field.getRealFieldX();
 	}
 
 	public getRealY(): number {
-		return this.getSectionY() * Tetris.instance.current_level.field.real_section_size + 
-				Tetris.instance.current_level.field.getRealFieldY();
+		const level = StateHandler.getHandler().GAME.level;
+		return this.getSectionY() * level.field.real_section_size + level.field.getRealFieldY();
 	}
 
 	public getSectionX(): number {
@@ -182,12 +183,12 @@ export class FigureBlock extends AbstractBlock {
 	}
 
 	public getRealShadowY(): number {
-		return Tetris.instance.current_level.field.getRealFieldY() + 
-				this.getShadowSectionY() * Tetris.instance.current_level.field.real_section_size;
+		const level = StateHandler.getHandler().GAME.level;
+		return level.field.getRealFieldY() + this.getShadowSectionY() * level.field.real_section_size;
 	}
 
 	public checkRotation(): MoveResult {
-		const field = Tetris.instance.current_level.field;
+		const field = StateHandler.getHandler().GAME.level.field;
 		const rotated_field_x = this.findRotatedRelativeX() + this.figure.section_x;
 		const rotated_field_y = this.findRotatedRelativeY() + this.figure.section_y;
 		if(!field.isSectionInside(rotated_field_x, rotated_field_y)) return MoveResult.BOUNDARY;
@@ -226,11 +227,11 @@ export class FigureBlock extends AbstractBlock {
 	}
 
 	public getPreviewRealX(): number {
-		return this.x * Tetris.instance.current_level.field.real_section_size + this.figure.getPreviewRealX();
+		return this.x * StateHandler.getHandler().GAME.level.field.real_section_size + this.figure.getPreviewRealX();
 	}
 
 	public getPreviewRealY(): number {
-		return this.y * Tetris.instance.current_level.field.real_section_size + this.figure.getPreviewRealY();
+		return this.y * StateHandler.getHandler().GAME.level.field.real_section_size + this.figure.getPreviewRealY();
 	}
 
 	/**
@@ -243,27 +244,27 @@ export class FigureBlock extends AbstractBlock {
 		return field_block;
 	}
 
-	public drawAsPreview() {
+	public drawAsPreview(context: CanvasRenderingContext2D) {
 		const startX = this.getPreviewRealX() + 0.5;
 		const startY = this.getPreviewRealY() + 0.5;
-		this.prepareContextPath(startX, startY);
-		this.fillBlock(this.getColor());
-		this.outlineBlock();
+		this.prepareContextPath(startX, startY, context);
+		this.fillBlock(this.getColor(), context);
+		this.outlineBlock(context);
 	}
 
-	public override draw() {
-		super.draw();
+	public override draw(context: CanvasRenderingContext2D) {
+		super.draw(context);
 	}
 
-	public drawShadow() {
+	public drawShadow(context: CanvasRenderingContext2D) {
 		const shadow_section_y = this.getShadowSectionY();
 		const current_section_y = this.getSectionY();
 		if(shadow_section_y != current_section_y) {
 			const shadow_real_x = this.getRealX() + 0.5;
 			const shadow_real_y = this.getRealShadowY() + 0.5;
-			this.prepareContextPath(shadow_real_x, shadow_real_y);
-			this.fillBlock("rgb(230, 230, 230)");
-			this.outlineBlock();
+			this.prepareContextPath(shadow_real_x, shadow_real_y, context);
+			this.fillBlock("rgb(230, 230, 230)", context);
+			this.outlineBlock(context);
 		}
 	}
 

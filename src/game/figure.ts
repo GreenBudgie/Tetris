@@ -1,3 +1,5 @@
+import StateHandler from "../state/StateHandler.js";
+import Processable from "../util/Processable.js";
 import {FigureBlock, MoveResult} from "./block.js";
 import Colorizable, {Color, getRandomColor} from "./color.js";
 import InputHandler, {KeyBindings} from "./input_handler.js";
@@ -6,7 +8,7 @@ import Tetris from "./tetris.js";
 /**
  * A figure is a collection of single blocks
  */
-export default class Figure implements Colorizable {
+export default class Figure implements Colorizable, Processable {
 	
 	public section_x: number = 0;
 	public section_y: number = 0;
@@ -45,12 +47,12 @@ export default class Figure implements Colorizable {
 	}
 
 	public getPreviewRealX() {
-		return Tetris.instance.current_level.getLeftSideMiddle() - 
-			(this.getCurrentWidth() * Tetris.instance.current_level.field.real_section_size) / 2;
+		const level = StateHandler.getHandler().GAME.level;
+		return level.getLeftSideMiddle() - (this.getCurrentWidth() * level.field.real_section_size) / 2;
 	}
 
 	public getPreviewRealY() {
-		return Tetris.instance.current_level.field.getRealFieldY() + 60;
+		return StateHandler.getHandler().GAME.level.field.getRealFieldY() + 60;
 	}
 
 	public getColor(): Color {
@@ -130,7 +132,7 @@ export default class Figure implements Colorizable {
 	 * Interrupts the falling
 	 */
 	public land() {
-		Tetris.instance.current_level.field.landFigure();
+		StateHandler.getHandler().GAME.level.field.landFigure();
 	}
 
 	public update(delta: number) {
@@ -158,18 +160,18 @@ export default class Figure implements Colorizable {
 		}
 	}
 
-	public drawAsPreview() {
+	public drawAsPreview(context: CanvasRenderingContext2D) {
 		for(const block of this._blocks) {
-			block.drawAsPreview();
+			block.drawAsPreview(context);
 		}
 	}
 
-	public draw() {
+	public draw(context: CanvasRenderingContext2D) {
 		const drawShadow = this.needsToDrawShadow();
 		for(const block of this._blocks) {
-			block.draw();
+			block.draw(context);
 			if(drawShadow) {
-				block.drawShadow();
+				block.drawShadow(context);
 			}
 		}
 	}

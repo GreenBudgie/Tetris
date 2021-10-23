@@ -1,3 +1,4 @@
+import StateHandler from "../state/StateHandler.js";
 import { FigureBlock, MoveResult } from "./block.js";
 import { getRandomColor } from "./color.js";
 import InputHandler, { KeyBindings } from "./input_handler.js";
@@ -32,11 +33,11 @@ export default class Figure {
         return new Figure(blocks);
     }
     getPreviewRealX() {
-        return Tetris.instance.current_level.getLeftSideMiddle() -
-            (this.getCurrentWidth() * Tetris.instance.current_level.field.real_section_size) / 2;
+        const level = StateHandler.getHandler().GAME.level;
+        return level.getLeftSideMiddle() - (this.getCurrentWidth() * level.field.real_section_size) / 2;
     }
     getPreviewRealY() {
-        return Tetris.instance.current_level.field.getRealFieldY() + 60;
+        return StateHandler.getHandler().GAME.level.field.getRealFieldY() + 60;
     }
     getColor() {
         return this.color;
@@ -109,7 +110,7 @@ export default class Figure {
      * Interrupts the falling
      */
     land() {
-        Tetris.instance.current_level.field.landFigure();
+        StateHandler.getHandler().GAME.level.field.landFigure();
     }
     update(delta) {
         this.movementHandle();
@@ -134,17 +135,17 @@ export default class Figure {
             this.rotate();
         }
     }
-    drawAsPreview() {
+    drawAsPreview(context) {
         for (const block of this._blocks) {
-            block.drawAsPreview();
+            block.drawAsPreview(context);
         }
     }
-    draw() {
+    draw(context) {
         const drawShadow = this.needsToDrawShadow();
         for (const block of this._blocks) {
-            block.draw();
+            block.draw(context);
             if (drawShadow) {
-                block.drawShadow();
+                block.drawShadow(context);
             }
         }
     }

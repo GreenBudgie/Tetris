@@ -1,10 +1,10 @@
-import Processable from "../util/Processable";
-import State from "./State";
-import StateGame from "./StateGame";
+import Processable from "../util/Processable.js";
+import State from "./State.js";
+import StateGame from "./StateGame.js";
 
 export default class StateHandler implements Processable {
 
-    public readonly GAME: State = new StateGame();
+    public readonly GAME: StateGame = new StateGame();
 
     private _currentState: State = this.GAME;
     private static instance: StateHandler = null;

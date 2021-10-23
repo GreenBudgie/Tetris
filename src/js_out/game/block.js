@@ -1,19 +1,19 @@
-import Tetris from "./tetris.js";
+import StateHandler from "../state/StateHandler.js";
 export class AbstractBlock {
     constructor(x, y) {
         this.x = x;
         this.y = y;
     }
-    draw() {
+    update(delta) { }
+    draw(context) {
         const block_start_x = this.getRealX() + 0.5;
         const block_start_y = this.getRealY() + 0.5;
-        this.prepareContextPath(block_start_x, block_start_y);
-        this.fillBlock(this.getColor());
-        this.outlineBlock();
+        this.prepareContextPath(block_start_x, block_start_y, context);
+        this.fillBlock(this.getColor(), context);
+        this.outlineBlock(context);
     }
-    prepareContextPath(start_x, start_y) {
-        const context = Tetris.instance.context;
-        const section_size = Tetris.instance.current_level.field.real_section_size;
+    prepareContextPath(start_x, start_y, context) {
+        const section_size = StateHandler.getHandler().GAME.level.field.real_section_size;
         context.beginPath();
         context.moveTo(start_x, start_y);
         context.lineTo(start_x + section_size, start_y);
@@ -21,14 +21,12 @@ export class AbstractBlock {
         context.lineTo(start_x, start_y + section_size);
         context.closePath();
     }
-    outlineBlock() {
-        const context = Tetris.instance.context;
+    outlineBlock(context) {
         context.lineWidth = 1;
         context.strokeStyle = 'black';
         context.stroke();
     }
-    fillBlock(color) {
-        const context = Tetris.instance.context;
+    fillBlock(color, context) {
         context.fillStyle = color;
         context.fill();
     }
@@ -56,12 +54,12 @@ export class FieldBlock extends AbstractBlock {
         return this.y;
     }
     calculateRealX() {
-        this.realX = Tetris.instance.current_level.field.getRealFieldX() +
-            this.getFieldSectionX() * Tetris.instance.current_level.field.real_section_size;
+        const level = StateHandler.getHandler().GAME.level;
+        this.realX = level.field.getRealFieldX() + this.getFieldSectionX() * level.field.real_section_size;
     }
     calculateRealY() {
-        this.realY = Tetris.instance.current_level.field.getRealFieldY() +
-            this.getFieldSectionY() * Tetris.instance.current_level.field.real_section_size;
+        const level = StateHandler.getHandler().GAME.level;
+        this.realY = level.field.getRealFieldY() + this.getFieldSectionY() * level.field.real_section_size;
     }
     getRealX() {
         return this.realX;
@@ -103,7 +101,7 @@ export class FigureBlock extends AbstractBlock {
      * @returns ALLOW if the block is able to move by specified deltas, BOUNDARY if a floor obstructs the movement, BLOCK if a block obstructs the movement
      */
     checkMove(dx, dy) {
-        const field = Tetris.instance.current_level.field;
+        const field = StateHandler.getHandler().GAME.level.field;
         const new_section_x = this.getSectionX() + dx;
         const new_section_y = this.getSectionY() + dy;
         for (const block of field.blocks) {
@@ -115,12 +113,12 @@ export class FigureBlock extends AbstractBlock {
         return MoveResult.BOUNDARY;
     }
     getRealX() {
-        return this.getSectionX() * Tetris.instance.current_level.field.real_section_size +
-            Tetris.instance.current_level.field.getRealFieldX();
+        const level = StateHandler.getHandler().GAME.level;
+        return this.getSectionX() * level.field.real_section_size + level.field.getRealFieldX();
     }
     getRealY() {
-        return this.getSectionY() * Tetris.instance.current_level.field.real_section_size +
-            Tetris.instance.current_level.field.getRealFieldY();
+        const level = StateHandler.getHandler().GAME.level;
+        return this.getSectionY() * level.field.real_section_size + level.field.getRealFieldY();
     }
     getSectionX() {
         return this.x + this.figure.section_x;
@@ -132,11 +130,11 @@ export class FigureBlock extends AbstractBlock {
         return this.y + this.figure.getShadowSectionY();
     }
     getRealShadowY() {
-        return Tetris.instance.current_level.field.getRealFieldY() +
-            this.getShadowSectionY() * Tetris.instance.current_level.field.real_section_size;
+        const level = StateHandler.getHandler().GAME.level;
+        return level.field.getRealFieldY() + this.getShadowSectionY() * level.field.real_section_size;
     }
     checkRotation() {
-        const field = Tetris.instance.current_level.field;
+        const field = StateHandler.getHandler().GAME.level.field;
         const rotated_field_x = this.findRotatedRelativeX() + this.figure.section_x;
         const rotated_field_y = this.findRotatedRelativeY() + this.figure.section_y;
         if (!field.isSectionInside(rotated_field_x, rotated_field_y))
@@ -170,10 +168,10 @@ export class FigureBlock extends AbstractBlock {
         return this.y;
     }
     getPreviewRealX() {
-        return this.x * Tetris.instance.current_level.field.real_section_size + this.figure.getPreviewRealX();
+        return this.x * StateHandler.getHandler().GAME.level.field.real_section_size + this.figure.getPreviewRealX();
     }
     getPreviewRealY() {
-        return this.y * Tetris.instance.current_level.field.real_section_size + this.figure.getPreviewRealY();
+        return this.y * StateHandler.getHandler().GAME.level.field.real_section_size + this.figure.getPreviewRealY();
     }
     /**
      * Creates a field block with the same coordinates and color
@@ -184,25 +182,25 @@ export class FigureBlock extends AbstractBlock {
         field_block.color = this.getColor();
         return field_block;
     }
-    drawAsPreview() {
+    drawAsPreview(context) {
         const startX = this.getPreviewRealX() + 0.5;
         const startY = this.getPreviewRealY() + 0.5;
-        this.prepareContextPath(startX, startY);
-        this.fillBlock(this.getColor());
-        this.outlineBlock();
+        this.prepareContextPath(startX, startY, context);
+        this.fillBlock(this.getColor(), context);
+        this.outlineBlock(context);
     }
-    draw() {
-        super.draw();
+    draw(context) {
+        super.draw(context);
     }
-    drawShadow() {
+    drawShadow(context) {
         const shadow_section_y = this.getShadowSectionY();
         const current_section_y = this.getSectionY();
         if (shadow_section_y != current_section_y) {
             const shadow_real_x = this.getRealX() + 0.5;
             const shadow_real_y = this.getRealShadowY() + 0.5;
-            this.prepareContextPath(shadow_real_x, shadow_real_y);
-            this.fillBlock("rgb(230, 230, 230)");
-            this.outlineBlock();
+            this.prepareContextPath(shadow_real_x, shadow_real_y, context);
+            this.fillBlock("rgb(230, 230, 230)", context);
+            this.outlineBlock(context);
         }
     }
 }

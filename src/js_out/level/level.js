@@ -15,10 +15,10 @@ export default class Level {
     update(delta) {
         this.field.update(delta);
     }
-    draw() {
-        this.field.draw();
-        this.drawPoints();
-        this.drawNextFigurePreview();
+    draw(context) {
+        this.field.draw(context);
+        this.drawPoints(context);
+        this.drawNextFigurePreview(context);
     }
     getRightSideMiddle() {
         const field_end_x = this.field.getRealFieldX() + this.field.getRealFieldWidth();
@@ -27,8 +27,7 @@ export default class Level {
     getLeftSideMiddle() {
         return this.field.getRealFieldX() / 2;
     }
-    drawNextFigurePreview() {
-        const context = Tetris.instance.context;
+    drawNextFigurePreview(context) {
         context.font = "36px homespun";
         context.fillStyle = "black";
         context.textBaseline = "top";
@@ -36,11 +35,10 @@ export default class Level {
         const leftMiddle = this.getLeftSideMiddle();
         context.fillText("- Next -", leftMiddle, this.field.getRealFieldY());
         if (this.nextFigure != null) {
-            this.nextFigure.drawAsPreview();
+            this.nextFigure.drawAsPreview(context);
         }
     }
-    drawPoints() {
-        const context = Tetris.instance.context;
+    drawPoints(context) {
         context.font = "36px homespun";
         context.fillStyle = "black";
         context.textBaseline = "top";

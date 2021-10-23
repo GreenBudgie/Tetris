@@ -1,6 +1,7 @@
 import InputHandler from "./input_handler.js";
 import Level from "../level/level.js";
 import Levels from "../level/levels.js";
+import StateHandler from "../state/StateHandler.js";
 
 export default class Tetris {
 
@@ -11,8 +12,6 @@ export default class Tetris {
 
 	public readonly window_width: number = this.canvas.width;
 	public readonly window_height: number = this.canvas.height;
-
-	public current_level: Level;
 
 	private static _instance: Tetris;
 
@@ -38,7 +37,6 @@ export default class Tetris {
 		this.fixCanvasScaling();
 		InputHandler.getHandler().registerListeners();
 		Levels.registerLevels();
-		this.current_level = Levels.LEVEL_1;
 		requestAnimationFrame((timestamp) => this.gameLoop(timestamp));
 	}
 
@@ -48,11 +46,11 @@ export default class Tetris {
 		const delta = (timestamp - this.previousTimestamp) / 1000;
 		this.previousTimestamp = timestamp;
 
-		this.current_level.update(delta);
+		StateHandler.getHandler().currentState.update(delta);
 
 		this.context.clearRect(0, 0, this.window_width, this.window_height);
 		this.drawFps(Math.round(1 / delta).toString());
-		this.current_level.draw();
+		StateHandler.getHandler().currentState.draw(this.context);
 
 		InputHandler.getHandler().clearCurrentFrameBindings();
 

@@ -1,3 +1,4 @@
+import StateHandler from "../state/StateHandler.js";
 import { Figures } from "./figure.js";
 import Tetris from "./tetris.js";
 /**
@@ -57,8 +58,9 @@ export default class Field {
                     continue row_loop;
                 }
             }
-            Tetris.instance.current_level.points += this.sections_x;
-            Tetris.instance.current_level.filled_rows++;
+            const level = StateHandler.getHandler().GAME.level;
+            level.points += this.sections_x;
+            level.filled_rows++;
             this.blocks = this.blocks.filter(block => block.getFieldSectionY() != y);
             for (const block of this.blocks) {
                 if (block.getFieldSectionY() < y)
@@ -83,19 +85,19 @@ export default class Field {
         else {
             this.time_to_create_new_figure -= delta * Tetris.FPS;
             if (this.time_to_create_new_figure <= 0) {
-                Tetris.instance.current_level.createNextFigureAtField();
-                Tetris.instance.current_level.selectNextFigure();
+                const level = StateHandler.getHandler().GAME.level;
+                level.createNextFigureAtField();
+                level.selectNextFigure();
             }
         }
     }
-    draw() {
-        this.drawSections();
-        this.drawBlocks();
+    draw(context) {
+        this.drawSections(context);
+        this.drawBlocks(context);
         if (this.falling_figure != null)
-            this.falling_figure.draw();
+            this.falling_figure.draw(context);
     }
-    drawSections() {
-        const context = Tetris.instance.context;
+    drawSections(context) {
         const start_x = this.getRealFieldX();
         const start_y = this.getRealFieldY();
         context.strokeStyle = "rgb(189, 189, 189)";
@@ -112,8 +114,8 @@ export default class Field {
         context.closePath();
         context.stroke();
     }
-    drawBlocks() {
-        this.blocks.forEach(block => block.draw());
+    drawBlocks(context) {
+        this.blocks.forEach(block => block.draw(context));
     }
 }
 //# sourceMappingURL=field.js.map

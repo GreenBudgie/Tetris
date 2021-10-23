@@ -1,11 +1,13 @@
-import {FieldBlock, MoveResult} from "./block.js";
+import StateHandler from "../state/StateHandler.js";
+import Processable from "../util/Processable.js";
+import {FieldBlock} from "./block.js";
 import Figure, {Figures} from "./figure.js";
 import Tetris from "./tetris.js";
 
 /**
  * A field is a game element that stores and renders all the blocks and figures inside it
  */
-export default class Field {
+export default class Field implements Processable {
 
 	/**
 	 * Determines how wide in terms of sections the field is
@@ -80,8 +82,9 @@ export default class Field {
 					continue row_loop;
 				}
 			}
-			Tetris.instance.current_level.points += this.sections_x;
-			Tetris.instance.current_level.filled_rows++;
+			const level = StateHandler.getHandler().GAME.level;
+			level.points += this.sections_x;
+			level.filled_rows++;
 			this.blocks = this.blocks.filter(block => block.getFieldSectionY() != y);
 			for(const block of this.blocks) {
 				if(block.getFieldSectionY() < y) block.moveDown();
@@ -106,20 +109,20 @@ export default class Field {
 		} else {
 			this.time_to_create_new_figure -= delta * Tetris.FPS;
 			if(this.time_to_create_new_figure <= 0) {
-				Tetris.instance.current_level.createNextFigureAtField();
-				Tetris.instance.current_level.selectNextFigure();
+				const level = StateHandler.getHandler().GAME.level;
+				level.createNextFigureAtField();
+				level.selectNextFigure();
 			}
 		}
 	}
 
-	public draw() {
-		this.drawSections();
-		this.drawBlocks();
-		if(this.falling_figure != null) this.falling_figure.draw();
+	public draw(context: CanvasRenderingContext2D) {
+		this.drawSections(context);
+		this.drawBlocks(context);
+		if(this.falling_figure != null) this.falling_figure.draw(context);
 	}
 
-	private drawSections() {
-		const context = Tetris.instance.context;
+	private drawSections(context: CanvasRenderingContext2D) {
 		const start_x = this.getRealFieldX();
 		const start_y = this.getRealFieldY();
 		context.strokeStyle = "rgb(189, 189, 189)";
@@ -137,8 +140,8 @@ export default class Field {
 		context.stroke();
 	}
 
-	private drawBlocks() {
-		this.blocks.forEach(block => block.draw());
+	private drawBlocks(context: CanvasRenderingContext2D) {
+		this.blocks.forEach(block => block.draw(context));
 	}
 
 }
