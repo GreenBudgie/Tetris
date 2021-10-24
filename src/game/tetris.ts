@@ -1,6 +1,5 @@
-import InputHandler from "./input_handler.js";
-import Level from "../level/level.js";
-import Levels from "../level/levels.js";
+import InputHandler from "./InputHandler.js";
+import Levels from "../level/Levels.js";
 import StateHandler from "../state/StateHandler.js";
 
 export default class Tetris {
@@ -10,8 +9,8 @@ export default class Tetris {
 	public readonly canvas: HTMLCanvasElement = document.getElementById("canvas") as HTMLCanvasElement;
 	public readonly context: CanvasRenderingContext2D = this.canvas.getContext("2d") as CanvasRenderingContext2D;
 
-	public readonly window_width: number = this.canvas.width;
-	public readonly window_height: number = this.canvas.height;
+	public readonly WINDOW_WIDTH: number = this.canvas.width;
+	public readonly WINDOW_HEIGHT: number = this.canvas.height;
 
 	private static _instance: Tetris;
 
@@ -48,7 +47,7 @@ export default class Tetris {
 
 		StateHandler.getHandler().currentState.update(delta);
 
-		this.context.clearRect(0, 0, this.window_width, this.window_height);
+		this.context.clearRect(0, 0, this.WINDOW_WIDTH, this.WINDOW_HEIGHT);
 		this.drawFps(Math.round(1 / delta).toString());
 		StateHandler.getHandler().currentState.draw(this.context);
 
@@ -58,7 +57,7 @@ export default class Tetris {
 	}
 
 	private drawFps(fps: string) {
-		this.context.font = "20px homespun";
+		this.context.font = "20px ft_default";
         this.context.fillStyle = "gray";
         this.context.textBaseline = "top";
         this.context.textAlign = "left";

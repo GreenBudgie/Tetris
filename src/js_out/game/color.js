@@ -14,4 +14,4 @@ export function getRandomColor() {
     }
     return colors[Math.floor(Math.random() * colors.length)];
 }
-//# sourceMappingURL=color.js.map
+//# sourceMappingURL=Color.js.map

@@ -1,6 +1,6 @@
-import Field from "../game/field.js";
-import Figure, {Figures} from "../game/figure.js";
-import Tetris from "../game/tetris.js";
+import Field from "../game/Field.js";
+import Figure, {Figures} from "../game/Figure.js";
+import Tetris from "../game/Tetris.js";
 import Processable from "../util/Processable.js";
 
 export default class Level implements Processable {
@@ -8,7 +8,7 @@ export default class Level implements Processable {
     public field: Field;
     public filled_rows: number = 0;
     public points: number = 0;
-    public required_points: number;
+    public requiredPoints: number;
 
     public nextFigure: Figure;
 
@@ -35,8 +35,8 @@ export default class Level implements Processable {
     }
 
     public getRightSideMiddle() {
-        const field_end_x = this.field.getRealFieldX() + this.field.getRealFieldWidth();
-        return Math.round((field_end_x + Tetris.instance.window_width) / 2);
+        const fieldEndX = this.field.getRealFieldX() + this.field.getRealFieldWidth();
+        return Math.round((fieldEndX + Tetris.instance.WINDOW_WIDTH) / 2);
     }
 
     public getLeftSideMiddle() {
@@ -44,7 +44,7 @@ export default class Level implements Processable {
     }
 
     private drawNextFigurePreview(context: CanvasRenderingContext2D) {
-        context.font = "36px homespun";
+        context.font = "36px ft_default";
         context.fillStyle = "black";
         context.textBaseline = "top";
         context.textAlign = "center";
@@ -59,7 +59,7 @@ export default class Level implements Processable {
     }
 
     private drawPoints(context: CanvasRenderingContext2D) {
-        context.font = "36px homespun";
+        context.font = "36px ft_default";
         context.fillStyle = "black";
         context.textBaseline = "top";
         context.textAlign = "center";
@@ -68,7 +68,7 @@ export default class Level implements Processable {
         const pointsY = this.field.getRealFieldY();
 
         context.fillText("- Points -", rightMiddle, pointsY);
-        context.fillText(`${this.points} / ${this.required_points}`, rightMiddle, pointsY + 45);
+        context.fillText(`${this.points} / ${this.requiredPoints}`, rightMiddle, pointsY + 45);
 
         const rowsY = pointsY + 150;
 

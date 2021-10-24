@@ -104,4 +104,4 @@ KeyBindings.FIGURE_MOVE_RIGHT = KeyBindings.register(new KeyBinding("ArrowRight"
 KeyBindings.FIGURE_MOVE_LEFT = KeyBindings.register(new KeyBinding("ArrowLeft", "KeyA"));
 KeyBindings.FIGURE_MOVE_DOWN = KeyBindings.register(new KeyBinding("ArrowDown", "KeyS"));
 KeyBindings.FIGURE_ROTATE = KeyBindings.register(new KeyBinding("ArrowUp", "KeyW"));
-//# sourceMappingURL=input_handler.js.map
+//# sourceMappingURL=InputHandler.js.map

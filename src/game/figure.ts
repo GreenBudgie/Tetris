@@ -1,25 +1,25 @@
 import StateHandler from "../state/StateHandler.js";
 import Processable from "../util/Processable.js";
-import {FigureBlock, MoveResult} from "./block.js";
-import Colorizable, {Color, getRandomColor} from "./color.js";
-import InputHandler, {KeyBindings} from "./input_handler.js";
-import Tetris from "./tetris.js";
+import {FigureBlock, MoveResult} from "./Block.js";
+import Colorizable, {Color, getRandomColor} from "./Color.js";
+import InputHandler, {KeyBindings} from "./InputHandler.js";
+import Tetris from "./Tetris.js";
 
 /**
  * A figure is a collection of single blocks
  */
 export default class Figure implements Colorizable, Processable {
 	
-	public section_x: number = 0;
-	public section_y: number = 0;
+	public sectionX: number = 0;
+	public sectionY: number = 0;
 
-	public rotation_center_x: number;
-	public rotation_center_y: number;
+	public rotationCenterX: number;
+	public rotationCenterY: number;
 
 	private _blocks: FigureBlock[];
 
-	private readonly max_falling_time: number = 45;
-	private falling_timer: number = this.max_falling_time;
+	private readonly maxFallingTime: number = 45;
+	private fallingTimer: number = this.maxFallingTime;
 
 	public color: Color;
 
@@ -48,7 +48,7 @@ export default class Figure implements Colorizable, Processable {
 
 	public getPreviewRealX() {
 		const level = StateHandler.getHandler().GAME.level;
-		return level.getLeftSideMiddle() - (this.getCurrentWidth() * level.field.real_section_size) / 2;
+		return level.getLeftSideMiddle() - (this.getCurrentWidth() * level.field.realSectionSize) / 2;
 	}
 
 	public getPreviewRealY() {
@@ -95,7 +95,7 @@ export default class Figure implements Colorizable, Processable {
 	}
 
 	public moveDownOrStop() {
-		this.falling_timer = this.max_falling_time;
+		this.fallingTimer = this.maxFallingTime;
 		this.moveIfPossibleOrStop(0, 1);
 	}
 
@@ -124,8 +124,8 @@ export default class Figure implements Colorizable, Processable {
 	 * @param dy Y movement
 	 */
 	public moveNoRestrictions(dx: number, dy: number) {
-		this.section_x += dx;
-		this.section_y += dy;
+		this.sectionX += dx;
+		this.sectionY += dy;
 	}
 
 	/**
@@ -137,10 +137,10 @@ export default class Figure implements Colorizable, Processable {
 
 	public update(delta: number) {
 		this.movementHandle();
-		this.falling_timer -= delta * Tetris.FPS;
-		if(this.falling_timer <= 0) {
+		this.fallingTimer -= delta * Tetris.FPS;
+		if(this.fallingTimer <= 0) {
 			this.moveDownOrStop();
-			this.falling_timer = this.max_falling_time;
+			this.fallingTimer = this.maxFallingTime;
 		}
 	}
 
@@ -187,10 +187,10 @@ export default class Figure implements Colorizable, Processable {
 	}
 
 	public getShadowSectionY(): number {
-		for(let y_shift = 1;; y_shift++) {
+		for(let yShift = 1;; yShift++) {
 			for(const block of this._blocks) {
-				if(block.checkMove(0, y_shift) != MoveResult.ALLOW) {
-					return this.section_y + y_shift - 1;
+				if(block.checkMove(0, yShift) != MoveResult.ALLOW) {
+					return this.sectionY + yShift - 1;
 				}
 			}
 		}
@@ -201,7 +201,7 @@ export default class Figure implements Colorizable, Processable {
 export class FigurePattern {
 
 	private shape: [number, number][] = [];
-	private rotation_center: [number, number];
+	private centerOfRotation: [number, number];
 
 	private maxX = 0;
 
@@ -218,7 +218,7 @@ export class FigurePattern {
 	}
 
 	public rotationCenter(relative_x: number, relative_y: number): FigurePattern {
-		this.rotation_center = [relative_x, relative_y];
+		this.centerOfRotation = [relative_x, relative_y];
 		return this;
 	}
 
@@ -234,8 +234,8 @@ export class FigurePattern {
 			});
 		}
 		const figure = Figure.createByRelativeBlockSections(...finalShape);
-		figure.rotation_center_x = this.rotation_center[0];
-		figure.rotation_center_y = this.rotation_center[1];
+		figure.rotationCenterX = this.centerOfRotation[0];
+		figure.rotationCenterY = this.centerOfRotation[1];
 		return figure;
 	}
 

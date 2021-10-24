@@ -1,65 +1,65 @@
 import StateHandler from "../state/StateHandler.js";
-import { Figures } from "./figure.js";
-import Tetris from "./tetris.js";
+import { Figures } from "./Figure.js";
+import Tetris from "./Tetris.js";
 /**
  * A field is a game element that stores and renders all the blocks and figures inside it
  */
 export default class Field {
-    constructor(sections_x, sections_y) {
+    constructor(sectionsX, sectionsY) {
         /**
          * The actual size of each section measured in pixels
          */
-        this.real_section_size = 28;
+        this.realSectionSize = 28;
         /**
          * The amount of sections above the playable area
          */
-        this.limit_sections = 3;
+        this.limitSections = 3;
         this.blocks = [];
-        this.max_time_to_create_new_figure = 15;
-        this.time_to_create_new_figure = this.max_time_to_create_new_figure;
-        this.sections_x = sections_x;
-        this.sections_y = sections_y;
+        this.maxTimeToCreateNewFigure = 15;
+        this.timeToCreateNewFigure = this.maxTimeToCreateNewFigure;
+        this.sectionX = sectionsX;
+        this.sectionsY = sectionsY;
         this.createFallingFigure(Figures.createRandomFigure());
     }
     static defaultSizeField() {
         return new Field(12, 20);
     }
     getRealFieldX() {
-        return Math.round(Tetris.instance.window_width / 2 - this.getRealFieldWidth() / 2);
+        return Math.round(Tetris.instance.WINDOW_WIDTH / 2 - this.getRealFieldWidth() / 2);
     }
     getRealFieldY() {
-        return Math.round(Tetris.instance.window_height / 2 - this.getRealFieldHeight() / 2);
+        return Math.round(Tetris.instance.WINDOW_HEIGHT / 2 - this.getRealFieldHeight() / 2);
     }
     getRealFieldWidth() {
-        return this.real_section_size * this.sections_x;
+        return this.realSectionSize * this.sectionX;
     }
     getRealFieldHeight() {
-        return this.real_section_size * this.sections_y;
+        return this.realSectionSize * this.sectionsY;
     }
     createFallingFigure(figure) {
-        const half_figure_width = Math.floor(figure.getCurrentWidth() / 2);
-        const half_field_width = Math.floor(this.sections_x / 2);
-        figure.moveNoRestrictions(half_field_width - half_figure_width, 0);
-        this.falling_figure = figure;
+        const halfFigureWidth = Math.floor(figure.getCurrentWidth() / 2);
+        const halfFieldWidth = Math.floor(this.sectionX / 2);
+        figure.moveNoRestrictions(halfFieldWidth - halfFigureWidth, 0);
+        this.fallingFigure = figure;
     }
     landFigure() {
-        for (const figure_block of this.falling_figure.blocks) {
-            this.blocks.push(figure_block.toFieldBlock());
+        for (const figureBlock of this.fallingFigure.blocks) {
+            this.blocks.push(figureBlock.toFieldBlock());
         }
-        this.falling_figure = null;
-        this.time_to_create_new_figure = this.max_time_to_create_new_figure;
+        this.fallingFigure = null;
+        this.timeToCreateNewFigure = this.maxTimeToCreateNewFigure;
         this.removeFullRowsAndGrantPoints();
     }
     removeFullRowsAndGrantPoints() {
-        row_loop: for (let y = 0; y < this.sections_y; y++) {
-            for (let x = 0; x < this.sections_x; x++) {
-                const field_block = this.getBlockAt(x, y);
-                if (field_block == null) {
+        row_loop: for (let y = 0; y < this.sectionsY; y++) {
+            for (let x = 0; x < this.sectionX; x++) {
+                const fieldBlock = this.getBlockAt(x, y);
+                if (fieldBlock == null) {
                     continue row_loop;
                 }
             }
             const level = StateHandler.getHandler().GAME.level;
-            level.points += this.sections_x;
+            level.points += this.sectionX;
             level.filled_rows++;
             this.blocks = this.blocks.filter(block => block.getFieldSectionY() != y);
             for (const block of this.blocks) {
@@ -68,23 +68,23 @@ export default class Field {
             }
         }
     }
-    getBlockAt(section_x, section_y) {
+    getBlockAt(sectionX, sectionY) {
         for (const block of this.blocks) {
-            if (block.getFieldSectionX() == section_x && block.getFieldSectionY() == section_y)
+            if (block.getFieldSectionX() == sectionX && block.getFieldSectionY() == sectionY)
                 return block;
         }
         return null;
     }
-    isSectionInside(section_x, section_y) {
-        return section_x >= 0 && section_x < this.sections_x && section_y >= 0 && section_y < this.sections_y;
+    isSectionInside(sectionX, sectionY) {
+        return sectionX >= 0 && sectionX < this.sectionX && sectionY >= 0 && sectionY < this.sectionsY;
     }
     update(delta) {
-        if (this.falling_figure != null) {
-            this.falling_figure.update(delta);
+        if (this.fallingFigure != null) {
+            this.fallingFigure.update(delta);
         }
         else {
-            this.time_to_create_new_figure -= delta * Tetris.FPS;
-            if (this.time_to_create_new_figure <= 0) {
+            this.timeToCreateNewFigure -= delta * Tetris.FPS;
+            if (this.timeToCreateNewFigure <= 0) {
                 const level = StateHandler.getHandler().GAME.level;
                 level.createNextFigureAtField();
                 level.selectNextFigure();
@@ -94,22 +94,22 @@ export default class Field {
     draw(context) {
         this.drawSections(context);
         this.drawBlocks(context);
-        if (this.falling_figure != null)
-            this.falling_figure.draw(context);
+        if (this.fallingFigure != null)
+            this.fallingFigure.draw(context);
     }
     drawSections(context) {
-        const start_x = this.getRealFieldX();
-        const start_y = this.getRealFieldY();
+        const startX = this.getRealFieldX();
+        const startY = this.getRealFieldY();
         context.strokeStyle = "rgb(189, 189, 189)";
         context.lineWidth = 1;
         context.beginPath();
-        for (let x_section = 0; x_section <= this.sections_x; x_section++) {
-            context.moveTo(start_x + x_section * this.real_section_size + 0.5, start_y);
-            context.lineTo(start_x + x_section * this.real_section_size + 0.5, start_y + this.getRealFieldHeight());
+        for (let xSection = 0; xSection <= this.sectionX; xSection++) {
+            context.moveTo(startX + xSection * this.realSectionSize + 0.5, startY);
+            context.lineTo(startX + xSection * this.realSectionSize + 0.5, startY + this.getRealFieldHeight());
         }
-        for (let y_section = 0; y_section <= this.sections_y; y_section++) {
-            context.moveTo(start_x, start_y + y_section * this.real_section_size + 0.5);
-            context.lineTo(start_x + this.getRealFieldWidth(), start_y + y_section * this.real_section_size + 0.5);
+        for (let ySection = 0; ySection <= this.sectionsY; ySection++) {
+            context.moveTo(startX, startY + ySection * this.realSectionSize + 0.5);
+            context.lineTo(startX + this.getRealFieldWidth(), startY + ySection * this.realSectionSize + 0.5);
         }
         context.closePath();
         context.stroke();
@@ -118,4 +118,4 @@ export default class Field {
         this.blocks.forEach(block => block.draw(context));
     }
 }
-//# sourceMappingURL=field.js.map
+//# sourceMappingURL=Field.js.map

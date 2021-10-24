@@ -1,5 +1,5 @@
-import { Figures } from "../game/figure.js";
-import Tetris from "../game/tetris.js";
+import { Figures } from "../game/Figure.js";
+import Tetris from "../game/Tetris.js";
 export default class Level {
     constructor() {
         this.filled_rows = 0;
@@ -21,14 +21,14 @@ export default class Level {
         this.drawNextFigurePreview(context);
     }
     getRightSideMiddle() {
-        const field_end_x = this.field.getRealFieldX() + this.field.getRealFieldWidth();
-        return Math.round((field_end_x + Tetris.instance.window_width) / 2);
+        const fieldEndX = this.field.getRealFieldX() + this.field.getRealFieldWidth();
+        return Math.round((fieldEndX + Tetris.instance.WINDOW_WIDTH) / 2);
     }
     getLeftSideMiddle() {
         return this.field.getRealFieldX() / 2;
     }
     drawNextFigurePreview(context) {
-        context.font = "36px homespun";
+        context.font = "36px ft_default";
         context.fillStyle = "black";
         context.textBaseline = "top";
         context.textAlign = "center";
@@ -39,17 +39,17 @@ export default class Level {
         }
     }
     drawPoints(context) {
-        context.font = "36px homespun";
+        context.font = "36px ft_default";
         context.fillStyle = "black";
         context.textBaseline = "top";
         context.textAlign = "center";
         const rightMiddle = this.getRightSideMiddle();
         const pointsY = this.field.getRealFieldY();
         context.fillText("- Points -", rightMiddle, pointsY);
-        context.fillText(`${this.points} / ${this.required_points}`, rightMiddle, pointsY + 45);
+        context.fillText(`${this.points} / ${this.requiredPoints}`, rightMiddle, pointsY + 45);
         const rowsY = pointsY + 150;
         context.fillText(`- Rows -`, rightMiddle, rowsY);
         context.fillText(`${this.filled_rows}`, rightMiddle, rowsY + 45);
     }
 }
-//# sourceMappingURL=level.js.map
+//# sourceMappingURL=Level.js.map

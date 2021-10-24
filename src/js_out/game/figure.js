@@ -1,17 +1,17 @@
 import StateHandler from "../state/StateHandler.js";
-import { FigureBlock, MoveResult } from "./block.js";
-import { getRandomColor } from "./color.js";
-import InputHandler, { KeyBindings } from "./input_handler.js";
-import Tetris from "./tetris.js";
+import { FigureBlock, MoveResult } from "./Block.js";
+import { getRandomColor } from "./Color.js";
+import InputHandler, { KeyBindings } from "./InputHandler.js";
+import Tetris from "./Tetris.js";
 /**
  * A figure is a collection of single blocks
  */
 export default class Figure {
     constructor(blocks) {
-        this.section_x = 0;
-        this.section_y = 0;
-        this.max_falling_time = 45;
-        this.falling_timer = this.max_falling_time;
+        this.sectionX = 0;
+        this.sectionY = 0;
+        this.maxFallingTime = 45;
+        this.fallingTimer = this.maxFallingTime;
         this._blocks = blocks;
         this.color = getRandomColor();
         this._blocks.forEach(block => {
@@ -34,7 +34,7 @@ export default class Figure {
     }
     getPreviewRealX() {
         const level = StateHandler.getHandler().GAME.level;
-        return level.getLeftSideMiddle() - (this.getCurrentWidth() * level.field.real_section_size) / 2;
+        return level.getLeftSideMiddle() - (this.getCurrentWidth() * level.field.realSectionSize) / 2;
     }
     getPreviewRealY() {
         return StateHandler.getHandler().GAME.level.field.getRealFieldY() + 60;
@@ -75,7 +75,7 @@ export default class Figure {
         this.moveIfPossibleOrStop(-1, 0);
     }
     moveDownOrStop() {
-        this.falling_timer = this.max_falling_time;
+        this.fallingTimer = this.maxFallingTime;
         this.moveIfPossibleOrStop(0, 1);
     }
     /**
@@ -103,8 +103,8 @@ export default class Figure {
      * @param dy Y movement
      */
     moveNoRestrictions(dx, dy) {
-        this.section_x += dx;
-        this.section_y += dy;
+        this.sectionX += dx;
+        this.sectionY += dy;
     }
     /**
      * Interrupts the falling
@@ -114,10 +114,10 @@ export default class Figure {
     }
     update(delta) {
         this.movementHandle();
-        this.falling_timer -= delta * Tetris.FPS;
-        if (this.falling_timer <= 0) {
+        this.fallingTimer -= delta * Tetris.FPS;
+        if (this.fallingTimer <= 0) {
             this.moveDownOrStop();
-            this.falling_timer = this.max_falling_time;
+            this.fallingTimer = this.maxFallingTime;
         }
     }
     movementHandle() {
@@ -160,10 +160,10 @@ export default class Figure {
         return true;
     }
     getShadowSectionY() {
-        for (let y_shift = 1;; y_shift++) {
+        for (let yShift = 1;; yShift++) {
             for (const block of this._blocks) {
-                if (block.checkMove(0, y_shift) != MoveResult.ALLOW) {
-                    return this.section_y + y_shift - 1;
+                if (block.checkMove(0, yShift) != MoveResult.ALLOW) {
+                    return this.sectionY + yShift - 1;
                 }
             }
         }
@@ -184,7 +184,7 @@ export class FigurePattern {
         return this;
     }
     rotationCenter(relative_x, relative_y) {
-        this.rotation_center = [relative_x, relative_y];
+        this.centerOfRotation = [relative_x, relative_y];
         return this;
     }
     createFigure() {
@@ -199,8 +199,8 @@ export class FigurePattern {
             });
         }
         const figure = Figure.createByRelativeBlockSections(...finalShape);
-        figure.rotation_center_x = this.rotation_center[0];
-        figure.rotation_center_y = this.rotation_center[1];
+        figure.rotationCenterX = this.centerOfRotation[0];
+        figure.rotationCenterY = this.centerOfRotation[1];
         return figure;
     }
 }
@@ -220,4 +220,4 @@ Figures.L_SHAPE = Figures.register(FigurePattern.builder().block(0, 0).block(1, 
 Figures.I_SHAPE = Figures.register(FigurePattern.builder().block(0, 0).block(1, 0).block(2, 0).block(3, 0).rotationCenter(1.5, 0.5));
 Figures.Z_SHAPE = Figures.register(FigurePattern.builder().block(0, 0).block(1, 0).block(1, 1).block(2, 1).rotationCenter(1, 0));
 Figures.CORNER_SHAPE = Figures.register(FigurePattern.builder().block(0, 0).block(1, 0).block(1, 1).rotationCenter(0.5, 0.5));
-//# sourceMappingURL=figure.js.map
+//# sourceMappingURL=Figure.js.map
