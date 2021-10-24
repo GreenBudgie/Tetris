@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2020",
-    "outDir": "js_out",
+    "outDir": "../compiledJsOutput",
     "sourceMap": true
   }
 }
