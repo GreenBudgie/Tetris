@@ -1,5 +1,5 @@
-import Field from "../game/Field.js";
-import Level from "./Level.js";
+import Field from "../game/field.js";
+import Level from "./level.js";
 export default class Levels {
     static registerLevels() {
         Levels.LEVEL_1.field = Field.defaultSizeField();
@@ -7,4 +7,4 @@ export default class Levels {
     }
 }
 Levels.LEVEL_1 = new Level();
-//# sourceMappingURL=Levels.js.map
+//# sourceMappingURL=levels.js.map

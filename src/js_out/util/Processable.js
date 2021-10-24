@@ -1,2 +1,2 @@
 export {};
-//# sourceMappingURL=Processable.js.map
+//# sourceMappingURL=processable.js.map

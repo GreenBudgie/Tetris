@@ -1,7 +1,7 @@
-import Field from "../game/Field.js";
-import Figure, {Figures} from "../game/Figure.js";
-import Tetris from "../game/Tetris.js";
-import Processable from "../util/Processable.js";
+import Field from "../game/field.js";
+import Figure, {Figures} from "../game/figure.js";
+import Tetris from "../game/tetris.js";
+import Processable from "../util/processable.js";
 
 export default class Level implements Processable {
 

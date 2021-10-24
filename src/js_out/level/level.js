@@ -1,5 +1,5 @@
-import { Figures } from "../game/Figure.js";
-import Tetris from "../game/Tetris.js";
+import { Figures } from "../game/figure.js";
+import Tetris from "../game/tetris.js";
 export default class Level {
     constructor() {
         this.filled_rows = 0;
@@ -52,4 +52,4 @@ export default class Level {
         context.fillText(`${this.filled_rows}`, rightMiddle, rowsY + 45);
     }
 }
-//# sourceMappingURL=Level.js.map
+//# sourceMappingURL=level.js.map

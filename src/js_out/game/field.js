@@ -1,6 +1,6 @@
-import StateHandler from "../state/StateHandler.js";
-import { Figures } from "./Figure.js";
-import Tetris from "./Tetris.js";
+import StateHandler from "../state/stateHandler.js";
+import { Figures } from "./figure.js";
+import Tetris from "./tetris.js";
 /**
  * A field is a game element that stores and renders all the blocks and figures inside it
  */
@@ -118,4 +118,4 @@ export default class Field {
         this.blocks.forEach(block => block.draw(context));
     }
 }
-//# sourceMappingURL=Field.js.map
+//# sourceMappingURL=field.js.map

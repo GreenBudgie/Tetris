@@ -1,8 +1,7 @@
-import StateHandler from "../state/StateHandler.js";
-import Processable from "../util/Processable.js";
-import Colorizable, {Color} from "./Color.js";
+import StateHandler from "../state/stateHandler.js";
+import Processable from "../util/processable.js";
+import Colorizable, {Color} from "./color.js";
 import Figure from "./Figure.js";
-import Tetris from "./Tetris.js";
 
 export abstract class AbstractBlock implements Colorizable, Processable {
 	protected x: number;

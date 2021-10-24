@@ -1,8 +1,8 @@
-import StateHandler from "../state/StateHandler.js";
-import { FigureBlock, MoveResult } from "./Block.js";
-import { getRandomColor } from "./Color.js";
-import InputHandler, { KeyBindings } from "./InputHandler.js";
-import Tetris from "./Tetris.js";
+import StateHandler from "../state/stateHandler.js";
+import { FigureBlock, MoveResult } from "./block.js";
+import { getRandomColor } from "./color.js";
+import InputHandler, { KeyBindings } from "./inputHandler.js";
+import Tetris from "./tetris.js";
 /**
  * A figure is a collection of single blocks
  */
@@ -220,4 +220,4 @@ Figures.L_SHAPE = Figures.register(FigurePattern.builder().block(0, 0).block(1, 
 Figures.I_SHAPE = Figures.register(FigurePattern.builder().block(0, 0).block(1, 0).block(2, 0).block(3, 0).rotationCenter(1.5, 0.5));
 Figures.Z_SHAPE = Figures.register(FigurePattern.builder().block(0, 0).block(1, 0).block(1, 1).block(2, 1).rotationCenter(1, 0));
 Figures.CORNER_SHAPE = Figures.register(FigurePattern.builder().block(0, 0).block(1, 0).block(1, 1).rotationCenter(0.5, 0.5));
-//# sourceMappingURL=Figure.js.map
+//# sourceMappingURL=figure.js.map

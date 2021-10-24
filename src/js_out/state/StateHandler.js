@@ -1,4 +1,4 @@
-import StateGame from "./StateGame.js";
+import StateGame from "./stateGame.js";
 export default class StateHandler {
     constructor() {
         this.GAME = new StateGame();
@@ -23,4 +23,4 @@ export default class StateHandler {
     }
 }
 StateHandler.instance = null;
-//# sourceMappingURL=StateHandler.js.map
+//# sourceMappingURL=stateHandler.js.map

@@ -1,4 +1,4 @@
-import StateHandler from "./StateHandler.js";
+import StateHandler from "./stateHandler.js";
 export default class State {
     onBegin() { }
     ;
@@ -15,4 +15,4 @@ export default class State {
         return this == StateHandler.getHandler().currentState;
     }
 }
-//# sourceMappingURL=State.js.map
+//# sourceMappingURL=state.js.map

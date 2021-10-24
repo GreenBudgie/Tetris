@@ -1,6 +1,6 @@
-import Processable from "../util/Processable.js";
-import State from "./State.js";
-import StateGame from "./StateGame.js";
+import Processable from "../util/processable.js";
+import State from "./state.js";
+import StateGame from "./stateGame.js";
 
 export default class StateHandler implements Processable {
 

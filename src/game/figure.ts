@@ -1,9 +1,9 @@
-import StateHandler from "../state/StateHandler.js";
-import Processable from "../util/Processable.js";
-import {FigureBlock, MoveResult} from "./Block.js";
-import Colorizable, {Color, getRandomColor} from "./Color.js";
-import InputHandler, {KeyBindings} from "./InputHandler.js";
-import Tetris from "./Tetris.js";
+import StateHandler from "../state/stateHandler.js";
+import Processable from "../util/processable.js";
+import {FigureBlock, MoveResult} from "./block.js";
+import Colorizable, {Color, getRandomColor} from "./color.js";
+import InputHandler, {KeyBindings} from "./inputHandler.js";
+import Tetris from "./tetris.js";
 
 /**
  * A figure is a collection of single blocks

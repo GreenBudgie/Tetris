@@ -1,5 +1,5 @@
-import Field from "../game/Field.js";
-import Level from "./Level.js";
+import Field from "../game/field.js";
+import Level from "./level.js";
 
 export default class Levels {
 

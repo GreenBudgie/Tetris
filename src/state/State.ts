@@ -1,5 +1,5 @@
-import Processable from "../util/Processable.js";
-import StateHandler from "./StateHandler.js";
+import Processable from "../util/processable.js";
+import StateHandler from "./stateHandler.js";
 
 export default abstract class State implements Processable {
 

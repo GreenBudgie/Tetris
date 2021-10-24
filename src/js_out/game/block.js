@@ -1,4 +1,4 @@
-import StateHandler from "../state/StateHandler.js";
+import StateHandler from "../state/stateHandler.js";
 export class AbstractBlock {
     constructor(x, y) {
         this.x = x;
@@ -219,4 +219,4 @@ export var MoveResult;
      */
     MoveResult[MoveResult["BLOCK"] = 2] = "BLOCK";
 })(MoveResult || (MoveResult = {}));
-//# sourceMappingURL=Block.js.map
+//# sourceMappingURL=block.js.map

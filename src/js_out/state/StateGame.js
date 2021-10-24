@@ -1,5 +1,5 @@
-import Levels from "../level/Levels.js";
-import State from "./State.js";
+import Levels from "../level/levels.js";
+import State from "./state.js";
 export default class StateGame extends State {
     constructor() {
         super();
@@ -18,4 +18,4 @@ export default class StateGame extends State {
         this._level.draw(context);
     }
 }
-//# sourceMappingURL=StateGame.js.map
+//# sourceMappingURL=stateGame.js.map

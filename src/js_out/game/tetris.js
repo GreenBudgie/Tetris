@@ -1,6 +1,6 @@
-import InputHandler from "./InputHandler.js";
-import Levels from "../level/Levels.js";
-import StateHandler from "../state/StateHandler.js";
+import InputHandler from "./inputHandler.js";
+import Levels from "../level/levels.js";
+import StateHandler from "../state/stateHandler.js";
 export default class Tetris {
     constructor() {
         this.canvas = document.getElementById("canvas");
@@ -48,4 +48,4 @@ export default class Tetris {
 }
 Tetris.FPS = 60;
 new Tetris();
-//# sourceMappingURL=Tetris.js.map
+//# sourceMappingURL=tetris.js.map

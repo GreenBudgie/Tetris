@@ -1,6 +1,6 @@
-import InputHandler from "./InputHandler.js";
-import Levels from "../level/Levels.js";
-import StateHandler from "../state/StateHandler.js";
+import InputHandler from "./inputHandler.js";
+import Levels from "../level/levels.js";
+import StateHandler from "../state/stateHandler.js";
 
 export default class Tetris {
 
