@@ -1,7 +1,9 @@
 import StateGame from "./stateGame.js";
+import StateMenu from "./stateMenu.js";
 export default class StateHandler {
     constructor() {
         this.GAME = new StateGame();
+        this.MENU = new StateMenu();
     }
     update(delta) {
         this._currentState.update(delta);
