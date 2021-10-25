@@ -6,7 +6,7 @@ export default class StateHandler implements Processable {
 
     public readonly GAME: StateGame = new StateGame();
 
-    private _currentState: State = this.GAME;
+    private _currentState: State;
     private static instance: StateHandler = null;
 
     private constructor() {}

@@ -2,7 +2,6 @@ import StateGame from "./stateGame.js";
 export default class StateHandler {
     constructor() {
         this.GAME = new StateGame();
-        this._currentState = this.GAME;
     }
     update(delta) {
         this._currentState.update(delta);
