@@ -1,4 +1,5 @@
 import {Color} from "../game/color.js";
+import StateHandler from "../state/stateHandler.js";
 import MenuButton, {ButtonShape} from "./menuButton.js";
 
 export default class ButtonEndless extends MenuButton {
@@ -11,8 +12,12 @@ export default class ButtonEndless extends MenuButton {
         return Color.BLUE;
     }
 
+    public override getShapeWidth(): number {
+        return 3;
+    }
+
     public onClick(): void {
-        
+        StateHandler.getHandler().GAME.begin();
     }
 
     public getText(): string {

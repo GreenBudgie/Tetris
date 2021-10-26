@@ -1,4 +1,5 @@
 import { Color } from "../game/color.js";
+import StateHandler from "../state/stateHandler.js";
 import MenuButton from "./menuButton.js";
 export default class ButtonEndless extends MenuButton {
     getTextCenterPosition() {
@@ -7,7 +8,11 @@ export default class ButtonEndless extends MenuButton {
     getColor() {
         return Color.BLUE;
     }
+    getShapeWidth() {
+        return 3;
+    }
     onClick() {
+        StateHandler.getHandler().GAME.begin();
     }
     getText() {
         return "Endless";

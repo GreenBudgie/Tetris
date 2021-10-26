@@ -10,12 +10,8 @@ export default class MenuButton {
     }
     getFigureShiftY() {
         const currentIndex = Menu.getMenu().currentButtonIndex;
-        const indexShift = this.index - currentIndex;
-        if (indexShift > 0)
-            return -indexShift * this.blockSize * 2.75;
-        if (indexShift < 0)
-            return indexShift * this.blockSize;
-        return 0;
+        const indexShift = currentIndex - this.index;
+        return indexShift * this.blockSize * 1.5;
     }
     getFigureStartX() {
         return Tetris.instance.WINDOW_WIDTH / 2 - this.blockSize * this.shapeWidth / 2;
