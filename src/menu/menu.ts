@@ -8,15 +8,20 @@ export default class Menu implements Processable {
 
     private static instance: Menu = null;
     private buttons: MenuButton[] = [
-        new ButtonArcade(),
+        new ButtonArcade(0),
+        new ButtonEndless(1)
     ];
-    private currentButtonIndex = 0;
-    private _currentButton: MenuButton = this.buttons[this.currentButtonIndex];
+    private _currentButtonIndex = 0;
+    private _currentButton: MenuButton = this.buttons[this._currentButtonIndex];
 
     private constructor() {}
 
     public get currentButton(): MenuButton {
         return this._currentButton;
+    }
+
+    public get currentButtonIndex(): number {
+        return this._currentButtonIndex;
     }
 
     public static getMenu(): Menu {
@@ -29,11 +34,11 @@ export default class Menu implements Processable {
             button.update(delta);
         }
         if(InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_BUTTON_UP)) {
-            this.currentButtonIndex = this.currentButtonIndex >= this.buttons.length - 1 ? 0 : this.currentButtonIndex + 1;
+            this._currentButtonIndex = this._currentButtonIndex >= this.buttons.length - 1 ? 0 : this._currentButtonIndex + 1;
             this.updateCurrentButton();
         }
         if(InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_BUTTON_DOWN)) {
-            this.currentButtonIndex = this.currentButtonIndex <= 0 ? this.buttons.length - 1 : this.currentButtonIndex - 1;
+            this._currentButtonIndex = this._currentButtonIndex <= 0 ? this.buttons.length - 1 : this._currentButtonIndex - 1;
             this.updateCurrentButton();
         }
         if(InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_BUTTON_CLICK)) {
@@ -42,7 +47,7 @@ export default class Menu implements Processable {
     }
 
     private updateCurrentButton() {
-        this._currentButton = this.buttons[this.currentButtonIndex];
+        this._currentButton = this.buttons[this._currentButtonIndex];
     }
 
     public draw(context: CanvasRenderingContext2D): void {

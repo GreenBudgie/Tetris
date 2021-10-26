@@ -1,15 +1,34 @@
 import Tetris from "../game/tetris.js";
 import Menu from "./menu.js";
 export default class MenuButton {
-    constructor() {
+    constructor(index) {
         this.blockSize = 100;
         this.shape = this.getShape();
         this.shapeWidth = this.getShapeWidth();
         this.shapeHeight = this.getShapeHeight();
-        this.figureStartX = Tetris.instance.WINDOW_WIDTH / 2 - this.blockSize * this.shapeWidth / 2;
-        this.figureStartY = Tetris.instance.WINDOW_HEIGHT / 2 - this.blockSize * this.shapeHeight / 2;
-        this.textCenterX = this.figureStartX + this.getTextCenterPosition().x * this.blockSize;
-        this.textCenterY = this.figureStartY + this.getTextCenterPosition().y * this.blockSize;
+        this.index = index;
+    }
+    getFigureShiftY() {
+        const currentIndex = Menu.getMenu().currentButtonIndex;
+        const indexShift = this.index - currentIndex;
+        if (indexShift > 0)
+            return -indexShift * this.blockSize * 2.75;
+        if (indexShift < 0)
+            return indexShift * this.blockSize;
+        return 0;
+    }
+    getFigureStartX() {
+        return Tetris.instance.WINDOW_WIDTH / 2 - this.blockSize * this.shapeWidth / 2;
+    }
+    getFigureStartY() {
+        const startY = Tetris.instance.WINDOW_HEIGHT / 2 - this.blockSize * this.shapeHeight / 2;
+        return startY + this.getFigureShiftY();
+    }
+    getTextCenterX() {
+        return this.getFigureStartX() + this.getTextCenterPosition().x * this.blockSize;
+    }
+    getTextCenterY() {
+        return this.getFigureStartY() + this.getTextCenterPosition().y * this.blockSize;
     }
     getShapeWidth() {
         let maxX = 0;
@@ -44,10 +63,10 @@ export default class MenuButton {
         context.textAlign = "center";
         context.textBaseline = "middle";
         context.font = "64px ft_default";
-        context.fillText(this.getText(), this.textCenterX, this.textCenterY);
+        context.fillText(this.getText(), this.getTextCenterX(), this.getTextCenterY());
         context.strokeStyle = "black";
         context.lineWidth = 2;
-        context.strokeText(this.getText(), this.textCenterX, this.textCenterY);
+        context.strokeText(this.getText(), this.getTextCenterX(), this.getTextCenterY());
     }
     drawFigure(context) {
         context.strokeStyle = "black";
@@ -55,8 +74,8 @@ export default class MenuButton {
         context.lineCap = "square";
         context.fillStyle = this.getColor();
         for (const blockPos of this.shape) {
-            const currentStartX = this.figureStartX + blockPos.x * this.blockSize;
-            const currentStartY = this.figureStartY + blockPos.y * this.blockSize;
+            const currentStartX = this.getFigureStartX() + blockPos.x * this.blockSize;
+            const currentStartY = this.getFigureStartY() + blockPos.y * this.blockSize;
             context.beginPath();
             context.moveTo(currentStartX, currentStartY);
             context.lineTo(currentStartX + this.blockSize, currentStartY);
