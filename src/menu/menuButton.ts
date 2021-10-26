@@ -98,11 +98,11 @@ export default abstract class MenuButton implements Colorizable, Processable {
             const currentStartX = this.getFigureStartX() + blockPos.x * this.blockSize;
             const currentStartY = this.getFigureStartY() + blockPos.y * this.blockSize;
             context.beginPath();
-            context.moveTo(currentStartX, currentStartY);
-            context.lineTo(currentStartX + this.blockSize, currentStartY);
-            context.lineTo(currentStartX + this.blockSize, currentStartY + this.blockSize);
-            context.lineTo(currentStartX, currentStartY + this.blockSize);
-            context.lineTo(currentStartX, currentStartY);
+            context.moveTo(currentStartX - 1, currentStartY - 1);
+            context.lineTo(currentStartX + this.blockSize + 1, currentStartY - 1);
+            context.lineTo(currentStartX + this.blockSize + 1, currentStartY + this.blockSize + 1);
+            context.lineTo(currentStartX - 1, currentStartY + this.blockSize + 1);
+            context.lineTo(currentStartX - 1, currentStartY - 1);
             context.fill();
 
             context.beginPath();
