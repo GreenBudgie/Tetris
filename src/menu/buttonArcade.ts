@@ -3,6 +3,10 @@ import MenuButton, {ButtonShape} from "./menuButton.js";
 
 export default class ButtonArcade extends MenuButton {
 
+    public getTextCenterPosition(): {x: number; y: number;} {
+        return {x: 1.5, y: 0.5};
+    }
+
     public override getColor(): Color {
         return Color.RED;
     }

@@ -5,6 +5,10 @@ export default class MenuButton {
         this.shape = this.getShape();
         this.shapeWidth = this.getShapeWidth();
         this.shapeHeight = this.getShapeHeight();
+        this.figureStartX = Tetris.instance.WINDOW_WIDTH / 2 - this.blockSize * this.shapeWidth / 2;
+        this.figureStartY = Tetris.instance.WINDOW_HEIGHT / 2 - this.blockSize * this.shapeHeight / 2;
+        this.textCenterX = this.figureStartX + this.getTextCenterPosition().x * this.blockSize;
+        this.textCenterY = this.figureStartY + this.getTextCenterPosition().y * this.blockSize;
     }
     getShapeWidth() {
         let maxX = 0;
@@ -28,17 +32,27 @@ export default class MenuButton {
     update(delta) {
     }
     draw(context) {
-        const centerX = Tetris.instance.WINDOW_WIDTH / 2;
-        const centerY = Tetris.instance.WINDOW_HEIGHT / 2;
-        const startX = centerX - this.blockSize * this.shapeWidth / 2;
-        const startY = centerY - this.blockSize * this.shapeHeight / 2;
+        this.drawFigure(context);
+        this.drawText(context);
+    }
+    drawText(context) {
+        context.fillStyle = "white";
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+        context.font = "64px ft_default";
+        context.fillText(this.getText(), this.textCenterX, this.textCenterY);
+        context.strokeStyle = "black";
+        context.lineWidth = 2;
+        context.strokeText(this.getText(), this.textCenterX, this.textCenterY);
+    }
+    drawFigure(context) {
         context.strokeStyle = "black";
         context.lineWidth = 4;
         context.lineCap = "square";
         context.fillStyle = this.getColor();
         for (const blockPos of this.shape) {
-            const currentStartX = startX + blockPos.x * this.blockSize;
-            const currentStartY = startY + blockPos.y * this.blockSize;
+            const currentStartX = this.figureStartX + blockPos.x * this.blockSize;
+            const currentStartY = this.figureStartY + blockPos.y * this.blockSize;
             context.beginPath();
             context.moveTo(currentStartX, currentStartY);
             context.lineTo(currentStartX + this.blockSize, currentStartY);

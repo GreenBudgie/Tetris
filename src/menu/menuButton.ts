@@ -9,11 +9,17 @@ export default abstract class MenuButton implements Colorizable, Processable {
     public readonly shapeWidth = this.getShapeWidth(); 
     public readonly shapeHeight = this.getShapeHeight(); 
 
+    protected readonly figureStartX = Tetris.instance.WINDOW_WIDTH / 2 - this.blockSize * this.shapeWidth / 2;
+    protected readonly figureStartY = Tetris.instance.WINDOW_HEIGHT / 2 - this.blockSize * this.shapeHeight / 2;
+    protected readonly textCenterX = this.figureStartX + this.getTextCenterPosition().x * this.blockSize;
+    protected readonly textCenterY = this.figureStartY + this.getTextCenterPosition().y * this.blockSize;
+
     public abstract getColor(): Color;
     public abstract onClick(): void;
     public abstract getText(): string;
     public abstract getIndex(): number;
     public abstract getShape(): ButtonShape;
+    public abstract getTextCenterPosition(): {x: number, y: number};
 
     private getShapeWidth(): number {
         let maxX = 0;
@@ -36,23 +42,34 @@ export default abstract class MenuButton implements Colorizable, Processable {
     }
 
     public update(delta: number): void {
-        
+
     }
 
     public draw(context: CanvasRenderingContext2D): void {
-        const centerX = Tetris.instance.WINDOW_WIDTH / 2;
-        const centerY = Tetris.instance.WINDOW_HEIGHT / 2;
-        const startX = centerX - this.blockSize * this.shapeWidth / 2;
-        const startY = centerY - this.blockSize * this.shapeHeight / 2;
-        
+        this.drawFigure(context);
+        this.drawText(context);
+    }
+
+    private drawText(context: CanvasRenderingContext2D): void {
+        context.fillStyle = "white";
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+        context.font = "64px ft_default";
+        context.fillText(this.getText(), this.textCenterX, this.textCenterY);
+        context.strokeStyle = "black";
+        context.lineWidth = 2;
+        context.strokeText(this.getText(), this.textCenterX, this.textCenterY);
+    }
+
+    private drawFigure(context: CanvasRenderingContext2D): void {
         context.strokeStyle = "black";
         context.lineWidth = 4;
         context.lineCap = "square";
         context.fillStyle = this.getColor();
         
         for(const blockPos of this.shape) {
-            const currentStartX = startX + blockPos.x * this.blockSize;
-            const currentStartY = startY + blockPos.y * this.blockSize;
+            const currentStartX = this.figureStartX + blockPos.x * this.blockSize;
+            const currentStartY = this.figureStartY + blockPos.y * this.blockSize;
             context.beginPath();
             context.moveTo(currentStartX, currentStartY);
             context.lineTo(currentStartX + this.blockSize, currentStartY);
@@ -88,7 +105,6 @@ export default abstract class MenuButton implements Colorizable, Processable {
 
             context.stroke();
         }
-        
     }
 
     private isFree(blockPos: {x: number, y: number}, dx: number, dy: number) {
