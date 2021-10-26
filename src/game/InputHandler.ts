@@ -98,10 +98,14 @@ export class KeyBindings {
 
     private static readonly keyBindings: KeyBinding[] = [];
 
-    public static readonly FIGURE_MOVE_RIGHT: KeyBinding = KeyBindings.register(new KeyBinding("ArrowRight", "KeyD"));
-    public static readonly FIGURE_MOVE_LEFT: KeyBinding = KeyBindings.register(new KeyBinding("ArrowLeft", "KeyA"));
-    public static readonly FIGURE_MOVE_DOWN: KeyBinding = KeyBindings.register(new KeyBinding("ArrowDown", "KeyS"));
-    public static readonly FIGURE_ROTATE: KeyBinding = KeyBindings.register(new KeyBinding("ArrowUp", "KeyW"));
+    public static readonly FIGURE_MOVE_RIGHT = KeyBindings.register(new KeyBinding("ArrowRight", "KeyD"));
+    public static readonly FIGURE_MOVE_LEFT = KeyBindings.register(new KeyBinding("ArrowLeft", "KeyA"));
+    public static readonly FIGURE_MOVE_DOWN = KeyBindings.register(new KeyBinding("ArrowDown", "KeyS"));
+    public static readonly FIGURE_ROTATE = KeyBindings.register(new KeyBinding("ArrowUp", "KeyW"));
+
+    public static readonly MENU_BUTTON_UP = KeyBindings.register(new KeyBinding("ArrowUp", "KeyW"));
+    public static readonly MENU_BUTTON_DOWN = KeyBindings.register(new KeyBinding("ArrowDown", "KeyS"));
+    public static readonly MENU_BUTTON_CLICK = KeyBindings.register(new KeyBinding("Enter", "Space"));
 
     private constructor() {}
 

@@ -1,16 +1,16 @@
 import { Color } from "../game/color.js";
 import MenuButton from "./menuButton.js";
-export default class ButtonArcade extends MenuButton {
+export default class ButtonEndless extends MenuButton {
     getTextCenterPosition() {
         return { x: 1.5, y: 1.5 };
     }
     getColor() {
-        return Color.RED;
+        return Color.BLUE;
     }
     onClick() {
     }
     getText() {
-        return "Arcade";
+        return "Endless";
     }
     getShape() {
         return [
@@ -21,4 +21,4 @@ export default class ButtonArcade extends MenuButton {
         ];
     }
 }
-//# sourceMappingURL=buttonArcade.js.map
+//# sourceMappingURL=buttonEndless.js.map

@@ -1,6 +1,7 @@
 import Colorizable, {Color} from "../game/color.js";
 import Tetris from "../game/tetris.js";
 import Processable from "../util/processable.js";
+import Menu from "./menu.js";
 
 export default abstract class MenuButton implements Colorizable, Processable {
 
@@ -17,7 +18,6 @@ export default abstract class MenuButton implements Colorizable, Processable {
     public abstract getColor(): Color;
     public abstract onClick(): void;
     public abstract getText(): string;
-    public abstract getIndex(): number;
     public abstract getShape(): ButtonShape;
     public abstract getTextCenterPosition(): {x: number, y: number};
 
@@ -35,6 +35,10 @@ export default abstract class MenuButton implements Colorizable, Processable {
             if(blockPos.y > maxY) maxY = blockPos.y;
         }
         return maxY + 1;
+    }
+
+    public isCurrent(): boolean {
+        return Menu.getMenu().currentButton == this;
     }
 
     public click(): void {

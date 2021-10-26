@@ -1,4 +1,5 @@
 import Tetris from "../game/tetris.js";
+import Menu from "./menu.js";
 export default class MenuButton {
     constructor() {
         this.blockSize = 100;
@@ -25,6 +26,9 @@ export default class MenuButton {
                 maxY = blockPos.y;
         }
         return maxY + 1;
+    }
+    isCurrent() {
+        return Menu.getMenu().currentButton == this;
     }
     click() {
         this.onClick();
