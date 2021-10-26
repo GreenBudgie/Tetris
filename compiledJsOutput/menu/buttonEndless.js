@@ -7,6 +7,9 @@ export default class ButtonEndless extends MenuButton {
     getColor() {
         return Color.BLUE;
     }
+    getShapeWidth() {
+        return 3;
+    }
     onClick() {
     }
     getText() {

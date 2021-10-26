@@ -25,12 +25,14 @@ export default class Menu {
         for (const button of this.buttons) {
             button.update(delta);
         }
-        if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_BUTTON_UP)) {
-            this._currentButtonIndex = this._currentButtonIndex >= this.buttons.length - 1 ? 0 : this._currentButtonIndex + 1;
+        if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_BUTTON_DOWN)) {
+            if (this._currentButtonIndex < this.buttons.length - 1)
+                this._currentButtonIndex++;
             this.updateCurrentButton();
         }
-        if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_BUTTON_DOWN)) {
-            this._currentButtonIndex = this._currentButtonIndex <= 0 ? this.buttons.length - 1 : this._currentButtonIndex - 1;
+        if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_BUTTON_UP)) {
+            if (this._currentButtonIndex > 0)
+                this._currentButtonIndex--;
             this.updateCurrentButton();
         }
         if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_BUTTON_CLICK)) {

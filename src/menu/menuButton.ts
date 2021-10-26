@@ -23,10 +23,8 @@ export default abstract class MenuButton implements Colorizable, Processable {
 
     protected getFigureShiftY(): number {
         const currentIndex = Menu.getMenu().currentButtonIndex;
-        const indexShift = this.index - currentIndex;
-        if(indexShift > 0) return -indexShift * this.blockSize * 2.75;
-        if(indexShift < 0) return indexShift * this.blockSize;
-        return 0;
+        const indexShift = currentIndex - this.index;
+        return indexShift * this.blockSize * 1.5;
     }
 
     protected getFigureStartX(): number {
@@ -46,7 +44,7 @@ export default abstract class MenuButton implements Colorizable, Processable {
         return this.getFigureStartY() + this.getTextCenterPosition().y * this.blockSize;
     }
 
-    private getShapeWidth(): number {
+    public getShapeWidth(): number {
         let maxX = 0;
         for(const blockPos of this.shape) {
             if(blockPos.x > maxX) maxX = blockPos.x;
@@ -54,7 +52,7 @@ export default abstract class MenuButton implements Colorizable, Processable {
         return maxX + 1;
     }
 
-    private getShapeHeight(): number {
+    public getShapeHeight(): number {
         let maxY = 0;
         for(const blockPos of this.shape) {
             if(blockPos.y > maxY) maxY = blockPos.y;

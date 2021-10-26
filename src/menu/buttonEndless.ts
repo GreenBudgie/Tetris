@@ -11,6 +11,10 @@ export default class ButtonEndless extends MenuButton {
         return Color.BLUE;
     }
 
+    public override getShapeWidth(): number {
+        return 3;
+    }
+
     public onClick(): void {
         
     }
