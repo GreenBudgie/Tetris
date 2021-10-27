@@ -1,6 +1,7 @@
 import InputHandler from "./inputHandler.js";
 import Levels from "../level/levels.js";
 import StateHandler from "../state/stateHandler.js";
+import EffectHandler from "../effect/effectHandler.js";
 export default class Tetris {
     constructor() {
         this.canvas = document.getElementById("canvas");
@@ -36,6 +37,8 @@ export default class Tetris {
         this.context.clearRect(0, 0, this.WINDOW_WIDTH, this.WINDOW_HEIGHT);
         this.drawFps(Math.round(1 / delta).toString());
         StateHandler.getHandler().currentState.draw(this.context);
+        EffectHandler.getHandler().update(delta);
+        EffectHandler.getHandler().draw(this.context);
         InputHandler.getHandler().clearCurrentFrameBindings();
         requestAnimationFrame((timestamp) => this.gameLoop(timestamp));
     }

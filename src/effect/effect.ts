@@ -1,51 +1,68 @@
-import Tetris from "../game/tetris";
-import Processable from "../util/processable";
+import Tetris from "../game/tetris.js";
+import Processable from "../util/processable.js";
+import EffectHandler from "./effectHandler.js";
 
 /**
  * Effects provide an easy way of handling 
  * animations and transitions of any objects in the game
  */
-export default abstract class Effect implements Processable {
+export default class Effect implements Processable {
     
-    public isEnded: boolean = false;
+    public readonly maxTime: number;
     public time: number;
-    private isPaused: boolean = false;
+
+    private _isActive: boolean = true;
+    private _isPaused: boolean = false;
+    private _progress: number = 0;
+
+    public onEnd: () => void;
 
     public constructor(time: number) {
+        this.maxTime = time;
         this.time = time;
-        this.onBegin();
+        EffectHandler.getHandler().activeEffects.push(this);
+    }
+
+    public get progress(): number {
+        return this._progress;
+    }
+
+    public get isPaused(): boolean {
+        return this._isPaused;
+    }
+
+    public get isActive(): boolean {
+        return this._isActive;
     }
 
     public pause(): void {
-        this.isPaused = true;
+        this._isPaused = true;
     }
 
     public resume(): void {
-        this.isPaused = false;
+        this._isPaused = false;
     }
 
     public interrupt(): void {
         this.end();
-    }   
+    }
 
     private end(): void {
         this.onEnd();
-        this.isEnded = true;
+        this._isActive = false;
     }
 
-    public onBegin(): void {}
-    public onEnd(): void {}
-
     public update(delta: number): void {
-        if(this.isEnded) return;
+        if(!this._isActive) return;
         this.time -= delta * Tetris.FPS;
+        this._progress = 1 - this.time / this.maxTime;
         if(this.time <= 0) {
             this.end();
         }
     }
 
     public draw(context: CanvasRenderingContext2D): void {
-        if(this.isEnded) return;
+        if(!this._isActive) return;
     }
     
 }

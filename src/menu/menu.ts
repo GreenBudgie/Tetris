@@ -1,3 +1,4 @@
+import Effect from "../effect/effect.js";
 import InputHandler, {KeyBinding, KeyBindings} from "../game/inputHandler.js";
 import Processable from "../util/processable.js";
 import ButtonArcade from "./buttonArcade.js";
@@ -14,6 +15,8 @@ export default class Menu implements Processable {
     private _currentButtonIndex = 0;
     private _currentButton: MenuButton = this.buttons[this._currentButtonIndex];
 
+    public buttonMoveEffect: Effect;
+
     private constructor() {}
 
     public get currentButton(): MenuButton {
@@ -29,16 +32,26 @@ export default class Menu implements Processable {
         return Menu.instance;
     }
 
+    private produceButtonMoveEffect(): void {
+        this.buttonMoveEffect = new Effect(20);
+    }
+
     public update(delta: number): void {
         for(const button of this.buttons) {
             button.update(delta);
         }
         if(InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_BUTTON_DOWN)) {
-            if(this._currentButtonIndex < this.buttons.length - 1) this._currentButtonIndex++;
+            if(this._currentButtonIndex < this.buttons.length - 1) {
+                this._currentButtonIndex++;
+                this.produceButtonMoveEffect();
+            }
             this.updateCurrentButton();
         }
         if(InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_BUTTON_UP)) {
-            if(this._currentButtonIndex > 0) this._currentButtonIndex--;
+            if(this._currentButtonIndex > 0) {
+                this._currentButtonIndex--;
+                this.produceButtonMoveEffect();
+            }
             this.updateCurrentButton();
         }
         if(InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_BUTTON_CLICK)) {

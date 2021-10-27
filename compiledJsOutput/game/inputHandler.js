@@ -107,4 +107,4 @@ KeyBindings.FIGURE_ROTATE = KeyBindings.register(new KeyBinding("ArrowUp", "KeyW
 KeyBindings.MENU_BUTTON_UP = KeyBindings.register(new KeyBinding("ArrowUp", "KeyW"));
 KeyBindings.MENU_BUTTON_DOWN = KeyBindings.register(new KeyBinding("ArrowDown", "KeyS"));
 KeyBindings.MENU_BUTTON_CLICK = KeyBindings.register(new KeyBinding("Enter", "Space"));
-//# sourceMappingURL=InputHandler.js.map
+//# sourceMappingURL=inputHandler.js.map

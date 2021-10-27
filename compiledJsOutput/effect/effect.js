@@ -1,40 +1,51 @@
-import Tetris from "../game/tetris";
+import Tetris from "../game/tetris.js";
+import EffectHandler from "./effectHandler.js";
 /**
  * Effects provide an easy way of handling
  * animations and transitions of any objects in the game
  */
 export default class Effect {
     constructor(time) {
-        this.isEnded = false;
-        this.isPaused = false;
+        this._isActive = true;
+        this._isPaused = false;
+        this._progress = 0;
+        this.maxTime = time;
         this.time = time;
-        this.onBegin();
+        EffectHandler.getHandler().activeEffects.push(this);
+    }
+    get progress() {
+        return this._progress;
+    }
+    get isPaused() {
+        return this._isPaused;
+    }
+    get isActive() {
+        return this._isActive;
     }
     pause() {
-        this.isPaused = true;
+        this._isPaused = true;
     }
     resume() {
-        this.isPaused = false;
+        this._isPaused = false;
     }
     interrupt() {
         this.end();
     }
     end() {
         this.onEnd();
-        this.isEnded = true;
+        this._isActive = false;
     }
-    onBegin() { }
-    onEnd() { }
     update(delta) {
-        if (this.isEnded)
+        if (!this._isActive)
             return;
         this.time -= delta * Tetris.FPS;
+        this._progress = 1 - this.time / this.maxTime;
         if (this.time <= 0) {
             this.end();
         }
     }
     draw(context) {
-        if (this.isEnded)
+        if (!this._isActive)
             return;
     }
 }

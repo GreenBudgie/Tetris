@@ -4,9 +4,17 @@ import Effect from "./effect";
 export default class EffectHandler implements Processable {
     
     public activeEffects: Effect[] = [];
+    private static instance: EffectHandler;
+
+    private constructor() {}
+
+    public static getHandler(): EffectHandler {
+        if(EffectHandler.instance == null) EffectHandler.instance = new EffectHandler();
+        return EffectHandler.instance;
+    }
 
     public update(delta: number): void {
-        this.activeEffects = this.activeEffects.filter(effect => !effect.isEnded);
+        this.activeEffects = this.activeEffects.filter(effect => effect.isActive);
         this.activeEffects.forEach(effect => effect.update(delta));
     }
 

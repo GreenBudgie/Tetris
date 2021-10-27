@@ -1,3 +1,4 @@
+import Effect from "../effect/effect.js";
 import InputHandler, { KeyBindings } from "../game/inputHandler.js";
 import ButtonArcade from "./buttonArcade.js";
 import ButtonEndless from "./buttonEndless.js";
@@ -21,18 +22,25 @@ export default class Menu {
             Menu.instance = new Menu();
         return Menu.instance;
     }
+    produceButtonMoveEffect() {
+        this.buttonMoveEffect = new Effect(20);
+    }
     update(delta) {
         for (const button of this.buttons) {
             button.update(delta);
         }
         if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_BUTTON_DOWN)) {
-            if (this._currentButtonIndex < this.buttons.length - 1)
+            if (this._currentButtonIndex < this.buttons.length - 1) {
                 this._currentButtonIndex++;
+                this.produceButtonMoveEffect();
+            }
             this.updateCurrentButton();
         }
         if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_BUTTON_UP)) {
-            if (this._currentButtonIndex > 0)
+            if (this._currentButtonIndex > 0) {
                 this._currentButtonIndex--;
+                this.produceButtonMoveEffect();
+            }
             this.updateCurrentButton();
         }
         if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_BUTTON_CLICK)) {
