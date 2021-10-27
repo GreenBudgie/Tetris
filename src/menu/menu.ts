@@ -3,6 +3,7 @@ import InputHandler, {KeyBinding, KeyBindings} from "../game/inputHandler.js";
 import Processable from "../util/processable.js";
 import ButtonArcade from "./buttonArcade.js";
 import ButtonEndless from "./buttonEndless.js";
+import ButtonMoveEffect from "./buttonMoveEffect.js";
 import MenuButton from "./menuButton.js";
 
 export default class Menu implements Processable {
@@ -11,8 +12,6 @@ export default class Menu implements Processable {
     private buttons: MenuButton[] = [];
     private _currentButtonIndex = 0;
     private _currentButton: MenuButton = this.buttons[this._currentButtonIndex];
-
-    public buttonMoveEffect: Effect;
 
     private constructor() {
         Menu.instance = this;
@@ -35,30 +34,31 @@ export default class Menu implements Processable {
         return Menu.instance;
     }
 
-    private produceButtonMoveEffect(): void {
-        this.buttonMoveEffect = new Effect(20);
+    private moveButtonsDown() {
+        this._currentButtonIndex++;
+        this.buttons.forEach(button => new ButtonMoveEffect(button, "down"));
+    }
+
+    private moveButtonsUp() {
+        this._currentButtonIndex--;
+        this.buttons.forEach(button => new ButtonMoveEffect(button, "up"));
     }
 
     public update(delta: number): void {
         for(const button of this.buttons) {
             button.update(delta);
         }
-        const previousIndex = this._currentButtonIndex;
         if(InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_BUTTON_DOWN)) {
             if(this._currentButtonIndex < this.buttons.length - 1) {
-                this._currentButtonIndex++;
-                this.buttons.forEach(button => button.calculateYShift(previousIndex, this._currentButtonIndex));
-                this.produceButtonMoveEffect();
+                this.moveButtonsDown();
+                this.updateCurrentButton();
             }
-            this.updateCurrentButton();
         }
         if(InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_BUTTON_UP)) {
             if(this._currentButtonIndex > 0) {
-                this._currentButtonIndex--;
-                this.buttons.forEach(button => button.calculateYShift(previousIndex, this._currentButtonIndex));
-                this.produceButtonMoveEffect();
+                this.moveButtonsUp();
+                this.updateCurrentButton();
             }
-            this.updateCurrentButton();
         }
         if(InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_BUTTON_CLICK)) {
             this._currentButton.onClick();

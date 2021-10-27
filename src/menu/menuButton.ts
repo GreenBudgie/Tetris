@@ -11,12 +11,16 @@ export default abstract class MenuButton implements Colorizable, Processable {
     public readonly shapeWidth = this.getShapeWidth(); 
     public readonly shapeHeight = this.getShapeHeight(); 
 
-    private currentShiftY: number;
-    private previousShiftY: number;
+    public readonly x: number = Tetris.instance.WINDOW_WIDTH / 2 - this.blockSize * this.shapeWidth / 2;
+    public readonly textCenterX: number = this.x + this.getTextCenterPosition().x * this.blockSize;
+    public readonly startY: number = Tetris.instance.WINDOW_HEIGHT / 2 - this.blockSize * this.shapeHeight / 2;
+
+    private _y: number;
+    private textCenterY: number; 
 
     public constructor(index: number) {
         this.index = index;
-        this.calculateYShift(Menu.getMenu().currentButtonIndex, Menu.getMenu().currentButtonIndex);
+        this.y = this.getYForIndex(0);
     }
 
     public abstract getColor(): Color;
@@ -25,40 +29,18 @@ export default abstract class MenuButton implements Colorizable, Processable {
     public abstract getShape(): ButtonShape;
     public abstract getTextCenterPosition(): {x: number, y: number};
 
-    public calculateYShift(previousIndex: number, currentIndex: number) {
-        this.previousShiftY = this.getFigureShiftY(previousIndex);
-        this.currentShiftY = this.getFigureShiftY(currentIndex);
+    public get y(): number {
+        return this._y;
     }
 
-    protected getFigureShiftY(forIndex: number): number {
-        const currentIndex = forIndex;
-        const indexShift = currentIndex - this.index;
+    public set y(y: number) {
+        this._y = this.startY + y;
+        this.textCenterY = this.y + this.getTextCenterPosition().y * this.blockSize;
+    }
+
+    public getYForIndex(index: number): number {
+        const indexShift = index - this.index;
         return indexShift * this.blockSize * 1.5;
-    }
-
-    protected getFigureStartX(): number {
-        return Tetris.instance.WINDOW_WIDTH / 2 - this.blockSize * this.shapeWidth / 2;
-    }
-
-    protected getFigureStartY(): number {
-        const startY = Tetris.instance.WINDOW_HEIGHT / 2 - this.blockSize * this.shapeHeight / 2;
-
-        let effectProgress = 1;
-        const effect = Menu.getMenu().buttonMoveEffect;
-        if(effect?.isActive) {
-            effectProgress = effect.progress;
-        }
-
-        const shiftedY = startY + (this.currentShiftY - this.previousShiftY) * effectProgress + this.previousShiftY;
-        return shiftedY;
-    }
-
-    protected getTextCenterX(): number {
-        return this.getFigureStartX() + this.getTextCenterPosition().x * this.blockSize;
-    }
-
-    protected getTextCenterY(): number {
-        return this.getFigureStartY() + this.getTextCenterPosition().y * this.blockSize;
     }
 
     public getShapeWidth(): number {
@@ -99,10 +81,10 @@ export default abstract class MenuButton implements Colorizable, Processable {
         context.textAlign = "center";
         context.textBaseline = "middle";
         context.font = "64px ft_default";
-        context.fillText(this.getText(), this.getTextCenterX(), this.getTextCenterY());
+        context.fillText(this.getText(), this.textCenterX, this.textCenterY);
         context.strokeStyle = "black";
         context.lineWidth = 2;
-        context.strokeText(this.getText(), this.getTextCenterX(), this.getTextCenterY());
+        context.strokeText(this.getText(), this.textCenterX, this.textCenterY);
     }
 
     private drawFigure(context: CanvasRenderingContext2D): void {
@@ -112,8 +94,8 @@ export default abstract class MenuButton implements Colorizable, Processable {
         context.fillStyle = this.getColor();
         
         for(const blockPos of this.shape) {
-            const currentStartX = this.getFigureStartX() + blockPos.x * this.blockSize;
-            const currentStartY = this.getFigureStartY() + blockPos.y * this.blockSize;
+            const currentStartX = this.x + blockPos.x * this.blockSize;
+            const currentStartY = this.y + blockPos.y * this.blockSize;
             context.beginPath();
             context.moveTo(currentStartX - 1, currentStartY - 1);
             context.lineTo(currentStartX + this.blockSize + 1, currentStartY - 1);

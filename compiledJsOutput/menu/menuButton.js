@@ -6,36 +6,22 @@ export default class MenuButton {
         this.shape = this.getShape();
         this.shapeWidth = this.getShapeWidth();
         this.shapeHeight = this.getShapeHeight();
+        this.x = Tetris.instance.WINDOW_WIDTH / 2 - this.blockSize * this.shapeWidth / 2;
+        this.textCenterX = this.x + this.getTextCenterPosition().x * this.blockSize;
+        this.startY = Tetris.instance.WINDOW_HEIGHT / 2 - this.blockSize * this.shapeHeight / 2;
         this.index = index;
-        this.calculateYShift(Menu.getMenu().currentButtonIndex, Menu.getMenu().currentButtonIndex);
+        this.y = this.getYForIndex(0);
     }
-    calculateYShift(previousIndex, currentIndex) {
-        this.previousShiftY = this.getFigureShiftY(previousIndex);
-        this.currentShiftY = this.getFigureShiftY(currentIndex);
+    get y() {
+        return this._y;
     }
-    getFigureShiftY(forIndex) {
-        const currentIndex = forIndex;
-        const indexShift = currentIndex - this.index;
+    set y(y) {
+        this._y = this.startY + y;
+        this.textCenterY = this.y + this.getTextCenterPosition().y * this.blockSize;
+    }
+    getYForIndex(index) {
+        const indexShift = index - this.index;
         return indexShift * this.blockSize * 1.5;
-    }
-    getFigureStartX() {
-        return Tetris.instance.WINDOW_WIDTH / 2 - this.blockSize * this.shapeWidth / 2;
-    }
-    getFigureStartY() {
-        const startY = Tetris.instance.WINDOW_HEIGHT / 2 - this.blockSize * this.shapeHeight / 2;
-        let effectProgress = 1;
-        const effect = Menu.getMenu().buttonMoveEffect;
-        if (effect?.isActive) {
-            effectProgress = effect.progress;
-        }
-        const shiftedY = startY + (this.currentShiftY - this.previousShiftY) * effectProgress + this.previousShiftY;
-        return shiftedY;
-    }
-    getTextCenterX() {
-        return this.getFigureStartX() + this.getTextCenterPosition().x * this.blockSize;
-    }
-    getTextCenterY() {
-        return this.getFigureStartY() + this.getTextCenterPosition().y * this.blockSize;
     }
     getShapeWidth() {
         let maxX = 0;
@@ -70,10 +56,10 @@ export default class MenuButton {
         context.textAlign = "center";
         context.textBaseline = "middle";
         context.font = "64px ft_default";
-        context.fillText(this.getText(), this.getTextCenterX(), this.getTextCenterY());
+        context.fillText(this.getText(), this.textCenterX, this.textCenterY);
         context.strokeStyle = "black";
         context.lineWidth = 2;
-        context.strokeText(this.getText(), this.getTextCenterX(), this.getTextCenterY());
+        context.strokeText(this.getText(), this.textCenterX, this.textCenterY);
     }
     drawFigure(context) {
         context.strokeStyle = "black";
@@ -81,8 +67,8 @@ export default class MenuButton {
         context.lineCap = "square";
         context.fillStyle = this.getColor();
         for (const blockPos of this.shape) {
-            const currentStartX = this.getFigureStartX() + blockPos.x * this.blockSize;
-            const currentStartY = this.getFigureStartY() + blockPos.y * this.blockSize;
+            const currentStartX = this.x + blockPos.x * this.blockSize;
+            const currentStartY = this.y + blockPos.y * this.blockSize;
             context.beginPath();
             context.moveTo(currentStartX - 1, currentStartY - 1);
             context.lineTo(currentStartX + this.blockSize + 1, currentStartY - 1);

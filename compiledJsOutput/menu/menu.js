@@ -1,7 +1,7 @@
-import Effect from "../effect/effect.js";
 import InputHandler, { KeyBindings } from "../game/inputHandler.js";
 import ButtonArcade from "./buttonArcade.js";
 import ButtonEndless from "./buttonEndless.js";
+import ButtonMoveEffect from "./buttonMoveEffect.js";
 export default class Menu {
     constructor() {
         this.buttons = [];
@@ -24,29 +24,29 @@ export default class Menu {
             new Menu();
         return Menu.instance;
     }
-    produceButtonMoveEffect() {
-        this.buttonMoveEffect = new Effect(20);
+    moveButtonsDown() {
+        this._currentButtonIndex++;
+        this.buttons.forEach(button => new ButtonMoveEffect(button, "down"));
+    }
+    moveButtonsUp() {
+        this._currentButtonIndex--;
+        this.buttons.forEach(button => new ButtonMoveEffect(button, "up"));
     }
     update(delta) {
         for (const button of this.buttons) {
             button.update(delta);
         }
-        const previousIndex = this._currentButtonIndex;
         if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_BUTTON_DOWN)) {
             if (this._currentButtonIndex < this.buttons.length - 1) {
-                this._currentButtonIndex++;
-                this.buttons.forEach(button => button.calculateYShift(previousIndex, this._currentButtonIndex));
-                this.produceButtonMoveEffect();
+                this.moveButtonsDown();
+                this.updateCurrentButton();
             }
-            this.updateCurrentButton();
         }
         if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_BUTTON_UP)) {
             if (this._currentButtonIndex > 0) {
-                this._currentButtonIndex--;
-                this.buttons.forEach(button => button.calculateYShift(previousIndex, this._currentButtonIndex));
-                this.produceButtonMoveEffect();
+                this.moveButtonsUp();
+                this.updateCurrentButton();
             }
-            this.updateCurrentButton();
         }
         if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_BUTTON_CLICK)) {
             this._currentButton.onClick();
