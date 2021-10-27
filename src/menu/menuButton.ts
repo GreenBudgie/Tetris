@@ -11,8 +11,12 @@ export default abstract class MenuButton implements Colorizable, Processable {
     public readonly shapeWidth = this.getShapeWidth(); 
     public readonly shapeHeight = this.getShapeHeight(); 
 
+    private currentShiftY: number;
+    private previousShiftY: number;
+
     public constructor(index: number) {
         this.index = index;
+        this.calculateYShift(Menu.getMenu().currentButtonIndex, Menu.getMenu().currentButtonIndex);
     }
 
     public abstract getColor(): Color;
@@ -21,8 +25,13 @@ export default abstract class MenuButton implements Colorizable, Processable {
     public abstract getShape(): ButtonShape;
     public abstract getTextCenterPosition(): {x: number, y: number};
 
-    protected getFigureShiftY(): number {
-        const currentIndex = Menu.getMenu().currentButtonIndex;
+    public calculateYShift(previousIndex: number, currentIndex: number) {
+        this.previousShiftY = this.getFigureShiftY(previousIndex);
+        this.currentShiftY = this.getFigureShiftY(currentIndex);
+    }
+
+    protected getFigureShiftY(forIndex: number): number {
+        const currentIndex = forIndex;
         const indexShift = currentIndex - this.index;
         return indexShift * this.blockSize * 1.5;
     }
@@ -33,7 +42,15 @@ export default abstract class MenuButton implements Colorizable, Processable {
 
     protected getFigureStartY(): number {
         const startY = Tetris.instance.WINDOW_HEIGHT / 2 - this.blockSize * this.shapeHeight / 2;
-        return startY + this.getFigureShiftY();
+
+        let effectProgress = 1;
+        const effect = Menu.getMenu().buttonMoveEffect;
+        if(effect?.isActive) {
+            effectProgress = effect.progress;
+        }
+
+        const shiftedY = startY + (this.currentShiftY - this.previousShiftY) * effectProgress + this.previousShiftY;
+        return shiftedY;
     }
 
     protected getTextCenterX(): number {

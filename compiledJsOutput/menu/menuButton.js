@@ -7,9 +7,14 @@ export default class MenuButton {
         this.shapeWidth = this.getShapeWidth();
         this.shapeHeight = this.getShapeHeight();
         this.index = index;
+        this.calculateYShift(Menu.getMenu().currentButtonIndex, Menu.getMenu().currentButtonIndex);
     }
-    getFigureShiftY() {
-        const currentIndex = Menu.getMenu().currentButtonIndex;
+    calculateYShift(previousIndex, currentIndex) {
+        this.previousShiftY = this.getFigureShiftY(previousIndex);
+        this.currentShiftY = this.getFigureShiftY(currentIndex);
+    }
+    getFigureShiftY(forIndex) {
+        const currentIndex = forIndex;
         const indexShift = currentIndex - this.index;
         return indexShift * this.blockSize * 1.5;
     }
@@ -18,7 +23,13 @@ export default class MenuButton {
     }
     getFigureStartY() {
         const startY = Tetris.instance.WINDOW_HEIGHT / 2 - this.blockSize * this.shapeHeight / 2;
-        return startY + this.getFigureShiftY();
+        let effectProgress = 1;
+        const effect = Menu.getMenu().buttonMoveEffect;
+        if (effect?.isActive) {
+            effectProgress = effect.progress;
+        }
+        const shiftedY = startY + (this.currentShiftY - this.previousShiftY) * effectProgress + this.previousShiftY;
+        return shiftedY;
     }
     getTextCenterX() {
         return this.getFigureStartX() + this.getTextCenterPosition().x * this.blockSize;

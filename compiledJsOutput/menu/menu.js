@@ -4,12 +4,14 @@ import ButtonArcade from "./buttonArcade.js";
 import ButtonEndless from "./buttonEndless.js";
 export default class Menu {
     constructor() {
+        this.buttons = [];
+        this._currentButtonIndex = 0;
+        this._currentButton = this.buttons[this._currentButtonIndex];
+        Menu.instance = this;
         this.buttons = [
             new ButtonArcade(0),
             new ButtonEndless(1)
         ];
-        this._currentButtonIndex = 0;
-        this._currentButton = this.buttons[this._currentButtonIndex];
     }
     get currentButton() {
         return this._currentButton;
@@ -19,7 +21,7 @@ export default class Menu {
     }
     static getMenu() {
         if (Menu.instance == null)
-            Menu.instance = new Menu();
+            new Menu();
         return Menu.instance;
     }
     produceButtonMoveEffect() {
@@ -29,9 +31,11 @@ export default class Menu {
         for (const button of this.buttons) {
             button.update(delta);
         }
+        const previousIndex = this._currentButtonIndex;
         if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_BUTTON_DOWN)) {
             if (this._currentButtonIndex < this.buttons.length - 1) {
                 this._currentButtonIndex++;
+                this.buttons.forEach(button => button.calculateYShift(previousIndex, this._currentButtonIndex));
                 this.produceButtonMoveEffect();
             }
             this.updateCurrentButton();
@@ -39,6 +43,7 @@ export default class Menu {
         if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_BUTTON_UP)) {
             if (this._currentButtonIndex > 0) {
                 this._currentButtonIndex--;
+                this.buttons.forEach(button => button.calculateYShift(previousIndex, this._currentButtonIndex));
                 this.produceButtonMoveEffect();
             }
             this.updateCurrentButton();

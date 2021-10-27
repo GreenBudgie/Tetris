@@ -9,6 +9,7 @@ export default class Effect {
         this._isActive = true;
         this._isPaused = false;
         this._progress = 0;
+        this.onEnd = () => { };
         this.maxTime = time;
         this.time = time;
         EffectHandler.getHandler().activeEffects.push(this);

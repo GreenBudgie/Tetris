@@ -15,7 +15,7 @@ export default class Effect implements Processable {
     private _isPaused: boolean = false;
     private _progress: number = 0;
 
-    public onEnd: () => void;
+    public onEnd: () => void = () => {};
 
     public constructor(time: number) {
         this.maxTime = time;

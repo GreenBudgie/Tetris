@@ -8,16 +8,19 @@ import MenuButton from "./menuButton.js";
 export default class Menu implements Processable {
 
     private static instance: Menu = null;
-    private buttons: MenuButton[] = [
-        new ButtonArcade(0),
-        new ButtonEndless(1)
-    ];
+    private buttons: MenuButton[] = [];
     private _currentButtonIndex = 0;
     private _currentButton: MenuButton = this.buttons[this._currentButtonIndex];
 
     public buttonMoveEffect: Effect;
 
-    private constructor() {}
+    private constructor() {
+        Menu.instance = this;
+        this.buttons = [
+            new ButtonArcade(0),
+            new ButtonEndless(1)
+        ];
+    }
 
     public get currentButton(): MenuButton {
         return this._currentButton;
@@ -28,7 +31,7 @@ export default class Menu implements Processable {
     }
 
     public static getMenu(): Menu {
-        if(Menu.instance == null) Menu.instance = new Menu();
+        if(Menu.instance == null) new Menu();
         return Menu.instance;
     }
 
@@ -40,9 +43,11 @@ export default class Menu implements Processable {
         for(const button of this.buttons) {
             button.update(delta);
         }
+        const previousIndex = this._currentButtonIndex;
         if(InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_BUTTON_DOWN)) {
             if(this._currentButtonIndex < this.buttons.length - 1) {
                 this._currentButtonIndex++;
+                this.buttons.forEach(button => button.calculateYShift(previousIndex, this._currentButtonIndex));
                 this.produceButtonMoveEffect();
             }
             this.updateCurrentButton();
@@ -50,6 +55,7 @@ export default class Menu implements Processable {
         if(InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_BUTTON_UP)) {
             if(this._currentButtonIndex > 0) {
                 this._currentButtonIndex--;
+                this.buttons.forEach(button => button.calculateYShift(previousIndex, this._currentButtonIndex));
                 this.produceButtonMoveEffect();
             }
             this.updateCurrentButton();
