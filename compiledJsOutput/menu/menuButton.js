@@ -2,7 +2,7 @@ import Tetris from "../game/tetris.js";
 import Menu from "./menu.js";
 export default class MenuButton {
     constructor(index) {
-        this.blockSize = 100;
+        this.blockSize = 85;
         this.shape = this.getShape();
         this.shapeWidth = this.getShapeWidth();
         this.shapeHeight = this.getShapeHeight();
@@ -21,7 +21,10 @@ export default class MenuButton {
     }
     getYForIndex(index) {
         const indexShift = index - this.index;
-        return indexShift * this.blockSize * 1.5;
+        let shiftedY = indexShift * this.blockSize * 1.5;
+        if (indexShift < 0)
+            return shiftedY + indexShift * this.blockSize * 1.5;
+        return shiftedY;
     }
     getShapeWidth() {
         let maxX = 0;

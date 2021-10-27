@@ -2,6 +2,7 @@ import Effect from "../effect/effect.js";
 import InputHandler, {KeyBinding, KeyBindings} from "../game/inputHandler.js";
 import Processable from "../util/processable.js";
 import ButtonArcade from "./buttonArcade.js";
+import ButtonChallenge from "./buttonChallenge.js";
 import ButtonEndless from "./buttonEndless.js";
 import ButtonMoveEffect from "./buttonMoveEffect.js";
 import MenuButton from "./menuButton.js";
@@ -17,7 +18,8 @@ export default class Menu implements Processable {
         Menu.instance = this;
         this.buttons = [
             new ButtonArcade(0),
-            new ButtonEndless(1)
+            new ButtonEndless(1),
+            new ButtonChallenge(2)
         ];
     }
 

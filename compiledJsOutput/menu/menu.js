@@ -1,5 +1,6 @@
 import InputHandler, { KeyBindings } from "../game/inputHandler.js";
 import ButtonArcade from "./buttonArcade.js";
+import ButtonChallenge from "./buttonChallenge.js";
 import ButtonEndless from "./buttonEndless.js";
 import ButtonMoveEffect from "./buttonMoveEffect.js";
 export default class Menu {
@@ -10,7 +11,8 @@ export default class Menu {
         Menu.instance = this;
         this.buttons = [
             new ButtonArcade(0),
-            new ButtonEndless(1)
+            new ButtonEndless(1),
+            new ButtonChallenge(2)
         ];
     }
     get currentButton() {

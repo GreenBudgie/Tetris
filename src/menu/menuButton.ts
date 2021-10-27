@@ -6,7 +6,7 @@ import Menu from "./menu.js";
 export default abstract class MenuButton implements Colorizable, Processable {
 
     public readonly index: number;
-    public readonly blockSize = 100;
+    public readonly blockSize = 85;
     public readonly shape = this.getShape();
     public readonly shapeWidth = this.getShapeWidth(); 
     public readonly shapeHeight = this.getShapeHeight(); 
@@ -40,7 +40,9 @@ export default abstract class MenuButton implements Colorizable, Processable {
 
     public getYForIndex(index: number): number {
         const indexShift = index - this.index;
-        return indexShift * this.blockSize * 1.5;
+        let shiftedY = indexShift * this.blockSize * 1.5;
+        if(indexShift < 0) return shiftedY + indexShift * this.blockSize * 1.5;
+        return shiftedY;
     }
 
     public getShapeWidth(): number {
