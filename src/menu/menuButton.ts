@@ -20,7 +20,7 @@ export default abstract class MenuButton implements Colorizable, Processable {
 
     public constructor(index: number) {
         this.index = index;
-        this.y = this.getYForIndex(0);
+        this.y = this.getYForIndex(Menu.getMenu().currentButtonIndex);
     }
 
     public abstract getColor(): Color;
@@ -28,6 +28,7 @@ export default abstract class MenuButton implements Colorizable, Processable {
     public abstract getText(): string;
     public abstract getShape(): ButtonShape;
     public abstract getTextCenterPosition(): {x: number, y: number};
+    public abstract getTextSize(): number;
 
     public get y(): number {
         return this._y;
@@ -82,7 +83,7 @@ export default abstract class MenuButton implements Colorizable, Processable {
         context.fillStyle = "white";
         context.textAlign = "center";
         context.textBaseline = "middle";
-        context.font = "64px ft_default";
+        context.font = this.getTextSize() + "px ft_default";
         context.fillText(this.getText(), this.textCenterX, this.textCenterY);
         context.strokeStyle = "black";
         context.lineWidth = 2;

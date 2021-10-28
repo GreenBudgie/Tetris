@@ -16,6 +16,10 @@ export default class ButtonChallenge extends MenuButton {
 
     }
 
+    public getTextSize(): number {
+        return 58;
+    }
+
     public getText(): string {
         return "Challenge";
     }

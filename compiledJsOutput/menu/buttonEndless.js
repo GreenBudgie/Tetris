@@ -11,6 +11,9 @@ export default class ButtonEndless extends MenuButton {
     getShapeWidth() {
         return 3;
     }
+    getTextSize() {
+        return 48;
+    }
     onClick() {
         StateHandler.getHandler().GAME.begin();
     }

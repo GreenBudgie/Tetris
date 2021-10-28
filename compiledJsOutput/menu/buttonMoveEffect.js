@@ -1,18 +1,19 @@
 import Effect from "../effect/effect.js";
+import { easeInQuad, easeOutQuad } from "../effect/effectEasings.js";
 import Menu from "./menu.js";
-import * as Easing from "../../node_modules/js-easing-functions/dist/index.js";
 export default class ButtonMoveEffect extends Effect {
     constructor(button, direction) {
-        super(20);
+        const delay = 0;
+        super(100);
         this.button = button;
         let prevIndex;
         if (direction == "up") {
             prevIndex = 1;
-            this.easingFunction = Easing.easeOutQuint;
+            this.easingFunction = easeOutQuad;
         }
         else {
             prevIndex = -1;
-            this.easingFunction = Easing.easeInQuint;
+            this.easingFunction = easeInQuad;
         }
         this.startY = button.getYForIndex(Menu.getMenu().currentButtonIndex + prevIndex);
         this.endY = button.getYForIndex(Menu.getMenu().currentButtonIndex);

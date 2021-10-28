@@ -9,6 +9,9 @@ export default class ButtonChallenge extends MenuButton {
     }
     onClick() {
     }
+    getTextSize() {
+        return 58;
+    }
     getText() {
         return "Challenge";
     }

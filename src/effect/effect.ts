@@ -1,5 +1,6 @@
 import Tetris from "../game/tetris.js";
 import Processable from "../util/processable.js";
+import {EasingFunction} from "./effectEasings.js";
 import EffectHandler from "./effectHandler.js";
 
 /**
@@ -55,10 +56,7 @@ export default class Effect implements Processable {
      * @param easingFunction A function to apply
      * @returns Eased and clamped progress
      */
-    public progressEasedClamped(
-        min: number, 
-        max: number, 
-        easingFunction: (elapsed: number, initialValue: number, amountOfChange: number, duration: number) => number): number {
+    public progressEasedClamped(min: number, max: number, easingFunction: EasingFunction): number {
         return easingFunction(this.progress, min, max - min, 1);
     }
 
@@ -67,7 +65,7 @@ export default class Effect implements Processable {
      * @param easingFunction A function to apply
      * @returns Eased progress
      */
-    public progressEased(easingFunction: (elapsed: number, initialValue: number, amountOfChange: number, duration: number) => number): number {
+    public progressEased(easingFunction: EasingFunction): number {
         return easingFunction(this.progress, 0, 1, 1);
     }
 

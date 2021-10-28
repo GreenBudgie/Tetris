@@ -12,6 +12,9 @@ export default class ButtonArcade extends MenuButton {
     getText() {
         return "Arcade";
     }
+    getTextSize() {
+        return 64;
+    }
     getShape() {
         return [
             { x: 0, y: 1 },

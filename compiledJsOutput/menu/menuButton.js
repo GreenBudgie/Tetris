@@ -10,7 +10,7 @@ export default class MenuButton {
         this.textCenterX = this.x + this.getTextCenterPosition().x * this.blockSize;
         this.startY = Tetris.instance.WINDOW_HEIGHT / 2 - this.blockSize * this.shapeHeight / 2;
         this.index = index;
-        this.y = this.getYForIndex(0);
+        this.y = this.getYForIndex(Menu.getMenu().currentButtonIndex);
     }
     get y() {
         return this._y;
@@ -58,7 +58,7 @@ export default class MenuButton {
         context.fillStyle = "white";
         context.textAlign = "center";
         context.textBaseline = "middle";
-        context.font = "64px ft_default";
+        context.font = this.getTextSize() + "px ft_default";
         context.fillText(this.getText(), this.textCenterX, this.textCenterY);
         context.strokeStyle = "black";
         context.lineWidth = 2;
