@@ -1,6 +1,7 @@
 import Effect from "../effect/effect.js";
 import Menu from "./menu.js";
 import MenuButton from "./menuButton.js";
+import * as Easing from "../../node_modules/js-easing-functions/dist/index.js";
 
 export default class ButtonMoveEffect extends Effect {
 
@@ -8,11 +9,19 @@ export default class ButtonMoveEffect extends Effect {
     public startY: number;
     public endY: number;
 
+    private easingFunction: (elapsed: number, initialValue: number, amountOfChange: number, duration: number) => number;
+
     public constructor(button: MenuButton, direction: "up" | "down") {
         super(20);
         this.button = button;
         let prevIndex: number;
-        if(direction == "up") prevIndex = 1; else prevIndex = -1;
+        if(direction == "up") {
+            prevIndex = 1;
+            this.easingFunction = Easing.easeOutQuint;
+         } else {
+            prevIndex = -1;
+            this.easingFunction = Easing.easeInQuint;
+         }
         this.startY = button.getYForIndex(Menu.getMenu().currentButtonIndex + prevIndex);
         this.endY = button.getYForIndex(Menu.getMenu().currentButtonIndex);
         this.onEnd = () => this.button.y = this.endY;
@@ -20,7 +29,7 @@ export default class ButtonMoveEffect extends Effect {
 
     public override update(delta: number) {
         super.update(delta);
-        this.button.y = (this.endY - this.startY) * this.progress + this.startY;
+        this.button.y = (this.endY - this.startY) * this.progressEased(this.easingFunction) + this.startY;
     }
 
 }
