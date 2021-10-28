@@ -92,7 +92,7 @@ export default abstract class MenuButton implements Colorizable, Processable {
 
     private drawFigure(context: CanvasRenderingContext2D): void {
         context.strokeStyle = "black";
-        context.lineWidth = 4;
+        context.lineWidth = 4
         context.lineCap = "square";
         context.fillStyle = this.getColor();
         

@@ -17,7 +17,7 @@ export default class Effect implements Processable {
     private _pauseDelay: number = 0;
     private _progress: number = 0;
 
-    public onEnd: () => void = () => {};
+    public callback: () => void = () => {};
 
     public constructor(time: number, initialDelay?: number) {
         this.maxTime = time;
@@ -37,6 +37,9 @@ export default class Effect implements Processable {
     public get isActive(): boolean {
         return this._isActive;
     }
+
+    public onEnd(): void {}
+    public onUpdate(delta: number): void {}
 
     /**
      * Returns the progress of the effect clamped between specified values
@@ -83,6 +86,7 @@ export default class Effect implements Processable {
     }
 
     private end(): void {
+        this.callback();
         this.onEnd();
         this._isActive = false;
     }
@@ -99,6 +103,8 @@ export default class Effect implements Processable {
             this._progress = 1 - this.time / this.maxTime;
             if(this.time <= 0) {
                 this.end();
+            } else {
+                this.onUpdate(delta);
             }
         }
     }

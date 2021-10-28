@@ -7,13 +7,13 @@ export default class Menu {
     constructor() {
         this.buttons = [];
         this._currentButtonIndex = 0;
-        this._currentButton = this.buttons[this._currentButtonIndex];
         Menu.instance = this;
         this.buttons = [
             new ButtonArcade(0),
             new ButtonEndless(1),
             new ButtonChallenge(2)
         ];
+        this._currentButton = this.buttons[this._currentButtonIndex];
     }
     get currentButton() {
         return this._currentButton;

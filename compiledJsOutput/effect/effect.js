@@ -10,7 +10,7 @@ export default class Effect {
         this._isPaused = false;
         this._pauseDelay = 0;
         this._progress = 0;
-        this.onEnd = () => { };
+        this.callback = () => { };
         this.maxTime = time;
         this.time = time;
         if (initialDelay != null && initialDelay != undefined)
@@ -26,6 +26,8 @@ export default class Effect {
     get isActive() {
         return this._isActive;
     }
+    onEnd() { }
+    onUpdate(delta) { }
     /**
      * Returns the progress of the effect clamped between specified values
      * @example If the real progress is 0.5, min = 1, max = 3, this will return 2
@@ -68,6 +70,7 @@ export default class Effect {
         this.end();
     }
     end() {
+        this.callback();
         this.onEnd();
         this._isActive = false;
     }
@@ -86,6 +89,9 @@ export default class Effect {
             this._progress = 1 - this.time / this.maxTime;
             if (this.time <= 0) {
                 this.end();
+            }
+            else {
+                this.onUpdate(delta);
             }
         }
     }

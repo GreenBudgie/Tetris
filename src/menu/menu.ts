@@ -12,7 +12,7 @@ export default class Menu implements Processable {
     private static instance: Menu = null;
     private buttons: MenuButton[] = [];
     private _currentButtonIndex = 0;
-    private _currentButton: MenuButton = this.buttons[this._currentButtonIndex];
+    private _currentButton: MenuButton;
 
     private constructor() {
         Menu.instance = this;
@@ -21,6 +21,7 @@ export default class Menu implements Processable {
             new ButtonEndless(1),
             new ButtonChallenge(2)
         ];
+        this._currentButton = this.buttons[this._currentButtonIndex];
     }
 
     public get currentButton(): MenuButton {
