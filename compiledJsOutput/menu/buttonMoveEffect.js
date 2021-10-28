@@ -3,7 +3,7 @@ import { easeInQuad, easeOutQuad } from "../effect/effectEasings.js";
 import Menu from "./menu.js";
 export default class ButtonMoveEffect extends Effect {
     constructor(button, direction) {
-        super(20);
+        super(18);
         this.button = button;
         let prevIndex;
         if (direction == "up") {
@@ -19,6 +19,7 @@ export default class ButtonMoveEffect extends Effect {
     }
     onEnd() {
         this.button.y = this.endY;
+        Menu.getMenu().isMoving = false;
     }
     onUpdate(delta) {
         this.button.y = (this.endY - this.startY) * this.progressEased(this.easingFunction) + this.startY;

@@ -12,7 +12,7 @@ export default class ButtonMoveEffect extends Effect {
     private easingFunction: (elapsed: number, initialValue: number, amountOfChange: number, duration: number) => number;
 
     public constructor(button: MenuButton, direction: "up" | "down") {
-        super(20);
+        super(18);
         this.button = button;
         let prevIndex: number;
         if(direction == "up") {
@@ -28,6 +28,7 @@ export default class ButtonMoveEffect extends Effect {
 
     public override onEnd(): void {
         this.button.y = this.endY;
+        Menu.getMenu().isMoving = false;
     }
 
     public override onUpdate(delta: number) {

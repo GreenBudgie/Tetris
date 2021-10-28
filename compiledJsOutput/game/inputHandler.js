@@ -37,7 +37,7 @@ export default class InputHandler {
         for (const binding of KeyBindings.getBindingsByKeyCode(event.code)) {
             this.justReleasedBindings.push(binding);
         }
-        this.activeBindings.filter(binding => !binding.isMapped(event.code));
+        this.activeBindings = this.activeBindings.filter(binding => !binding.isMapped(event.code));
     }
     /**
      * Checks whether one of the keys that are related to the current binding have been just pressed
