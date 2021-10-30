@@ -1,6 +1,7 @@
+import Colorizable from "../color/colorizable.js";
+import RGBColor from "../color/rgbColor.js";
 import StateHandler from "../state/stateHandler.js";
 import Processable from "../util/processable.js";
-import Colorizable, {Color} from "./color.js";
 import Figure from "./Figure.js";
 
 export abstract class AbstractBlock implements Colorizable, Processable {
@@ -14,7 +15,7 @@ export abstract class AbstractBlock implements Colorizable, Processable {
 
 	public update(delta: number): void {}
 
-	public abstract getColor(): Color;
+	public abstract getColor(): RGBColor;
 
 	/**
 	 * Gets the real X section position of the current block on the screen
@@ -30,7 +31,7 @@ export abstract class AbstractBlock implements Colorizable, Processable {
 		const blockStartX = this.getRealX() + 0.5;
 		const blockStartY = this.getRealY() + 0.5;
 		this.prepareContextPath(blockStartX, blockStartY, context);
-		this.fillBlock(this.getColor(), context);
+		this.fillBlock(this.getColor().rgbString, context);
 		this.outlineBlock(context);
 	}
 
@@ -62,7 +63,7 @@ export abstract class AbstractBlock implements Colorizable, Processable {
  */
 export class FieldBlock extends AbstractBlock {
 
-	public color: Color;
+	public color: RGBColor;
 	private realX: number;
 	private realY: number;
 
@@ -72,7 +73,7 @@ export class FieldBlock extends AbstractBlock {
 		this.calculateRealY();
 	}
 
-	public getColor(): Color {
+	public getColor(): RGBColor {
 		return this.color;
 	}
 
@@ -116,7 +117,7 @@ export class FigureBlock extends AbstractBlock {
 
 	public figure: Figure;
 
-	public getColor(): Color {
+	public getColor(): RGBColor {
 		return this.figure.color;
 	}
 
@@ -247,7 +248,7 @@ export class FigureBlock extends AbstractBlock {
 		const startX = this.getPreviewRealX() + 0.5;
 		const startY = this.getPreviewRealY() + 0.5;
 		this.prepareContextPath(startX, startY, context);
-		this.fillBlock(this.getColor(), context);
+		this.fillBlock(this.getColor().rgbString, context);
 		this.outlineBlock(context);
 	}
 

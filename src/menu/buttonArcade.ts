@@ -1,4 +1,5 @@
-import {Color} from "../game/color.js";
+import BlockColor from "../color/blockColor.js";
+import RGBColor from "../color/rgbColor.js";
 import MenuButton, {ButtonShape} from "./menuButton.js";
 
 export default class ButtonArcade extends MenuButton {
@@ -7,8 +8,8 @@ export default class ButtonArcade extends MenuButton {
         return {x: 1.5, y: 1.5};
     }
 
-    public override getColor(): Color {
-        return Color.RED;
+    public override getColor(): RGBColor {
+        return BlockColor.RED;
     }
 
     public onClick(): void {

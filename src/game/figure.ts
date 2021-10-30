@@ -1,7 +1,9 @@
+import BlockColor from "../color/blockColor.js";
+import Colorizable from "../color/colorizable.js";
+import RGBColor from "../color/rgbColor.js";
 import StateHandler from "../state/stateHandler.js";
 import Processable from "../util/processable.js";
 import {FigureBlock, MoveResult} from "./block.js";
-import Colorizable, {Color, getRandomColor} from "./color.js";
 import InputHandler, {KeyBindings} from "./inputHandler.js";
 import Tetris from "./tetris.js";
 
@@ -21,7 +23,7 @@ export default class Figure implements Colorizable, Processable {
 	private readonly maxFallingTime: number = 45;
 	private fallingTimer: number = this.maxFallingTime;
 
-	public color: Color;
+	public color: RGBColor;
 
 	/**
 	 * Creates a figure based on section coordinates.
@@ -40,7 +42,7 @@ export default class Figure implements Colorizable, Processable {
 
 	constructor(blocks: FigureBlock[]) {
 		this._blocks = blocks;
-		this.color = getRandomColor();
+		this.color = BlockColor.getRandomColor();
 		this._blocks.forEach(block => {
 			block.figure = this;
 		});
@@ -55,7 +57,7 @@ export default class Figure implements Colorizable, Processable {
 		return StateHandler.getHandler().GAME.level.field.getRealFieldY() + 60;
 	}
 
-	public getColor(): Color {
+	public getColor(): RGBColor {
 		return this.color;
 	}
 

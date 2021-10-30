@@ -9,7 +9,7 @@ export class AbstractBlock {
         const blockStartX = this.getRealX() + 0.5;
         const blockStartY = this.getRealY() + 0.5;
         this.prepareContextPath(blockStartX, blockStartY, context);
-        this.fillBlock(this.getColor(), context);
+        this.fillBlock(this.getColor().rgbString, context);
         this.outlineBlock(context);
     }
     prepareContextPath(startX, startY, context) {
@@ -186,7 +186,7 @@ export class FigureBlock extends AbstractBlock {
         const startX = this.getPreviewRealX() + 0.5;
         const startY = this.getPreviewRealY() + 0.5;
         this.prepareContextPath(startX, startY, context);
-        this.fillBlock(this.getColor(), context);
+        this.fillBlock(this.getColor().rgbString, context);
         this.outlineBlock(context);
     }
     draw(context) {

@@ -1,4 +1,4 @@
-import { Color } from "../game/color.js";
+import BlockColor from "../color/blockColor.js";
 import StateHandler from "../state/stateHandler.js";
 import MenuButton from "./menuButton.js";
 export default class ButtonEndless extends MenuButton {
@@ -6,7 +6,7 @@ export default class ButtonEndless extends MenuButton {
         return { x: 1, y: 1.5 };
     }
     getColor() {
-        return Color.BLUE;
+        return BlockColor.BLUE;
     }
     getShapeWidth() {
         return 3;

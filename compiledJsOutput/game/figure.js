@@ -1,6 +1,6 @@
+import BlockColor from "../color/blockColor.js";
 import StateHandler from "../state/stateHandler.js";
 import { FigureBlock, MoveResult } from "./block.js";
-import { getRandomColor } from "./color.js";
 import InputHandler, { KeyBindings } from "./inputHandler.js";
 import Tetris from "./tetris.js";
 /**
@@ -13,7 +13,7 @@ export default class Figure {
         this.maxFallingTime = 45;
         this.fallingTimer = this.maxFallingTime;
         this._blocks = blocks;
-        this.color = getRandomColor();
+        this.color = BlockColor.getRandomColor();
         this._blocks.forEach(block => {
             block.figure = this;
         });

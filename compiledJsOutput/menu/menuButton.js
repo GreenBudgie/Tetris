@@ -68,7 +68,7 @@ export default class MenuButton {
         context.strokeStyle = "black";
         context.lineWidth = 4;
         context.lineCap = "square";
-        context.fillStyle = this.getColor();
+        context.fillStyle = this.getColor().rgbString;
         for (const blockPos of this.shape) {
             const currentStartX = this.x + blockPos.x * this.blockSize;
             const currentStartY = this.y + blockPos.y * this.blockSize;

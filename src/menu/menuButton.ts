@@ -1,4 +1,5 @@
-import Colorizable, {Color} from "../game/color.js";
+import Colorizable from "../color/colorizable.js";
+import RGBColor from "../color/rgbColor.js";
 import Tetris from "../game/tetris.js";
 import Processable from "../util/processable.js";
 import Menu from "./menu.js";
@@ -23,7 +24,7 @@ export default abstract class MenuButton implements Colorizable, Processable {
         this.y = this.getYForIndex(Menu.getMenu().currentButtonIndex);
     }
 
-    public abstract getColor(): Color;
+    public abstract getColor(): RGBColor;
     public abstract onClick(): void;
     public abstract getText(): string;
     public abstract getShape(): ButtonShape;
@@ -94,7 +95,7 @@ export default abstract class MenuButton implements Colorizable, Processable {
         context.strokeStyle = "black";
         context.lineWidth = 4
         context.lineCap = "square";
-        context.fillStyle = this.getColor();
+        context.fillStyle = this.getColor().rgbString;
         
         for(const blockPos of this.shape) {
             const currentStartX = this.x + blockPos.x * this.blockSize;

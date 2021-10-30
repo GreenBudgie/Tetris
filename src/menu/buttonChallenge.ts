@@ -1,5 +1,5 @@
-import {Color} from "../game/color.js";
-import StateHandler from "../state/stateHandler.js";
+import BlockColor from "../color/blockColor.js";
+import RGBColor from "../color/rgbColor.js";
 import MenuButton, {ButtonShape} from "./menuButton.js";
 
 export default class ButtonChallenge extends MenuButton {
@@ -8,8 +8,8 @@ export default class ButtonChallenge extends MenuButton {
         return {x: 1.5, y: 0.5};
     }
 
-    public override getColor(): Color {
-        return Color.ORANGE;
+    public override getColor(): RGBColor {
+        return BlockColor.ORANGE;
     }
 
     public onClick(): void {

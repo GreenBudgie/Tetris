@@ -1,11 +1,11 @@
-import { Color } from "../game/color.js";
+import BlockColor from "../color/blockColor.js";
 import MenuButton from "./menuButton.js";
 export default class ButtonArcade extends MenuButton {
     getTextCenterPosition() {
         return { x: 1.5, y: 1.5 };
     }
     getColor() {
-        return Color.RED;
+        return BlockColor.RED;
     }
     onClick() {
     }

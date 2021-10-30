@@ -1,11 +1,11 @@
-import { Color } from "../game/color.js";
+import BlockColor from "../color/blockColor.js";
 import MenuButton from "./menuButton.js";
 export default class ButtonChallenge extends MenuButton {
     getTextCenterPosition() {
         return { x: 1.5, y: 0.5 };
     }
     getColor() {
-        return Color.ORANGE;
+        return BlockColor.ORANGE;
     }
     onClick() {
     }
