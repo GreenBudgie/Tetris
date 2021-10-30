@@ -1,3 +1,4 @@
+import RGBColor from "../color/rgbColor.js";
 import Tetris from "../game/tetris.js";
 import Menu from "./menu.js";
 export default class MenuButton {
@@ -6,25 +7,14 @@ export default class MenuButton {
         this.shape = this.getShape();
         this.shapeWidth = this.getShapeWidth();
         this.shapeHeight = this.getShapeHeight();
-        this.x = Tetris.instance.WINDOW_WIDTH / 2 - this.blockSize * this.shapeWidth / 2;
+        this.x = this.blockSize;
         this.textCenterX = this.x + this.getTextCenterPosition().x * this.blockSize;
-        this.startY = Tetris.instance.WINDOW_HEIGHT / 2 - this.blockSize * this.shapeHeight / 2;
+        this.grayColor = RGBColor.grayscale(200);
         this.index = index;
-        this.y = this.getYForIndex(Menu.getMenu().currentButtonIndex);
-    }
-    get y() {
-        return this._y;
-    }
-    set y(y) {
-        this._y = this.startY + y;
+        const startY = Tetris.instance.WINDOW_HEIGHT / 2 - this.blockSize * this.shapeHeight / 2;
+        this.y = startY + (index - 1) * this.blockSize * 1.5;
         this.textCenterY = this.y + this.getTextCenterPosition().y * this.blockSize;
-    }
-    getYForIndex(index) {
-        const indexShift = index - this.index;
-        let shiftedY = indexShift * this.blockSize * 1.5;
-        if (indexShift < 0)
-            return shiftedY + indexShift * this.blockSize * 1.5;
-        return shiftedY;
+        this.currentColor = index == 0 ? this.getColor().clone() : this.grayColor.clone();
     }
     getShapeWidth() {
         let maxX = 0;
@@ -68,7 +58,7 @@ export default class MenuButton {
         context.strokeStyle = "black";
         context.lineWidth = 4;
         context.lineCap = "square";
-        context.fillStyle = this.getColor().rgbString;
+        context.fillStyle = this.currentColor.rgbString;
         for (const blockPos of this.shape) {
             const currentStartX = this.x + blockPos.x * this.blockSize;
             const currentStartY = this.y + blockPos.y * this.blockSize;

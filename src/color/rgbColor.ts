@@ -112,11 +112,14 @@ export default class RGBColor {
     }
 
     private fadeComponent(from: number, to: number, amount: number): number {
-        return Math.abs((to - from) * amount) + (from < to ? from : to);
+        return Math.sign(to - from) * Math.abs((to - from) * amount) + from;
     }
 
     private updateRGBString(): void {
-        if(this.alpha == 1) this._rgbString = `rgb(${this._red}, ${this._green}, ${this._blue})`;
+        if(this.alpha == 1) {
+            this._rgbString = `rgb(${this._red}, ${this._green}, ${this._blue})`;
+            return;
+        }
         this._rgbString = `rgba(${this._red}, ${this._green}, ${this._blue}, ${this._alpha})`;
     }
 

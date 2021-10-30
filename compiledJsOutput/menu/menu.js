@@ -1,13 +1,13 @@
+import ColorFadeEffect from "../color/colorFadeEffect.js";
 import InputHandler, { KeyBindings } from "../game/inputHandler.js";
-import ButtonArcade from "./buttonArcade.js";
 import ButtonChallenge from "./buttonChallenge.js";
+import ButtonArcade from "./buttonArcade.js";
 import ButtonEndless from "./buttonEndless.js";
-import ButtonMoveEffect from "./buttonMoveEffect.js";
 export default class Menu {
     constructor() {
         this.buttons = [];
         this._currentButtonIndex = 0;
-        this.isMoving = false;
+        this.isFading = false;
         Menu.instance = this;
         this.buttons = [
             new ButtonArcade(0),
@@ -27,32 +27,31 @@ export default class Menu {
             new Menu();
         return Menu.instance;
     }
-    moveButtonsDown() {
-        this.isMoving = true;
-        this._currentButtonIndex++;
-        this.buttons.forEach(button => new ButtonMoveEffect(button, "down"));
-    }
-    moveButtonsUp() {
-        this.isMoving = true;
-        this._currentButtonIndex--;
-        this.buttons.forEach(button => new ButtonMoveEffect(button, "up"));
+    changeCurrentButton(di) {
+        this.isFading = true;
+        const fadeTime = 15;
+        new ColorFadeEffect(this.currentButton.currentColor, this.currentButton.grayColor, fadeTime);
+        this._currentButtonIndex += di;
+        this.updateCurrentButton();
+        const fadeEffect = new ColorFadeEffect(this.currentButton.currentColor, this.currentButton.getColor(), fadeTime);
+        fadeEffect.callback = () => {
+            this.isFading = false;
+        };
     }
     update(delta) {
         for (const button of this.buttons) {
             button.update(delta);
         }
-        if (!this.isMoving) {
+        if (!this.isFading) {
             if (InputHandler.getHandler().isKeyBindingDown(KeyBindings.MENU_BUTTON_DOWN)) {
                 if (this._currentButtonIndex < this.buttons.length - 1) {
-                    this.moveButtonsDown();
-                    this.updateCurrentButton();
+                    this.changeCurrentButton(1);
                     return;
                 }
             }
             if (InputHandler.getHandler().isKeyBindingDown(KeyBindings.MENU_BUTTON_UP)) {
                 if (this._currentButtonIndex > 0) {
-                    this.moveButtonsUp();
-                    this.updateCurrentButton();
+                    this.changeCurrentButton(-1);
                 }
             }
         }

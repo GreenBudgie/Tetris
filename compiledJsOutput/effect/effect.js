@@ -70,8 +70,8 @@ export default class Effect {
         this.end();
     }
     end() {
-        this.callback();
         this.onEnd();
+        this.callback();
         this._isActive = false;
     }
     update(delta) {

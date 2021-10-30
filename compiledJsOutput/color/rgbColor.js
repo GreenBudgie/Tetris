@@ -1,6 +1,15 @@
 export default class RGBColor {
     constructor(red, green, blue, alpha) {
         this._alpha = 1;
+        this.setComponents(red, green, blue, alpha);
+    }
+    /**
+     * Creates a grayscale color with the given brightness (0-255)
+     */
+    static grayscale(brightness) {
+        return new RGBColor(brightness, brightness, brightness);
+    }
+    setComponents(red, green, blue, alpha) {
         this.red = red;
         this.green = green;
         this.blue = blue;
@@ -8,10 +17,14 @@ export default class RGBColor {
             this.alpha = alpha;
     }
     /**
-     * Creates a grayscale color with the given brightness (0-255)
+     * Copies every component from the given color
+     * @param color Another color
      */
-    static grayscale(brightness) {
-        return new RGBColor(brightness, brightness, brightness);
+    setTo(color) {
+        this.setComponents(color.red, color.green, color.blue, color.alpha);
+    }
+    clone() {
+        return new RGBColor(this.red, this.green, this.blue, this.alpha);
     }
     get red() {
         return this._red;
@@ -38,7 +51,7 @@ export default class RGBColor {
         this.updateRGBString();
     }
     set alpha(alpha) {
-        this._alpha = this.clampAlpha(alpha);
+        this._alpha = this.clamp(alpha, 0, 1);
         this.updateRGBString();
     }
     /**
@@ -63,16 +76,33 @@ export default class RGBColor {
         this.green -= amount;
         this.blue -= amount;
     }
+    /**
+     * Transforms every color component to the corresponding given color's component
+     * @param color The color to fade to
+     * @param amount Fading amount (0-1). The higher the value, the closer the total color will be.
+     */
+    instantFadeTo(color, amount) {
+        amount = this.clamp(amount, 0, 1);
+        this.red = this.fadeComponent(this.red, color.red, amount);
+        this.green = this.fadeComponent(this.green, color.green, amount);
+        this.blue = this.fadeComponent(this.blue, color.blue, amount);
+        this.alpha = this.fadeComponent(this.alpha, color.alpha, amount);
+    }
+    fadeComponent(from, to, amount) {
+        return Math.sign(to - from) * Math.abs((to - from) * amount) + from;
+    }
     updateRGBString() {
-        if (this.alpha == 1)
+        if (this.alpha == 1) {
             this._rgbString = `rgb(${this._red}, ${this._green}, ${this._blue})`;
+            return;
+        }
         this._rgbString = `rgba(${this._red}, ${this._green}, ${this._blue}, ${this._alpha})`;
     }
-    clampColor(color) {
-        return color < 0 ? 0 : (color > 255 ? 255 : color);
+    clamp(n, min, max) {
+        return n < min ? min : (n > max ? max : n);
     }
-    clampAlpha(alpha) {
-        return alpha < 0 ? 0 : (alpha > 1 ? 1 : alpha);
+    clampColor(color) {
+        return this.clamp(color, 0, 255);
     }
 }
 //# sourceMappingURL=rgbColor.js.map

@@ -1,3 +1,4 @@
+import ColorFadeEffect from "../color/colorFadeEffect.js";
 import Colorizable from "../color/colorizable.js";
 import RGBColor from "../color/rgbColor.js";
 import Tetris from "../game/tetris.js";
@@ -12,16 +13,21 @@ export default abstract class MenuButton implements Colorizable, Processable {
     public readonly shapeWidth = this.getShapeWidth(); 
     public readonly shapeHeight = this.getShapeHeight(); 
 
-    public readonly x: number = Tetris.instance.WINDOW_WIDTH / 2 - this.blockSize * this.shapeWidth / 2;
+    public readonly x: number = this.blockSize;
     public readonly textCenterX: number = this.x + this.getTextCenterPosition().x * this.blockSize;
-    public readonly startY: number = Tetris.instance.WINDOW_HEIGHT / 2 - this.blockSize * this.shapeHeight / 2;
+    
+    public readonly y: number;
+    public readonly textCenterY: number;
 
-    private _y: number;
-    private textCenterY: number; 
+    public currentColor: RGBColor;
+    public readonly grayColor = RGBColor.grayscale(200);
 
     public constructor(index: number) {
         this.index = index;
-        this.y = this.getYForIndex(Menu.getMenu().currentButtonIndex);
+        const startY: number = Tetris.instance.WINDOW_HEIGHT / 2 - this.blockSize * this.shapeHeight / 2;
+        this.y = startY + (index - 1) * this.blockSize * 1.5;
+        this.textCenterY = this.y + this.getTextCenterPosition().y * this.blockSize;
+        this.currentColor = index == 0 ? this.getColor().clone() : this.grayColor.clone();
     }
 
     public abstract getColor(): RGBColor;
@@ -30,22 +36,6 @@ export default abstract class MenuButton implements Colorizable, Processable {
     public abstract getShape(): ButtonShape;
     public abstract getTextCenterPosition(): {x: number, y: number};
     public abstract getTextSize(): number;
-
-    public get y(): number {
-        return this._y;
-    }
-
-    public set y(y: number) {
-        this._y = this.startY + y;
-        this.textCenterY = this.y + this.getTextCenterPosition().y * this.blockSize;
-    }
-
-    public getYForIndex(index: number): number {
-        const indexShift = index - this.index;
-        let shiftedY = indexShift * this.blockSize * 1.5;
-        if(indexShift < 0) return shiftedY + indexShift * this.blockSize * 1.5;
-        return shiftedY;
-    }
 
     public getShapeWidth(): number {
         let maxX = 0;
@@ -72,7 +62,6 @@ export default abstract class MenuButton implements Colorizable, Processable {
     }
 
     public update(delta: number): void {
-
     }
 
     public draw(context: CanvasRenderingContext2D): void {
@@ -95,7 +84,7 @@ export default abstract class MenuButton implements Colorizable, Processable {
         context.strokeStyle = "black";
         context.lineWidth = 4
         context.lineCap = "square";
-        context.fillStyle = this.getColor().rgbString;
+        context.fillStyle = this.currentColor.rgbString;
         
         for(const blockPos of this.shape) {
             const currentStartX = this.x + blockPos.x * this.blockSize;

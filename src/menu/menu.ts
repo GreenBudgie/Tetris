@@ -1,10 +1,9 @@
-import Effect from "../effect/effect.js";
-import InputHandler, {KeyBinding, KeyBindings} from "../game/inputHandler.js";
+import ColorFadeEffect from "../color/colorFadeEffect.js";
+import InputHandler, {KeyBindings} from "../game/inputHandler.js";
 import Processable from "../util/processable.js";
-import ButtonArcade from "./buttonArcade.js";
 import ButtonChallenge from "./buttonChallenge.js";
+import ButtonArcade from "./buttonArcade.js";
 import ButtonEndless from "./buttonEndless.js";
-import ButtonMoveEffect from "./buttonMoveEffect.js";
 import MenuButton from "./menuButton.js";
 
 export default class Menu implements Processable {
@@ -14,7 +13,7 @@ export default class Menu implements Processable {
     private _currentButtonIndex = 0;
     private _currentButton: MenuButton;
 
-    public isMoving = false;
+    public isFading = false;
 
     private constructor() {
         Menu.instance = this;
@@ -39,34 +38,35 @@ export default class Menu implements Processable {
         return Menu.instance;
     }
 
-    private moveButtonsDown() {
-        this.isMoving = true;
-        this._currentButtonIndex++;
-        this.buttons.forEach(button => new ButtonMoveEffect(button, "down"));
-    }
+    private changeCurrentButton(di: number) {
+        this.isFading = true;
+        const fadeTime = 15;
 
-    private moveButtonsUp() {
-        this.isMoving = true;
-        this._currentButtonIndex--;
-        this.buttons.forEach(button => new ButtonMoveEffect(button, "up"));
+        new ColorFadeEffect(this.currentButton.currentColor, this.currentButton.grayColor, fadeTime);
+
+        this._currentButtonIndex += di;
+        this.updateCurrentButton();
+
+        const fadeEffect = new ColorFadeEffect(this.currentButton.currentColor, this.currentButton.getColor(), fadeTime);
+        fadeEffect.callback = () => {
+            this.isFading = false;
+        };
     }
 
     public update(delta: number): void {
         for(const button of this.buttons) {
             button.update(delta);
         }
-        if(!this.isMoving) {
+        if(!this.isFading) {
             if(InputHandler.getHandler().isKeyBindingDown(KeyBindings.MENU_BUTTON_DOWN)) {
                 if(this._currentButtonIndex < this.buttons.length - 1) {
-                    this.moveButtonsDown();
-                    this.updateCurrentButton();
+                    this.changeCurrentButton(1);
                     return;
                 }
             }
             if(InputHandler.getHandler().isKeyBindingDown(KeyBindings.MENU_BUTTON_UP)) {
                 if(this._currentButtonIndex > 0) {
-                    this.moveButtonsUp();
-                    this.updateCurrentButton();
+                    this.changeCurrentButton(-1);
                 }
             }
         }
