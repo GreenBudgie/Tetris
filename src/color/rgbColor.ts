@@ -15,10 +15,26 @@ export default class RGBColor {
     }
 
     public constructor(red: number, green: number, blue: number, alpha?: number) {
+        this.setComponents(red, green, blue, alpha)
+    }
+
+    public setComponents(red: number, green: number, blue: number, alpha?: number) {
         this.red = red;
         this.green = green;
         this.blue = blue;
         if(alpha != undefined && alpha != null) this.alpha = alpha;
+    }
+
+    /**
+     * Copies every component from the given color
+     * @param color Another color
+     */
+    public setTo(color: RGBColor) {
+        this.setComponents(color.red, color.green, color.blue, color.alpha)
+    }
+
+    public clone(): RGBColor {
+        return new RGBColor(this.red, this.green, this.blue, this.alpha);
     }
 
     public get red(): number {
@@ -53,7 +69,7 @@ export default class RGBColor {
     }
 
     public set alpha(alpha: number) {
-        this._alpha = this.clampAlpha(alpha);
+        this._alpha = this.clamp(alpha, 0, 1);
         this.updateRGBString();
     }
 
@@ -76,10 +92,27 @@ export default class RGBColor {
     /**
      * Darkens every component of the color by the given amount
      */
-     public darken(amount: number) {
+    public darken(amount: number) {
         this.red -= amount;
         this.green -= amount;
         this.blue -= amount;
+    }
+
+    /**
+     * Transforms every color component to the corresponding given color's component
+     * @param color The color to fade to
+     * @param amount Fading amount (0-1). The higher the value, the closer the total color will be.
+     */
+    public instantFadeTo(color: RGBColor, amount: number) {
+        amount = this.clamp(amount, 0, 1);
+        this.red = this.fadeComponent(this.red, color.red, amount);
+        this.green = this.fadeComponent(this.green, color.green, amount);
+        this.blue = this.fadeComponent(this.blue, color.blue, amount);
+        this.alpha = this.fadeComponent(this.alpha, color.alpha, amount);
+    }
+
+    private fadeComponent(from: number, to: number, amount: number): number {
+        return Math.abs((to - from) * amount) + (from < to ? from : to);
     }
 
     private updateRGBString(): void {
@@ -87,12 +120,12 @@ export default class RGBColor {
         this._rgbString = `rgba(${this._red}, ${this._green}, ${this._blue}, ${this._alpha})`;
     }
 
-    private clampColor(color: number): number {
-        return color < 0 ? 0 : (color > 255 ? 255 : color);
+    private clamp(n: number, min: number, max: number) {
+        return n < min ? min : (n > max ? max : n);
     }
 
-    private clampAlpha(alpha: number): number {
-        return alpha < 0 ? 0 : (alpha > 1 ? 1 : alpha);
+    private clampColor(color: number): number {
+        return this.clamp(color, 0, 255);
     }
 
 }
