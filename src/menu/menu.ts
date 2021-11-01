@@ -5,6 +5,7 @@ import ButtonChallenge from "./buttonChallenge.js";
 import ButtonArcade from "./buttonArcade.js";
 import ButtonEndless from "./buttonEndless.js";
 import MenuButton from "./menuButton.js";
+import {easeInQuad, easeOutQuad} from "../effect/effectEasings.js";
 
 export default class Menu implements Processable {
 

@@ -1,6 +1,6 @@
 import Tetris from "../game/tetris.js";
 import Processable from "../util/processable.js";
-import {EasingFunction} from "./effectEasings.js";
+import {EasingFunction, noEasing} from "./effectEasings.js";
 import EffectHandler from "./effectHandler.js";
 
 /**
@@ -18,6 +18,7 @@ export default class Effect implements Processable {
     private _progress: number = 0;
 
     public callback: () => void = () => {};
+    public easing: EasingFunction = noEasing;
 
     public constructor(time: number, initialDelay?: number) {
         this.maxTime = time;
@@ -100,7 +101,7 @@ export default class Effect implements Processable {
             }
         } else {
             this.time -= delta * Tetris.FPS;
-            this._progress = 1 - this.time / this.maxTime;
+            this._progress = this.easing(1 - this.time / this.maxTime, 0, 1, 1);
             if(this.time <= 0) {
                 this.end();
             } else {

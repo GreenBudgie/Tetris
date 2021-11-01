@@ -1,4 +1,5 @@
 import Tetris from "../game/tetris.js";
+import { noEasing } from "./effectEasings.js";
 import EffectHandler from "./effectHandler.js";
 /**
  * Effects provide an easy way of handling
@@ -11,6 +12,7 @@ export default class Effect {
         this._pauseDelay = 0;
         this._progress = 0;
         this.callback = () => { };
+        this.easing = noEasing;
         this.maxTime = time;
         this.time = time;
         if (initialDelay != null && initialDelay != undefined)
@@ -86,7 +88,7 @@ export default class Effect {
         }
         else {
             this.time -= delta * Tetris.FPS;
-            this._progress = 1 - this.time / this.maxTime;
+            this._progress = this.easing(1 - this.time / this.maxTime, 0, 1, 1);
             if (this.time <= 0) {
                 this.end();
             }
