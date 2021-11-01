@@ -1,5 +1,6 @@
 import BlockColor from "../color/blockColor.js";
 import RGBColor from "../color/rgbColor.js";
+import ArcadeHandler from "./arcade/arcadeHandler.js";
 import MenuButton, {ButtonShape} from "./menuButton.js";
 
 export default class ButtonArcade extends MenuButton {
@@ -31,6 +32,16 @@ export default class ButtonArcade extends MenuButton {
             {x: 1, y: 0},
             {x: 2, y: 0},
         ]
+    }
+
+    public override update(delta: number) {
+        super.update(delta);
+        if(this.isCurrent()) ArcadeHandler.getHandler().update(delta);
+    }
+
+    public override draw(context: CanvasRenderingContext2D) {
+        super.draw(context);
+        if(this.isCurrent()) ArcadeHandler.getHandler().draw(context);
     }
 
 }

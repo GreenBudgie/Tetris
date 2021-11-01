@@ -5,6 +5,8 @@ import Processable from "../util/processable.js";
 
 export default class Level implements Processable {
 
+    public levelNumber: number;
+
     public field: Field;
     public filled_rows: number = 0;
     public points: number = 0;
@@ -12,7 +14,8 @@ export default class Level implements Processable {
 
     public nextFigure: Figure;
 
-    public constructor() {
+    public constructor(levelNumber: number) {
+        this.levelNumber = levelNumber;
         this.selectNextFigure();
     }
 

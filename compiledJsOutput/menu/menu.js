@@ -29,7 +29,7 @@ export default class Menu {
     }
     changeCurrentButton(di) {
         this.isFading = true;
-        const fadeTime = 15;
+        const fadeTime = 12;
         new ColorFadeEffect(this.currentButton.currentColor, this.currentButton.grayColor, fadeTime);
         this._currentButtonIndex += di;
         this.updateCurrentButton();

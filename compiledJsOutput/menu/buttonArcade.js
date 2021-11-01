@@ -1,4 +1,5 @@
 import BlockColor from "../color/blockColor.js";
+import ArcadeHandler from "./arcade/arcadeHandler.js";
 import MenuButton from "./menuButton.js";
 export default class ButtonArcade extends MenuButton {
     getTextCenterPosition() {
@@ -22,6 +23,16 @@ export default class ButtonArcade extends MenuButton {
             { x: 1, y: 0 },
             { x: 2, y: 0 },
         ];
+    }
+    update(delta) {
+        super.update(delta);
+        if (this.isCurrent())
+            ArcadeHandler.getHandler().update(delta);
+    }
+    draw(context) {
+        super.draw(context);
+        if (this.isCurrent())
+            ArcadeHandler.getHandler().draw(context);
     }
 }
 //# sourceMappingURL=buttonArcade.js.map

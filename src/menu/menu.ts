@@ -40,7 +40,7 @@ export default class Menu implements Processable {
 
     private changeCurrentButton(di: number) {
         this.isFading = true;
-        const fadeTime = 15;
+        const fadeTime = 12;
 
         new ColorFadeEffect(this.currentButton.currentColor, this.currentButton.grayColor, fadeTime);
 

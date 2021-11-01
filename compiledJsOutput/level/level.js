@@ -1,9 +1,10 @@
 import { Figures } from "../game/figure.js";
 import Tetris from "../game/tetris.js";
 export default class Level {
-    constructor() {
+    constructor(levelNumber) {
         this.filled_rows = 0;
         this.points = 0;
+        this.levelNumber = levelNumber;
         this.selectNextFigure();
     }
     selectNextFigure() {

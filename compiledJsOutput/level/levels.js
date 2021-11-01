@@ -6,5 +6,5 @@ export default class Levels {
         Levels.LEVEL_1.requiredPoints = 12 * 8;
     }
 }
-Levels.LEVEL_1 = new Level();
+Levels.LEVEL_1 = new Level(1);
 //# sourceMappingURL=levels.js.map
