@@ -25,17 +25,19 @@ export default class ButtonArcade extends MenuButton {
         ];
     }
     onSelect() {
-        ArcadeHandler.getHandler().playEffect();
+        ArcadeHandler.getHandler().needsToDraw = true;
+        ArcadeHandler.getHandler().playAppearEffect();
+    }
+    onDeselect() {
+        ArcadeHandler.getHandler().playDisappearEffect();
     }
     update(delta) {
         super.update(delta);
-        if (this.isCurrent())
-            ArcadeHandler.getHandler().update(delta);
+        ArcadeHandler.getHandler().update(delta);
     }
     draw(context) {
         super.draw(context);
-        if (this.isCurrent())
-            ArcadeHandler.getHandler().draw(context);
+        ArcadeHandler.getHandler().draw(context);
     }
 }
 //# sourceMappingURL=buttonArcade.js.map

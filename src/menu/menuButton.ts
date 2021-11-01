@@ -60,6 +60,10 @@ export default abstract class MenuButton implements Colorizable, Processable {
     public onSelect(): void {
     }
 
+    public onDeselect(): void {
+        
+    }
+
     public click(): void {
         this.onClick();
     }

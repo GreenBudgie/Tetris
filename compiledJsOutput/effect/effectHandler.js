@@ -8,8 +8,8 @@ export default class EffectHandler {
         return EffectHandler.instance;
     }
     update(delta) {
-        this.activeEffects = this.activeEffects.filter(effect => effect.isActive);
         this.activeEffects.forEach(effect => effect.update(delta));
+        this.activeEffects = this.activeEffects.filter(effect => effect.isActive);
     }
     draw(context) {
         this.activeEffects.forEach(effect => effect.draw(context));

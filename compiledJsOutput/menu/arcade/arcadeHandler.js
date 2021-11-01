@@ -13,15 +13,21 @@ export default class ArcadeHandler {
         this.FIELD_START_X = 400;
         this.FIELD_START_Y = Tetris.instance.WINDOW_HEIGHT / 2 - this.REAL_FIELD_HEIGHT / 2;
         this.stageButtons = [];
+        this.needsToDraw = false;
         ArcadeHandler.instance = this;
         this.registerStages();
     }
-    playEffect() {
-        this.stageButtons.forEach(button => button.playEffect());
+    playAppearEffect() {
+        this.stageButtons.forEach(button => button.playAppearEffect());
+    }
+    playDisappearEffect() {
+        this.stageButtons.forEach(button => button.playDisappearEffect());
     }
     update(delta) {
     }
     draw(context) {
+        if (!this.needsToDraw)
+            return;
         for (const button of this.stageButtons) {
             button.draw(context);
         }

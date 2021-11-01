@@ -24,6 +24,7 @@ export default class Menu implements Processable {
             new ButtonChallenge(2)
         ];
         this._currentButton = this.buttons[this._currentButtonIndex];
+        this._currentButton.onSelect();
     }
 
     public get currentButton(): MenuButton {
@@ -44,9 +45,11 @@ export default class Menu implements Processable {
         const fadeTime = 12;
 
         new ColorFadeEffect(this.currentButton.currentColor, this.currentButton.grayColor, fadeTime);
+        this._currentButton.onDeselect();
 
         this._currentButtonIndex += di;
         this.updateCurrentButton();
+        this._currentButton.onSelect();
 
         const fadeEffect = new ColorFadeEffect(this.currentButton.currentColor, this.currentButton.getColor(), fadeTime);
         fadeEffect.callback = () => {
@@ -78,7 +81,6 @@ export default class Menu implements Processable {
 
     private updateCurrentButton() {
         this._currentButton = this.buttons[this._currentButtonIndex];
-        this._currentButton.onSelect();
     }
 
     public draw(context: CanvasRenderingContext2D): void {

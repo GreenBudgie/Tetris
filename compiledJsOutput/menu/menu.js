@@ -15,6 +15,7 @@ export default class Menu {
             new ButtonChallenge(2)
         ];
         this._currentButton = this.buttons[this._currentButtonIndex];
+        this._currentButton.onSelect();
     }
     get currentButton() {
         return this._currentButton;
@@ -31,8 +32,10 @@ export default class Menu {
         this.isFading = true;
         const fadeTime = 12;
         new ColorFadeEffect(this.currentButton.currentColor, this.currentButton.grayColor, fadeTime);
+        this._currentButton.onDeselect();
         this._currentButtonIndex += di;
         this.updateCurrentButton();
+        this._currentButton.onSelect();
         const fadeEffect = new ColorFadeEffect(this.currentButton.currentColor, this.currentButton.getColor(), fadeTime);
         fadeEffect.callback = () => {
             this.isFading = false;
@@ -61,7 +64,6 @@ export default class Menu {
     }
     updateCurrentButton() {
         this._currentButton = this.buttons[this._currentButtonIndex];
-        this._currentButton.onSelect();
     }
     draw(context) {
         for (const button of this.buttons) {

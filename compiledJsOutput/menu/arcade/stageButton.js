@@ -1,9 +1,10 @@
 import ColorFadeEffect from "../../color/colorFadeEffect.js";
-import { easeOutQuad } from "../../effect/effectEasings.js";
+import { easeInOutQuad } from "../../effect/effectEasings.js";
 import MoveEffect from "../../effect/moveEffect.js";
 import ArcadeHandler from "./arcadeHandler.js";
 export default class StageButton {
     constructor() {
+        this.EFFECT_SPEED = 10;
     }
     get x() {
         return this._x;
@@ -20,14 +21,30 @@ export default class StageButton {
     getColor() {
         return this.currentColor;
     }
-    playEffect() {
+    playAppearEffect() {
+        this.fadeEffect?.interrupt();
+        this.moveEffect?.interrupt();
+        ArcadeHandler.getHandler().needsToDraw = true;
         this.currentColor.alpha = 0;
         this.x = this.startX;
         this.y = this.startY;
-        const fade = new ColorFadeEffect(this.currentColor, this.color, 12);
-        const move = new MoveEffect(this, this.endX, this.endY, 12);
-        move.pause(12);
-        move.easing = easeOutQuad;
+        this.fadeEffect = new ColorFadeEffect(this.currentColor, this.color, this.EFFECT_SPEED);
+        this.moveEffect = new MoveEffect(this, this.endX, this.endY, this.EFFECT_SPEED);
+        this.moveEffect.pause(this.EFFECT_SPEED);
+        this.moveEffect.easing = easeInOutQuad;
+    }
+    playDisappearEffect() {
+        this.fadeEffect?.interrupt();
+        this.moveEffect?.interrupt();
+        this.x = this.endX;
+        this.y = this.endY;
+        this.moveEffect = new MoveEffect(this, this.startX, this.startY, this.EFFECT_SPEED);
+        this.moveEffect.easing = easeInOutQuad;
+        const zeroAlpha = this.color.clone();
+        zeroAlpha.alpha = 0;
+        this.fadeEffect = new ColorFadeEffect(this.currentColor, zeroAlpha, this.EFFECT_SPEED);
+        this.fadeEffect.pause(this.EFFECT_SPEED);
+        this.fadeEffect.callback = () => ArcadeHandler.getHandler().needsToDraw = false;
     }
     update(delta) {
     }
@@ -56,7 +73,7 @@ export default class StageButton {
         this.blocks = blocks;
     }
     setColor(color) {
-        this.color = color;
+        this.color = color.clone();
         this.currentColor = color.clone();
     }
 }

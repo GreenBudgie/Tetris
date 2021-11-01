@@ -37,6 +37,8 @@ export default class MenuButton {
     }
     onSelect() {
     }
+    onDeselect() {
+    }
     click() {
         this.onClick();
     }

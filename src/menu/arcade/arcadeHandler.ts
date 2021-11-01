@@ -18,20 +18,26 @@ export default class ArcadeHandler implements Processable {
     private static instance: ArcadeHandler;
     public stageButtons: StageButton[] = [];
 
+    public needsToDraw = false;
+
     private constructor() {
         ArcadeHandler.instance = this;
         this.registerStages();
     }
 
-    public playEffect(): void {
-        this.stageButtons.forEach(button => button.playEffect());
+    public playAppearEffect(): void {
+        this.stageButtons.forEach(button => button.playAppearEffect());
+    }
+
+    public playDisappearEffect(): void {
+        this.stageButtons.forEach(button => button.playDisappearEffect());
     }
 
     public update(delta: number): void {
-
     }
 
     public draw(context: CanvasRenderingContext2D): void {
+        if(!this.needsToDraw) return;
         for(const button of this.stageButtons) {
             button.draw(context);
         }

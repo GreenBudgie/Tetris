@@ -14,8 +14,8 @@ export default class EffectHandler implements Processable {
     }
 
     public update(delta: number): void {
-        this.activeEffects = this.activeEffects.filter(effect => effect.isActive);
         this.activeEffects.forEach(effect => effect.update(delta));
+        this.activeEffects = this.activeEffects.filter(effect => effect.isActive);
     }
 
     public draw(context: CanvasRenderingContext2D): void {
