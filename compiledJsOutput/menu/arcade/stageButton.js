@@ -1,3 +1,6 @@
+import ColorFadeEffect from "../../color/colorFadeEffect.js";
+import { easeOutQuad } from "../../effect/effectEasings.js";
+import MoveEffect from "../../effect/moveEffect.js";
 import ArcadeHandler from "./arcadeHandler.js";
 export default class StageButton {
     constructor() {
@@ -15,7 +18,16 @@ export default class StageButton {
         this._y = y;
     }
     getColor() {
-        return this.color;
+        return this.currentColor;
+    }
+    playEffect() {
+        this.currentColor.alpha = 0;
+        this.x = this.startX;
+        this.y = this.startY;
+        const fade = new ColorFadeEffect(this.currentColor, this.color, 12);
+        const move = new MoveEffect(this, this.endX, this.endY, 12);
+        move.pause(12);
+        move.easing = easeOutQuad;
     }
     update(delta) {
     }
@@ -24,15 +36,15 @@ export default class StageButton {
             block.draw(context);
         }
     }
-    setSection(sectionX, sectionY) {
-        this.sectionX = sectionX;
-        this.sectionY = sectionY;
+    setEndSection(sectionX, sectionY) {
+        this.endX = this.getRealXBySection(sectionX);
+        this.endY = this.getRealYBySection(sectionY);
     }
-    setCenterSection(centerSectionX, centerSectionY) {
-        this.x = this.getRealXBySection(centerSectionX);
-        this.y = this.getRealYBySection(centerSectionY);
-        this.centerSectionX = centerSectionX;
-        this.centerSectionY = centerSectionY;
+    setStartSection(sectionX, sectionY) {
+        this.startX = this.getRealXBySection(sectionX);
+        this.startY = this.getRealYBySection(sectionY);
+        this.x = this.startX;
+        this.y = this.startY;
     }
     getRealXBySection(sectionX) {
         return ArcadeHandler.getHandler().FIELD_START_X + sectionX * ArcadeHandler.getHandler().FIELD_SECTION_SIZE;
@@ -45,6 +57,7 @@ export default class StageButton {
     }
     setColor(color) {
         this.color = color;
+        this.currentColor = color.clone();
     }
 }
 //# sourceMappingURL=stageButton.js.map

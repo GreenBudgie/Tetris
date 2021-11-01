@@ -34,6 +34,10 @@ export default class ButtonArcade extends MenuButton {
         ]
     }
 
+    public override onSelect() {
+        ArcadeHandler.getHandler().playEffect();
+    }
+
     public override update(delta: number) {
         super.update(delta);
         if(this.isCurrent()) ArcadeHandler.getHandler().update(delta);

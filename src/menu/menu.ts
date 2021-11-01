@@ -78,6 +78,7 @@ export default class Menu implements Processable {
 
     private updateCurrentButton() {
         this._currentButton = this.buttons[this._currentButtonIndex];
+        this._currentButton.onSelect();
     }
 
     public draw(context: CanvasRenderingContext2D): void {

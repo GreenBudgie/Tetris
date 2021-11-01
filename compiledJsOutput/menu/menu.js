@@ -61,6 +61,7 @@ export default class Menu {
     }
     updateCurrentButton() {
         this._currentButton = this.buttons[this._currentButtonIndex];
+        this._currentButton.onSelect();
     }
     draw(context) {
         for (const button of this.buttons) {

@@ -6,7 +6,7 @@ export default class RGBColor {
     private _alpha: number = 1;
 
     private _rgbString: string;
-
+    
     /**
      * Creates a grayscale color with the given brightness (0-255)
      */

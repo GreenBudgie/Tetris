@@ -46,7 +46,7 @@ export default class StageBlock implements Processable, Colorizable, Positionabl
         const startY = this.stageButton.y + this.y * sectionSize;
 
         context.fillStyle = this.getColor().rgbString;
-        context.strokeStyle = "black";
+        context.strokeStyle = `rgb(0, 0, 0, ${this.getColor().alpha})`;
         context.lineWidth = 2;
 
         context.beginPath();

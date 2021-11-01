@@ -1,5 +1,8 @@
+import ColorFadeEffect from "../../color/colorFadeEffect.js";
 import Colorizable from "../../color/colorizable.js";
 import RGBColor from "../../color/rgbColor.js";
+import {easeInQuad, easeOutQuad} from "../../effect/effectEasings.js";
+import MoveEffect from "../../effect/moveEffect.js";
 import Positionable from "../../util/positionable.js";
 import Processable from "../../util/processable.js";
 import ArcadeHandler from "./arcadeHandler.js";
@@ -12,12 +15,14 @@ export default class StageButton implements Processable, Colorizable, Positionab
     private _y: number;
     private blocks: StageBlock[];
 
-    private sectionX: number;
-    private centerSectionX: number;
-    private sectionY: number;
-    private centerSectionY: number;
+    private endX: number;
+    private startX: number;
+    private endY: number;
+    private startY: number;
 
     private color: RGBColor;
+
+    public currentColor: RGBColor;
 
     public constructor() {
         
@@ -40,7 +45,17 @@ export default class StageButton implements Processable, Colorizable, Positionab
     }
 
     public getColor(): RGBColor {
-        return this.color;
+        return this.currentColor;
+    }
+
+    public playEffect(): void {
+        this.currentColor.alpha = 0;
+        this.x = this.startX;
+        this.y = this.startY;
+        const fade = new ColorFadeEffect(this.currentColor, this.color, 12);
+        const move = new MoveEffect(this, this.endX, this.endY, 12);
+        move.pause(12);
+        move.easing = easeOutQuad;
     }
 
     public update(delta: number): void {
@@ -52,16 +67,16 @@ export default class StageButton implements Processable, Colorizable, Positionab
         }
     }
 
-    public setSection(sectionX: number, sectionY: number): void {
-        this.sectionX = sectionX;
-        this.sectionY = sectionY;
+    public setEndSection(sectionX: number, sectionY: number): void {
+        this.endX = this.getRealXBySection(sectionX);
+        this.endY = this.getRealYBySection(sectionY);
     }
 
-    public setCenterSection(centerSectionX: number, centerSectionY: number): void {
-        this.x = this.getRealXBySection(centerSectionX);
-        this.y = this.getRealYBySection(centerSectionY);
-        this.centerSectionX = centerSectionX;
-        this.centerSectionY = centerSectionY;
+    public setStartSection(sectionX: number, sectionY: number): void {
+        this.startX = this.getRealXBySection(sectionX);
+        this.startY = this.getRealYBySection(sectionY);
+        this.x = this.startX;
+        this.y = this.startY;
     }
 
     public getRealXBySection(sectionX: number): number {
@@ -78,6 +93,7 @@ export default class StageButton implements Processable, Colorizable, Positionab
 
     public setColor(color: RGBColor): void {
         this.color = color;
+        this.currentColor = color.clone();
     }
 
 }

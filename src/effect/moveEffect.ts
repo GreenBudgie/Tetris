@@ -23,4 +23,9 @@ export default class MoveEffect extends Effect {
         this.toMove.y = this.startY + (this.endY - this.startY) * this.progress;
     }
 
+    public override onEnd() {
+        this.toMove.x = this.endX;
+        this.toMove.y = this.endY;
+    }
+
 }

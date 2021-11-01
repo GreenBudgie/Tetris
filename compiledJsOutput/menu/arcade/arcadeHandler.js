@@ -16,6 +16,9 @@ export default class ArcadeHandler {
         ArcadeHandler.instance = this;
         this.registerStages();
     }
+    playEffect() {
+        this.stageButtons.forEach(button => button.playEffect());
+    }
     update(delta) {
     }
     draw(context) {
@@ -37,8 +40,8 @@ export default class ArcadeHandler {
             new StageBlock(1, 1, Levels.LEVEL_1, stage1),
         ]);
         stage1.setColor(BlockColor.GREEN);
-        stage1.setSection(0, 0);
-        stage1.setCenterSection(2, 2);
+        stage1.setStartSection(2, 2);
+        stage1.setEndSection(0, 0);
         this.stageButtons.push(stage1);
         const stage2 = new StageButton();
         stage2.setBlocks([
@@ -48,8 +51,8 @@ export default class ArcadeHandler {
             new StageBlock(1, 2, Levels.LEVEL_1, stage2),
         ]);
         stage2.setColor(BlockColor.BLUE);
-        stage2.setSection(4, 0);
-        stage2.setCenterSection(3, 1);
+        stage2.setStartSection(3, 1);
+        stage2.setEndSection(4, 0);
         this.stageButtons.push(stage2);
         const stage3 = new StageButton();
         stage3.setBlocks([
@@ -59,8 +62,8 @@ export default class ArcadeHandler {
             new StageBlock(1, 2, Levels.LEVEL_1, stage3),
         ]);
         stage3.setColor(BlockColor.ORANGE);
-        stage3.setSection(0, 4);
-        stage3.setCenterSection(1, 3);
+        stage3.setStartSection(1, 3);
+        stage3.setEndSection(0, 4);
         this.stageButtons.push(stage3);
         const stage4 = new StageButton();
         stage4.setBlocks([
@@ -70,8 +73,8 @@ export default class ArcadeHandler {
             new StageBlock(1, 1, Levels.LEVEL_1, stage4),
         ]);
         stage4.setColor(BlockColor.RED);
-        stage4.setSection(4, 5);
-        stage4.setCenterSection(3, 4);
+        stage4.setStartSection(3, 4);
+        stage4.setEndSection(4, 5);
         this.stageButtons.push(stage4);
     }
 }

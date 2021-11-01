@@ -35,6 +35,8 @@ export default class MenuButton {
     isCurrent() {
         return Menu.getMenu().currentButton == this;
     }
+    onSelect() {
+    }
     click() {
         this.onClick();
     }

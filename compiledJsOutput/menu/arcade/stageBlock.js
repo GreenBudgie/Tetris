@@ -25,7 +25,7 @@ export default class StageBlock {
         const startX = this.stageButton.x + this.x * sectionSize;
         const startY = this.stageButton.y + this.y * sectionSize;
         context.fillStyle = this.getColor().rgbString;
-        context.strokeStyle = "black";
+        context.strokeStyle = `rgb(0, 0, 0, ${this.getColor().alpha})`;
         context.lineWidth = 2;
         context.beginPath();
         context.moveTo(startX, startY);

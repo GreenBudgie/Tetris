@@ -24,6 +24,9 @@ export default class ButtonArcade extends MenuButton {
             { x: 2, y: 0 },
         ];
     }
+    onSelect() {
+        ArcadeHandler.getHandler().playEffect();
+    }
     update(delta) {
         super.update(delta);
         if (this.isCurrent())
