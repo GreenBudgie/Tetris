@@ -1,3 +1,4 @@
+import ArcadeHandler from "./arcadeHandler.js";
 export default class StageBlock {
     constructor(relativeX, relativeY, level, stageButton) {
         this.x = relativeX;
@@ -20,7 +21,7 @@ export default class StageBlock {
     update(delta) {
     }
     draw(context) {
-        const blockSize = this.stageButton.getCurrentBlockSize();
+        const blockSize = ArcadeHandler.getHandler().FIELD_SECTION_SIZE * this.stageButton.scale;
         const startX = this.stageButton.x + this.x * blockSize;
         const startY = this.stageButton.y + this.y * blockSize;
         context.fillStyle = this.getColor().rgbString;

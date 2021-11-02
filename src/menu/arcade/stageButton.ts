@@ -19,18 +19,20 @@ export default class StageButton implements Processable, Colorizable, Positionab
     private _y: number;
     private _scale: number = 1;
     private blocks: StageBlock[];
-    private width: number;
-    private height: number;
 
     private endX: number;
     private startX: number;
     private endY: number;
     private startY: number;
+    private selectedX: number;
+    private selectedY: number;
 
     private color: RGBColor;
 
     public currentColor: RGBColor;
     private readonly grayscale = RGBColor.grayscale(200);
+
+    private readonly targetScale = 2;
 
     public constructor(index: number) {
         this.index = index;
@@ -70,6 +72,7 @@ export default class StageButton implements Processable, Colorizable, Positionab
 
     private fadeEffect: ColorFadeEffect;
     private moveEffect: MoveEffect;
+    private scaleEffect: ScaleEffect;
     private readonly EFFECT_SPEED = 10;
 
     public playAppearEffect(): void {
@@ -86,8 +89,8 @@ export default class StageButton implements Processable, Colorizable, Positionab
     }
 
     public playDisappearEffect(): void {
-        this.fadeEffect?.interruptWithCallback();
-        this.moveEffect?.interruptWithCallback();
+        this.fadeEffect?.interruptNoCallback();
+        this.moveEffect?.interruptNoCallback();
 
         this.x = this.endX;
         this.y = this.endY;
@@ -101,19 +104,37 @@ export default class StageButton implements Processable, Colorizable, Positionab
     }
 
     public hideWhenAnotherSelected(): void {
-
+        this.fadeEffect?.interruptNoCallback();
+        const zeroAlpha = this.currentColor.clone();
+        zeroAlpha.alpha = 0;
+        this.fadeEffect = new ColorFadeEffect(this.currentColor, zeroAlpha, 10);
     }
 
     public showWhenAnotherDeselected(): void {
-
+        this.fadeEffect?.interruptNoCallback();
+        this.fadeEffect = new ColorFadeEffect(this.currentColor, this.grayscale, 10);
     }
 
     public onSelect(): void {
+        this.moveEffect?.interruptNoCallback();
+        this.scaleEffect?.interruptNoCallback();
 
+        this.scaleEffect = new ScaleEffect(this, this.targetScale, 12);
+        this.scaleEffect.easing = easeInQuad;
+
+        this.moveEffect = new MoveEffect(this, this.selectedX, this.selectedY, 12);
+        this.moveEffect.easing = easeOutQuad;
     }
 
     public onDeselect(): void {
+        this.moveEffect?.interruptNoCallback();
+        this.scaleEffect?.interruptNoCallback();
 
+        this.scaleEffect = new ScaleEffect(this, 1, 12);
+        this.scaleEffect.easing = easeOutQuad;
+
+        this.moveEffect = new MoveEffect(this, this.endX, this.endY, 12);
+        this.moveEffect.easing = easeInQuad;
     }
 
     public onHover(): void {
@@ -147,16 +168,12 @@ export default class StageButton implements Processable, Colorizable, Positionab
         this.y = this.startY;
     }
 
-    public getCurrentBlockSize(): number {
-        return this.scale * ArcadeHandler.getHandler().FIELD_SECTION_SIZE;
-    }
-
     public getRealXBySection(sectionX: number): number {
-        return ArcadeHandler.getHandler().FIELD_START_X + sectionX * this.getCurrentBlockSize();
+        return ArcadeHandler.getHandler().FIELD_START_X + sectionX * ArcadeHandler.getHandler().FIELD_SECTION_SIZE;
     }
 
     public getRealYBySection(sectionY: number): number {
-        return ArcadeHandler.getHandler().FIELD_START_Y + sectionY * this.getCurrentBlockSize();
+        return ArcadeHandler.getHandler().FIELD_START_Y + sectionY * ArcadeHandler.getHandler().FIELD_SECTION_SIZE;
     }
 
     public setBlocks(blocks: StageBlock[]): void {
@@ -167,8 +184,11 @@ export default class StageButton implements Processable, Colorizable, Positionab
 			if(block.x > maxX) maxX = block.x;
             if(block.y > maxY) maxY = block.y;
         }
-        this.width = maxX + 1;
-        this.height = maxY + 1;
+        const handler = ArcadeHandler.getHandler();
+        const scaledRealWidth = (maxX + 1) * this.targetScale * handler.FIELD_SECTION_SIZE;
+        const scaledRealHeight = (maxY + 1) * this.targetScale * handler.FIELD_SECTION_SIZE;
+        this.selectedX = handler.FIELD_START_X + (handler.REAL_FIELD_WIDTH / 2) - (scaledRealWidth / 2);
+        this.selectedY = handler.FIELD_START_Y + (handler.REAL_FIELD_HEIGHT / 2) - (scaledRealHeight / 2);
     }
 
     public setColor(color: RGBColor): void {

@@ -27,6 +27,11 @@ export default class ArcadeHandler implements Processable {
         this.registerStages();
     }
 
+    public static getHandler(): ArcadeHandler {
+        if(ArcadeHandler.instance == null) new ArcadeHandler();
+        return ArcadeHandler.instance;
+    }
+
     public get hoveredButtonIndex(): number {
         return this._hoveredButtonIndex;
     }
@@ -86,11 +91,6 @@ export default class ArcadeHandler implements Processable {
     public draw(context: CanvasRenderingContext2D): void {
         if(this.state == "hide") return;
         this.stageButtons.forEach(button => button.draw(context));
-    }
-
-    public static getHandler(): ArcadeHandler {
-        if(ArcadeHandler.instance == null) new ArcadeHandler();
-        return ArcadeHandler.instance;
     }
 
     public stopStageSelect(): void {

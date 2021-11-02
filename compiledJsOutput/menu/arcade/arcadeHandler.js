@@ -19,6 +19,11 @@ export default class ArcadeHandler {
         ArcadeHandler.instance = this;
         this.registerStages();
     }
+    static getHandler() {
+        if (ArcadeHandler.instance == null)
+            new ArcadeHandler();
+        return ArcadeHandler.instance;
+    }
     get hoveredButtonIndex() {
         return this._hoveredButtonIndex;
     }
@@ -74,11 +79,6 @@ export default class ArcadeHandler {
         if (this.state == "hide")
             return;
         this.stageButtons.forEach(button => button.draw(context));
-    }
-    static getHandler() {
-        if (ArcadeHandler.instance == null)
-            new ArcadeHandler();
-        return ArcadeHandler.instance;
     }
     stopStageSelect() {
         this.getHoveredButton().onUnhover();

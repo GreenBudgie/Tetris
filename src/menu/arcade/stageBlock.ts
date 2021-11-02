@@ -3,6 +3,7 @@ import RGBColor from "../../color/rgbColor.js";
 import Level from "../../level/level.js";
 import Positionable from "../../util/positionable.js";
 import Processable from "../../util/processable.js";
+import ArcadeHandler from "./arcadeHandler.js";
 import StageButton from "./stageButton.js";
 
 export default class StageBlock implements Processable, Colorizable, Positionable {
@@ -40,7 +41,7 @@ export default class StageBlock implements Processable, Colorizable, Positionabl
     }
 
     public draw(context: CanvasRenderingContext2D): void {
-        const blockSize = this.stageButton.getCurrentBlockSize();
+        const blockSize = ArcadeHandler.getHandler().FIELD_SECTION_SIZE * this.stageButton.scale;
         const startX = this.stageButton.x + this.x * blockSize;
         const startY = this.stageButton.y + this.y * blockSize;
 
