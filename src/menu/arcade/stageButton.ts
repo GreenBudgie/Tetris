@@ -19,6 +19,8 @@ export default class StageButton implements Processable, Colorizable, Positionab
     private _y: number;
     private _scale: number = 1;
     private blocks: StageBlock[];
+    private width: number;
+    private height: number;
 
     private endX: number;
     private startX: number;
@@ -62,8 +64,12 @@ export default class StageButton implements Processable, Colorizable, Positionab
         return this.currentColor;
     }
 
-    public isCurrent(): boolean {
-        return ArcadeHandler.getHandler().selectedButtonIndex == this.index;
+    public isHovered(): boolean {
+        return ArcadeHandler.getHandler().hoveredButtonIndex == this.index;
+    }
+
+    public isSelected(): boolean {
+        return ArcadeHandler.getHandler().selectedButton == this;
     }
 
     private fadeEffect: ColorFadeEffect;
@@ -100,20 +106,25 @@ export default class StageButton implements Processable, Colorizable, Positionab
         this.fadeEffect.callback = () => ArcadeHandler.getHandler().needsToDraw = false;
     }
 
-    private isColored = false;
+    public select(): void {
+
+    }
+
+    public deselect(): void {
+
+    }
+
+    public hover(): void {
+        this.fadeEffect?.interrupt();
+        this.fadeEffect = new ColorFadeEffect(this.currentColor, this.color, 8);
+    }
+
+    public unhover(): void {
+        this.fadeEffect?.interrupt();
+        this.fadeEffect = new ColorFadeEffect(this.currentColor, this.grayscale, 8);
+    }
 
     public update(delta: number): void {
-        if(ArcadeHandler.getHandler().isSelectingStages && this.isCurrent() && !this.isColored) {
-            this.fadeEffect?.interrupt();
-            this.fadeEffect = new ColorFadeEffect(this.currentColor, this.color, 8);
-            this.isColored = true;
-        }
-        if((!this.isCurrent() && this.isColored) ||
-            (this.isColored && !ArcadeHandler.getHandler().isSelectingStages)) {
-            this.fadeEffect?.interrupt();
-            this.fadeEffect = new ColorFadeEffect(this.currentColor, this.grayscale, 8);
-            this.isColored = false;
-        }
     }
 
     public draw(context: CanvasRenderingContext2D): void {
@@ -148,6 +159,14 @@ export default class StageButton implements Processable, Colorizable, Positionab
 
     public setBlocks(blocks: StageBlock[]): void {
         this.blocks = blocks;
+        let maxX = 0;
+        let maxY = 0;
+        for(const block of this.blocks) {
+			if(block.x > maxX) maxX = block.x;
+            if(block.y > maxY) maxY = block.y;
+        }
+        this.width = maxX + 1;
+        this.height = maxY + 1;
     }
 
     public setColor(color: RGBColor): void {

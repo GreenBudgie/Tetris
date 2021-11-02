@@ -14,19 +14,24 @@ export default class ArcadeHandler {
         this.FIELD_START_X = 400;
         this.FIELD_START_Y = Tetris.instance.WINDOW_HEIGHT / 2 - this.REAL_FIELD_HEIGHT / 2;
         this.stageButtons = [];
-        this._selectedButtonIndex = 0;
+        this._hoveredButtonIndex = 0;
+        this.selectedButton = null;
         this.isSelectingStages = false;
         this.needsToDraw = false;
         ArcadeHandler.instance = this;
         this.registerStages();
     }
-    get selectedButtonIndex() {
-        return this._selectedButtonIndex;
+    get hoveredButtonIndex() {
+        return this._hoveredButtonIndex;
     }
-    set selectedButtonIndex(index) {
-        if (index < 0 || index >= this.stageButtons.length)
+    set hoveredButtonIndex(newIndex) {
+        if (newIndex < 0 || newIndex >= this.stageButtons.length)
             return;
-        this._selectedButtonIndex = index;
+        if (this._hoveredButtonIndex != newIndex) {
+            this.stageButtons[this._hoveredButtonIndex].unhover();
+            this.stageButtons[newIndex].hover();
+        }
+        this._hoveredButtonIndex = newIndex;
     }
     playAppearEffect() {
         this.stageButtons.forEach(button => button.playAppearEffect());
@@ -35,21 +40,23 @@ export default class ArcadeHandler {
         this.stageButtons.forEach(button => button.playDisappearEffect());
     }
     update(delta) {
-        if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_DOWN)) {
-            this.selectedButtonIndex += 2;
-        }
-        if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_UP)) {
-            this.selectedButtonIndex -= 2;
-        }
-        if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_RIGHT)) {
-            this.selectedButtonIndex += 1;
-        }
-        if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_LEFT)) {
-            if (this.selectedButtonIndex % 2 == 0) {
-                this.stopSelectingStages();
+        if (this.isSelectingStages) {
+            if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_DOWN)) {
+                this.hoveredButtonIndex += 2;
             }
-            else {
-                this.selectedButtonIndex -= 1;
+            if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_UP)) {
+                this.hoveredButtonIndex -= 2;
+            }
+            if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_RIGHT)) {
+                this.hoveredButtonIndex += 1;
+            }
+            if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_LEFT)) {
+                if (this.hoveredButtonIndex % 2 == 0) {
+                    this.stopSelectingStages();
+                }
+                else {
+                    this.hoveredButtonIndex -= 1;
+                }
             }
         }
         this.stageButtons.forEach(button => button.update(delta));
@@ -65,14 +72,16 @@ export default class ArcadeHandler {
         return ArcadeHandler.instance;
     }
     stopSelectingStages() {
+        this.getSelectedButton().unhover();
         this.isSelectingStages = false;
     }
     startSelectingStages() {
         this.isSelectingStages = true;
-        this.selectedButtonIndex = 0;
+        this.hoveredButtonIndex = 0;
+        this.getSelectedButton().hover();
     }
     getSelectedButton() {
-        return this.stageButtons[this.selectedButtonIndex];
+        return this.stageButtons[this.hoveredButtonIndex];
     }
     registerStages() {
         const stage1 = new StageButton(0);

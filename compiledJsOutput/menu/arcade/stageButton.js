@@ -8,7 +8,6 @@ export default class StageButton {
         this._scale = 1;
         this.grayscale = RGBColor.grayscale(200);
         this.EFFECT_SPEED = 10;
-        this.isColored = false;
         this.index = index;
     }
     get scale() {
@@ -32,8 +31,11 @@ export default class StageButton {
     getColor() {
         return this.currentColor;
     }
-    isCurrent() {
-        return ArcadeHandler.getHandler().selectedButtonIndex == this.index;
+    isHovered() {
+        return ArcadeHandler.getHandler().hoveredButtonIndex == this.index;
+    }
+    isSelected() {
+        return ArcadeHandler.getHandler().selectedButton == this;
     }
     playAppearEffect() {
         this.fadeEffect?.interrupt();
@@ -60,18 +62,19 @@ export default class StageButton {
         this.fadeEffect.pause(this.EFFECT_SPEED);
         this.fadeEffect.callback = () => ArcadeHandler.getHandler().needsToDraw = false;
     }
+    select() {
+    }
+    deselect() {
+    }
+    hover() {
+        this.fadeEffect?.interrupt();
+        this.fadeEffect = new ColorFadeEffect(this.currentColor, this.color, 8);
+    }
+    unhover() {
+        this.fadeEffect?.interrupt();
+        this.fadeEffect = new ColorFadeEffect(this.currentColor, this.grayscale, 8);
+    }
     update(delta) {
-        if (ArcadeHandler.getHandler().isSelectingStages && this.isCurrent() && !this.isColored) {
-            this.fadeEffect?.interrupt();
-            this.fadeEffect = new ColorFadeEffect(this.currentColor, this.color, 8);
-            this.isColored = true;
-        }
-        if ((!this.isCurrent() && this.isColored) ||
-            (this.isColored && !ArcadeHandler.getHandler().isSelectingStages)) {
-            this.fadeEffect?.interrupt();
-            this.fadeEffect = new ColorFadeEffect(this.currentColor, this.grayscale, 8);
-            this.isColored = false;
-        }
     }
     draw(context) {
         for (const block of this.blocks) {
@@ -99,6 +102,16 @@ export default class StageButton {
     }
     setBlocks(blocks) {
         this.blocks = blocks;
+        let maxX = 0;
+        let maxY = 0;
+        for (const block of this.blocks) {
+            if (block.x > maxX)
+                maxX = block.x;
+            if (block.y > maxY)
+                maxY = block.y;
+        }
+        this.width = maxX + 1;
+        this.height = maxY + 1;
     }
     setColor(color) {
         this.color = color.clone();

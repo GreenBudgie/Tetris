@@ -18,7 +18,8 @@ export default class ArcadeHandler implements Processable {
 
     private static instance: ArcadeHandler;
     public stageButtons: StageButton[] = [];
-    private _selectedButtonIndex: number = 0;
+    private _hoveredButtonIndex: number = 0;
+    public selectedButton: StageButton | null = null;
 
     public isSelectingStages = false;
     public needsToDraw = false;
@@ -28,13 +29,19 @@ export default class ArcadeHandler implements Processable {
         this.registerStages();
     }
 
-    public get selectedButtonIndex(): number {
-        return this._selectedButtonIndex;
+    public get hoveredButtonIndex(): number {
+        return this._hoveredButtonIndex;
     }
 
-    public set selectedButtonIndex(index: number) {
-        if(index < 0 || index >= this.stageButtons.length) return;
-        this._selectedButtonIndex = index;
+    public set hoveredButtonIndex(newIndex: number) {
+        if(newIndex < 0 || newIndex >= this.stageButtons.length) return;
+
+        if(this._hoveredButtonIndex != newIndex) {
+            this.stageButtons[this._hoveredButtonIndex].unhover();
+            this.stageButtons[newIndex].hover();
+        }
+
+        this._hoveredButtonIndex = newIndex;
     }
 
     public playAppearEffect(): void {
@@ -46,20 +53,22 @@ export default class ArcadeHandler implements Processable {
     }
 
     public update(delta: number): void {
-        if(InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_DOWN)) {
-            this.selectedButtonIndex += 2;
-        }
-        if(InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_UP)) {
-            this.selectedButtonIndex -= 2;
-        }
-        if(InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_RIGHT)) {
-            this.selectedButtonIndex += 1;
-        }
-        if(InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_LEFT)) {
-            if(this.selectedButtonIndex % 2 == 0) {
-                this.stopSelectingStages();
-            } else {
-                this.selectedButtonIndex -= 1;
+        if(this.isSelectingStages) {
+            if(InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_DOWN)) {
+                this.hoveredButtonIndex += 2;
+            }
+            if(InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_UP)) {
+                this.hoveredButtonIndex -= 2;
+            }
+            if(InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_RIGHT)) {
+                this.hoveredButtonIndex += 1;
+            }
+            if(InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_LEFT)) {
+                if(this.hoveredButtonIndex % 2 == 0) {
+                    this.stopSelectingStages();
+                } else {
+                    this.hoveredButtonIndex -= 1;
+                }
             }
         }
         this.stageButtons.forEach(button => button.update(delta));
@@ -76,16 +85,18 @@ export default class ArcadeHandler implements Processable {
     }
 
     public stopSelectingStages(): void {
+        this.getSelectedButton().unhover();
         this.isSelectingStages = false;
     }
 
     public startSelectingStages(): void {
         this.isSelectingStages = true;
-        this.selectedButtonIndex = 0;
+        this.hoveredButtonIndex = 0;
+        this.getSelectedButton().hover();
     }
 
     public getSelectedButton(): StageButton {
-        return this.stageButtons[this.selectedButtonIndex];
+        return this.stageButtons[this.hoveredButtonIndex];
     }
 
     private registerStages(): void {

@@ -3,8 +3,6 @@ import RGBColor from "../../color/rgbColor.js";
 import Level from "../../level/level.js";
 import Positionable from "../../util/positionable.js";
 import Processable from "../../util/processable.js";
-import Scalable from "../../util/scalable.js";
-import ArcadeHandler from "./arcadeHandler.js";
 import StageButton from "./stageButton.js";
 
 export default class StageBlock implements Processable, Colorizable, Positionable {
