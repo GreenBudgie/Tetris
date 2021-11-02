@@ -68,7 +68,11 @@ export default class Effect {
     resume() {
         this._isPaused = false;
     }
-    interrupt() {
+    interruptWithCallback() {
+        this.end();
+    }
+    interruptNoCallback() {
+        this.callback = () => { };
         this.end();
     }
     end() {

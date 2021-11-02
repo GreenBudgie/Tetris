@@ -107,7 +107,8 @@ export class KeyBindings {
     public static readonly MENU_DOWN = KeyBindings.register(new KeyBinding("ArrowDown", "KeyS"));
     public static readonly MENU_LEFT = KeyBindings.register(new KeyBinding("ArrowLeft", "KeyA"));
     public static readonly MENU_RIGHT = KeyBindings.register(new KeyBinding("ArrowRight", "KeyD"));
-    public static readonly MENU_BUTTON_CLICK = KeyBindings.register(new KeyBinding("Enter", "Space"));
+    public static readonly MENU_SELECT = KeyBindings.register(new KeyBinding("Enter", "Space"));
+    public static readonly MENU_BACK = KeyBindings.register(new KeyBinding("Escape"));
 
     private constructor() {}
 

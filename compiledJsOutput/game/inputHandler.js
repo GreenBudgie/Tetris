@@ -108,5 +108,6 @@ KeyBindings.MENU_UP = KeyBindings.register(new KeyBinding("ArrowUp", "KeyW"));
 KeyBindings.MENU_DOWN = KeyBindings.register(new KeyBinding("ArrowDown", "KeyS"));
 KeyBindings.MENU_LEFT = KeyBindings.register(new KeyBinding("ArrowLeft", "KeyA"));
 KeyBindings.MENU_RIGHT = KeyBindings.register(new KeyBinding("ArrowRight", "KeyD"));
-KeyBindings.MENU_BUTTON_CLICK = KeyBindings.register(new KeyBinding("Enter", "Space"));
+KeyBindings.MENU_SELECT = KeyBindings.register(new KeyBinding("Enter", "Space"));
+KeyBindings.MENU_BACK = KeyBindings.register(new KeyBinding("Escape"));
 //# sourceMappingURL=inputHandler.js.map

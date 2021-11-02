@@ -14,7 +14,7 @@ export default class ButtonArcade extends MenuButton {
     }
 
     public onClick(): void {
-        ArcadeHandler.getHandler().startSelectingStages();
+        ArcadeHandler.getHandler().startStageSelect();
     }
 
     public getTextSize(): number {
@@ -35,7 +35,7 @@ export default class ButtonArcade extends MenuButton {
     }
 
     public override onSelect() {
-        ArcadeHandler.getHandler().needsToDraw = true;
+        ArcadeHandler.getHandler().state = "show";
         ArcadeHandler.getHandler().playAppearEffect();
     }
 

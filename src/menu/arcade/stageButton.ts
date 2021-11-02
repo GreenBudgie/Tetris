@@ -64,12 +64,8 @@ export default class StageButton implements Processable, Colorizable, Positionab
         return this.currentColor;
     }
 
-    public isHovered(): boolean {
+    public isHoveredOrSelected(): boolean {
         return ArcadeHandler.getHandler().hoveredButtonIndex == this.index;
-    }
-
-    public isSelected(): boolean {
-        return ArcadeHandler.getHandler().selectedButton == this;
     }
 
     private fadeEffect: ColorFadeEffect;
@@ -77,10 +73,8 @@ export default class StageButton implements Processable, Colorizable, Positionab
     private readonly EFFECT_SPEED = 10;
 
     public playAppearEffect(): void {
-        this.fadeEffect?.interrupt();
-        this.moveEffect?.interrupt();
-
-        ArcadeHandler.getHandler().needsToDraw = true;
+        this.fadeEffect?.interruptNoCallback();
+        this.moveEffect?.interruptNoCallback();
 
         this.currentColor.alpha = 0;
         this.x = this.startX;
@@ -92,8 +86,8 @@ export default class StageButton implements Processable, Colorizable, Positionab
     }
 
     public playDisappearEffect(): void {
-        this.fadeEffect?.interrupt();
-        this.moveEffect?.interrupt();
+        this.fadeEffect?.interruptWithCallback();
+        this.moveEffect?.interruptWithCallback();
 
         this.x = this.endX;
         this.y = this.endY;
@@ -103,24 +97,32 @@ export default class StageButton implements Processable, Colorizable, Positionab
         zeroAlpha.alpha = 0;
         this.fadeEffect = new ColorFadeEffect(this.currentColor, zeroAlpha, this.EFFECT_SPEED);
         this.fadeEffect.pause(this.EFFECT_SPEED);
-        this.fadeEffect.callback = () => ArcadeHandler.getHandler().needsToDraw = false;
+        this.fadeEffect.callback = () => ArcadeHandler.getHandler().state = "hide";
     }
 
-    public select(): void {
-
-    }
-
-    public deselect(): void {
+    public hideWhenAnotherSelected(): void {
 
     }
 
-    public hover(): void {
-        this.fadeEffect?.interrupt();
+    public showWhenAnotherDeselected(): void {
+
+    }
+
+    public onSelect(): void {
+
+    }
+
+    public onDeselect(): void {
+
+    }
+
+    public onHover(): void {
+        this.fadeEffect?.interruptWithCallback();
         this.fadeEffect = new ColorFadeEffect(this.currentColor, this.color, 8);
     }
 
-    public unhover(): void {
-        this.fadeEffect?.interrupt();
+    public onUnhover(): void {
+        this.fadeEffect?.interruptWithCallback();
         this.fadeEffect = new ColorFadeEffect(this.currentColor, this.grayscale, 8);
     }
 

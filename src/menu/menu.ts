@@ -62,7 +62,7 @@ export default class Menu implements Processable {
         for(const button of this.buttons) {
             button.update(delta);
         }
-        const listenToInputs = !ArcadeHandler.getHandler().isSelectingStages;
+        const listenToInputs = ArcadeHandler.getHandler().state == "hide" || ArcadeHandler.getHandler().state == "show";
         if(!this.isFading && listenToInputs) {
             if(InputHandler.getHandler().isKeyBindingDown(KeyBindings.MENU_DOWN)) {
                 if(this._currentButtonIndex < this.buttons.length - 1) {
@@ -77,7 +77,7 @@ export default class Menu implements Processable {
             }
         }
         if(listenToInputs && 
-            (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_BUTTON_CLICK) || 
+            (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_SELECT) || 
             InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_RIGHT))) {
             this._currentButton.click();
         }

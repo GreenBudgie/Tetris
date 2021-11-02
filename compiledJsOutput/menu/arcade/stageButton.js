@@ -31,16 +31,12 @@ export default class StageButton {
     getColor() {
         return this.currentColor;
     }
-    isHovered() {
+    isHoveredOrSelected() {
         return ArcadeHandler.getHandler().hoveredButtonIndex == this.index;
     }
-    isSelected() {
-        return ArcadeHandler.getHandler().selectedButton == this;
-    }
     playAppearEffect() {
-        this.fadeEffect?.interrupt();
-        this.moveEffect?.interrupt();
-        ArcadeHandler.getHandler().needsToDraw = true;
+        this.fadeEffect?.interruptNoCallback();
+        this.moveEffect?.interruptNoCallback();
         this.currentColor.alpha = 0;
         this.x = this.startX;
         this.y = this.startY;
@@ -50,8 +46,8 @@ export default class StageButton {
         this.moveEffect.easing = easeInOutQuad;
     }
     playDisappearEffect() {
-        this.fadeEffect?.interrupt();
-        this.moveEffect?.interrupt();
+        this.fadeEffect?.interruptWithCallback();
+        this.moveEffect?.interruptWithCallback();
         this.x = this.endX;
         this.y = this.endY;
         this.moveEffect = new MoveEffect(this, this.startX, this.startY, this.EFFECT_SPEED);
@@ -60,18 +56,22 @@ export default class StageButton {
         zeroAlpha.alpha = 0;
         this.fadeEffect = new ColorFadeEffect(this.currentColor, zeroAlpha, this.EFFECT_SPEED);
         this.fadeEffect.pause(this.EFFECT_SPEED);
-        this.fadeEffect.callback = () => ArcadeHandler.getHandler().needsToDraw = false;
+        this.fadeEffect.callback = () => ArcadeHandler.getHandler().state = "hide";
     }
-    select() {
+    hideWhenAnotherSelected() {
     }
-    deselect() {
+    showWhenAnotherDeselected() {
     }
-    hover() {
-        this.fadeEffect?.interrupt();
+    onSelect() {
+    }
+    onDeselect() {
+    }
+    onHover() {
+        this.fadeEffect?.interruptWithCallback();
         this.fadeEffect = new ColorFadeEffect(this.currentColor, this.color, 8);
     }
-    unhover() {
-        this.fadeEffect?.interrupt();
+    onUnhover() {
+        this.fadeEffect?.interruptWithCallback();
         this.fadeEffect = new ColorFadeEffect(this.currentColor, this.grayscale, 8);
     }
     update(delta) {

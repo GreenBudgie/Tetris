@@ -82,7 +82,12 @@ export default class Effect implements Processable {
         this._isPaused = false;
     }
 
-    public interrupt(): void {
+    public interruptWithCallback(): void {
+        this.end();
+    }
+
+    public interruptNoCallback(): void {
+        this.callback = () => {};
         this.end();
     }
 

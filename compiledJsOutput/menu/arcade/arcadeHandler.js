@@ -15,9 +15,7 @@ export default class ArcadeHandler {
         this.FIELD_START_Y = Tetris.instance.WINDOW_HEIGHT / 2 - this.REAL_FIELD_HEIGHT / 2;
         this.stageButtons = [];
         this._hoveredButtonIndex = 0;
-        this.selectedButton = null;
-        this.isSelectingStages = false;
-        this.needsToDraw = false;
+        this.state = "hide";
         ArcadeHandler.instance = this;
         this.registerStages();
     }
@@ -28,8 +26,8 @@ export default class ArcadeHandler {
         if (newIndex < 0 || newIndex >= this.stageButtons.length)
             return;
         if (this._hoveredButtonIndex != newIndex) {
-            this.stageButtons[this._hoveredButtonIndex].unhover();
-            this.stageButtons[newIndex].hover();
+            this.stageButtons[this._hoveredButtonIndex].onUnhover();
+            this.stageButtons[newIndex].onHover();
         }
         this._hoveredButtonIndex = newIndex;
     }
@@ -40,7 +38,7 @@ export default class ArcadeHandler {
         this.stageButtons.forEach(button => button.playDisappearEffect());
     }
     update(delta) {
-        if (this.isSelectingStages) {
+        if (this.state == "stageSelect") {
             if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_DOWN)) {
                 this.hoveredButtonIndex += 2;
             }
@@ -52,17 +50,28 @@ export default class ArcadeHandler {
             }
             if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_LEFT)) {
                 if (this.hoveredButtonIndex % 2 == 0) {
-                    this.stopSelectingStages();
+                    this.stopStageSelect();
                 }
                 else {
                     this.hoveredButtonIndex -= 1;
                 }
             }
+            if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_SELECT)) {
+                this.startLevelSelect();
+            }
+            if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_BACK)) {
+                this.stopStageSelect();
+            }
+        }
+        if (this.state == "levelSelect") {
+            if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_BACK)) {
+                this.stopLevelSelect();
+            }
         }
         this.stageButtons.forEach(button => button.update(delta));
     }
     draw(context) {
-        if (!this.needsToDraw)
+        if (this.state == "hide")
             return;
         this.stageButtons.forEach(button => button.draw(context));
     }
@@ -71,16 +80,38 @@ export default class ArcadeHandler {
             new ArcadeHandler();
         return ArcadeHandler.instance;
     }
-    stopSelectingStages() {
-        this.getSelectedButton().unhover();
-        this.isSelectingStages = false;
+    stopStageSelect() {
+        this.getHoveredButton().onUnhover();
+        this.state = "show";
     }
-    startSelectingStages() {
-        this.isSelectingStages = true;
+    startStageSelect() {
+        this.state = "stageSelect";
         this.hoveredButtonIndex = 0;
-        this.getSelectedButton().hover();
+        this.getHoveredButton().onHover();
     }
-    getSelectedButton() {
+    startLevelSelect() {
+        this.state = "levelSelect";
+        for (const button of this.stageButtons) {
+            if (button.isHoveredOrSelected()) {
+                button.onSelect();
+            }
+            else {
+                button.hideWhenAnotherSelected();
+            }
+        }
+    }
+    stopLevelSelect() {
+        this.state = "stageSelect";
+        for (const button of this.stageButtons) {
+            if (button.isHoveredOrSelected()) {
+                button.onDeselect();
+            }
+            else {
+                button.showWhenAnotherDeselected();
+            }
+        }
+    }
+    getHoveredButton() {
         return this.stageButtons[this.hoveredButtonIndex];
     }
     registerStages() {
