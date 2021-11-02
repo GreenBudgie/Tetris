@@ -6,6 +6,7 @@ import ButtonArcade from "./buttonArcade.js";
 import ButtonEndless from "./buttonEndless.js";
 import MenuButton from "./menuButton.js";
 import {easeInQuad, easeOutQuad} from "../effect/effectEasings.js";
+import ArcadeHandler from "./arcade/arcadeHandler.js";
 
 export default class Menu implements Processable {
 
@@ -61,21 +62,24 @@ export default class Menu implements Processable {
         for(const button of this.buttons) {
             button.update(delta);
         }
-        if(!this.isFading) {
-            if(InputHandler.getHandler().isKeyBindingDown(KeyBindings.MENU_BUTTON_DOWN)) {
+        const listenToInputs = !ArcadeHandler.getHandler().isSelectingStages;
+        if(!this.isFading && listenToInputs) {
+            if(InputHandler.getHandler().isKeyBindingDown(KeyBindings.MENU_DOWN)) {
                 if(this._currentButtonIndex < this.buttons.length - 1) {
                     this.changeCurrentButton(1);
                     return;
                 }
             }
-            if(InputHandler.getHandler().isKeyBindingDown(KeyBindings.MENU_BUTTON_UP)) {
+            if(InputHandler.getHandler().isKeyBindingDown(KeyBindings.MENU_UP)) {
                 if(this._currentButtonIndex > 0) {
                     this.changeCurrentButton(-1);
                 }
             }
         }
-        if(InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_BUTTON_CLICK)) {
-            this._currentButton.onClick();
+        if(listenToInputs && 
+            (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_BUTTON_CLICK) || 
+            InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_RIGHT))) {
+            this._currentButton.click();
         }
     }
 

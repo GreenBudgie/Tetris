@@ -3,6 +3,7 @@ import RGBColor from "../../color/rgbColor.js";
 import Level from "../../level/level.js";
 import Positionable from "../../util/positionable.js";
 import Processable from "../../util/processable.js";
+import Scalable from "../../util/scalable.js";
 import ArcadeHandler from "./arcadeHandler.js";
 import StageButton from "./stageButton.js";
 
@@ -41,9 +42,9 @@ export default class StageBlock implements Processable, Colorizable, Positionabl
     }
 
     public draw(context: CanvasRenderingContext2D): void {
-        const sectionSize = ArcadeHandler.getHandler().FIELD_SECTION_SIZE;
-        const startX = this.stageButton.x + this.x * sectionSize;
-        const startY = this.stageButton.y + this.y * sectionSize;
+        const blockSize = this.stageButton.getCurrentBlockSize();
+        const startX = this.stageButton.x + this.x * blockSize;
+        const startY = this.stageButton.y + this.y * blockSize;
 
         context.fillStyle = this.getColor().rgbString;
         context.strokeStyle = `rgb(0, 0, 0, ${this.getColor().alpha})`;
@@ -51,9 +52,9 @@ export default class StageBlock implements Processable, Colorizable, Positionabl
 
         context.beginPath();
         context.moveTo(startX, startY);
-        context.lineTo(startX + sectionSize, startY);
-        context.lineTo(startX + sectionSize, startY + sectionSize);
-        context.lineTo(startX, startY + sectionSize);
+        context.lineTo(startX + blockSize, startY);
+        context.lineTo(startX + blockSize, startY + blockSize);
+        context.lineTo(startX, startY + blockSize);
         context.lineTo(startX, startY);
         context.fill();
         context.stroke();

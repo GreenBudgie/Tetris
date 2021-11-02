@@ -1,4 +1,5 @@
 import BlockColor from "../../color/blockColor.js";
+import InputHandler, { KeyBindings } from "../../game/inputHandler.js";
 import Tetris from "../../game/tetris.js";
 import Levels from "../../level/levels.js";
 import StageBlock from "./stageBlock.js";
@@ -13,9 +14,19 @@ export default class ArcadeHandler {
         this.FIELD_START_X = 400;
         this.FIELD_START_Y = Tetris.instance.WINDOW_HEIGHT / 2 - this.REAL_FIELD_HEIGHT / 2;
         this.stageButtons = [];
+        this._selectedButtonIndex = 0;
+        this.isSelectingStages = false;
         this.needsToDraw = false;
         ArcadeHandler.instance = this;
         this.registerStages();
+    }
+    get selectedButtonIndex() {
+        return this._selectedButtonIndex;
+    }
+    set selectedButtonIndex(index) {
+        if (index < 0 || index >= this.stageButtons.length)
+            return;
+        this._selectedButtonIndex = index;
     }
     playAppearEffect() {
         this.stageButtons.forEach(button => button.playAppearEffect());
@@ -24,21 +35,47 @@ export default class ArcadeHandler {
         this.stageButtons.forEach(button => button.playDisappearEffect());
     }
     update(delta) {
+        if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_DOWN)) {
+            this.selectedButtonIndex += 2;
+        }
+        if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_UP)) {
+            this.selectedButtonIndex -= 2;
+        }
+        if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_RIGHT)) {
+            this.selectedButtonIndex += 1;
+        }
+        if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_LEFT)) {
+            if (this.selectedButtonIndex % 2 == 0) {
+                this.stopSelectingStages();
+            }
+            else {
+                this.selectedButtonIndex -= 1;
+            }
+        }
+        this.stageButtons.forEach(button => button.update(delta));
     }
     draw(context) {
         if (!this.needsToDraw)
             return;
-        for (const button of this.stageButtons) {
-            button.draw(context);
-        }
+        this.stageButtons.forEach(button => button.draw(context));
     }
     static getHandler() {
         if (ArcadeHandler.instance == null)
             new ArcadeHandler();
         return ArcadeHandler.instance;
     }
+    stopSelectingStages() {
+        this.isSelectingStages = false;
+    }
+    startSelectingStages() {
+        this.isSelectingStages = true;
+        this.selectedButtonIndex = 0;
+    }
+    getSelectedButton() {
+        return this.stageButtons[this.selectedButtonIndex];
+    }
     registerStages() {
-        const stage1 = new StageButton();
+        const stage1 = new StageButton(0);
         stage1.setBlocks([
             new StageBlock(0, 0, Levels.LEVEL_1, stage1),
             new StageBlock(0, 1, Levels.LEVEL_1, stage1),
@@ -49,7 +86,7 @@ export default class ArcadeHandler {
         stage1.setStartSection(2, 2);
         stage1.setEndSection(0, 0);
         this.stageButtons.push(stage1);
-        const stage2 = new StageButton();
+        const stage2 = new StageButton(1);
         stage2.setBlocks([
             new StageBlock(0, 0, Levels.LEVEL_1, stage2),
             new StageBlock(0, 1, Levels.LEVEL_1, stage2),
@@ -60,7 +97,7 @@ export default class ArcadeHandler {
         stage2.setStartSection(3, 1);
         stage2.setEndSection(4, 0);
         this.stageButtons.push(stage2);
-        const stage3 = new StageButton();
+        const stage3 = new StageButton(2);
         stage3.setBlocks([
             new StageBlock(0, 0, Levels.LEVEL_1, stage3),
             new StageBlock(0, 1, Levels.LEVEL_1, stage3),
@@ -71,7 +108,7 @@ export default class ArcadeHandler {
         stage3.setStartSection(1, 3);
         stage3.setEndSection(0, 4);
         this.stageButtons.push(stage3);
-        const stage4 = new StageButton();
+        const stage4 = new StageButton(3);
         stage4.setBlocks([
             new StageBlock(0, 0, Levels.LEVEL_1, stage4),
             new StageBlock(0, 1, Levels.LEVEL_1, stage4),

@@ -1,4 +1,5 @@
 import BlockColor from "../../color/blockColor.js";
+import InputHandler, {KeyBindings} from "../../game/inputHandler.js";
 import Tetris from "../../game/tetris.js";
 import Levels from "../../level/levels.js";
 import Processable from "../../util/processable.js";
@@ -17,12 +18,23 @@ export default class ArcadeHandler implements Processable {
 
     private static instance: ArcadeHandler;
     public stageButtons: StageButton[] = [];
+    private _selectedButtonIndex: number = 0;
 
+    public isSelectingStages = false;
     public needsToDraw = false;
 
     private constructor() {
         ArcadeHandler.instance = this;
         this.registerStages();
+    }
+
+    public get selectedButtonIndex(): number {
+        return this._selectedButtonIndex;
+    }
+
+    public set selectedButtonIndex(index: number) {
+        if(index < 0 || index >= this.stageButtons.length) return;
+        this._selectedButtonIndex = index;
     }
 
     public playAppearEffect(): void {
@@ -34,22 +46,50 @@ export default class ArcadeHandler implements Processable {
     }
 
     public update(delta: number): void {
+        if(InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_DOWN)) {
+            this.selectedButtonIndex += 2;
+        }
+        if(InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_UP)) {
+            this.selectedButtonIndex -= 2;
+        }
+        if(InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_RIGHT)) {
+            this.selectedButtonIndex += 1;
+        }
+        if(InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_LEFT)) {
+            if(this.selectedButtonIndex % 2 == 0) {
+                this.stopSelectingStages();
+            } else {
+                this.selectedButtonIndex -= 1;
+            }
+        }
+        this.stageButtons.forEach(button => button.update(delta));
     }
 
     public draw(context: CanvasRenderingContext2D): void {
         if(!this.needsToDraw) return;
-        for(const button of this.stageButtons) {
-            button.draw(context);
-        }
+        this.stageButtons.forEach(button => button.draw(context));
     }
 
-    public static getHandler() {
+    public static getHandler(): ArcadeHandler {
         if(ArcadeHandler.instance == null) new ArcadeHandler();
         return ArcadeHandler.instance;
     }
 
+    public stopSelectingStages(): void {
+        this.isSelectingStages = false;
+    }
+
+    public startSelectingStages(): void {
+        this.isSelectingStages = true;
+        this.selectedButtonIndex = 0;
+    }
+
+    public getSelectedButton(): StageButton {
+        return this.stageButtons[this.selectedButtonIndex];
+    }
+
     private registerStages(): void {
-        const stage1 = new StageButton();
+        const stage1 = new StageButton(0);
         stage1.setBlocks([
             new StageBlock(0, 0, Levels.LEVEL_1, stage1),
             new StageBlock(0, 1, Levels.LEVEL_1, stage1),
@@ -61,7 +101,7 @@ export default class ArcadeHandler implements Processable {
         stage1.setEndSection(0, 0);
         this.stageButtons.push(stage1);
 
-        const stage2 = new StageButton();
+        const stage2 = new StageButton(1);
         stage2.setBlocks([
             new StageBlock(0, 0, Levels.LEVEL_1, stage2),
             new StageBlock(0, 1, Levels.LEVEL_1, stage2),
@@ -73,7 +113,7 @@ export default class ArcadeHandler implements Processable {
         stage2.setEndSection(4, 0);
         this.stageButtons.push(stage2);
 
-        const stage3 = new StageButton();
+        const stage3 = new StageButton(2);
         stage3.setBlocks([
             new StageBlock(0, 0, Levels.LEVEL_1, stage3),
             new StageBlock(0, 1, Levels.LEVEL_1, stage3),
@@ -85,7 +125,7 @@ export default class ArcadeHandler implements Processable {
         stage3.setEndSection(0, 4);
         this.stageButtons.push(stage3);
 
-        const stage4 = new StageButton();
+        const stage4 = new StageButton(3);
         stage4.setBlocks([
             new StageBlock(0, 0, Levels.LEVEL_1, stage4),
             new StageBlock(0, 1, Levels.LEVEL_1, stage4),

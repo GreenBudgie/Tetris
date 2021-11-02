@@ -9,6 +9,7 @@ export default class ButtonArcade extends MenuButton {
         return BlockColor.ORANGE;
     }
     onClick() {
+        ArcadeHandler.getHandler().startSelectingStages();
     }
     getTextSize() {
         return 64;

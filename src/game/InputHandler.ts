@@ -103,8 +103,10 @@ export class KeyBindings {
     public static readonly FIGURE_MOVE_DOWN = KeyBindings.register(new KeyBinding("ArrowDown", "KeyS"));
     public static readonly FIGURE_ROTATE = KeyBindings.register(new KeyBinding("ArrowUp", "KeyW"));
 
-    public static readonly MENU_BUTTON_UP = KeyBindings.register(new KeyBinding("ArrowUp", "KeyW"));
-    public static readonly MENU_BUTTON_DOWN = KeyBindings.register(new KeyBinding("ArrowDown", "KeyS"));
+    public static readonly MENU_UP = KeyBindings.register(new KeyBinding("ArrowUp", "KeyW"));
+    public static readonly MENU_DOWN = KeyBindings.register(new KeyBinding("ArrowDown", "KeyS"));
+    public static readonly MENU_LEFT = KeyBindings.register(new KeyBinding("ArrowLeft", "KeyA"));
+    public static readonly MENU_RIGHT = KeyBindings.register(new KeyBinding("ArrowRight", "KeyD"));
     public static readonly MENU_BUTTON_CLICK = KeyBindings.register(new KeyBinding("Enter", "Space"));
 
     private constructor() {}

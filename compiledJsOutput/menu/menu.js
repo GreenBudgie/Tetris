@@ -3,6 +3,7 @@ import InputHandler, { KeyBindings } from "../game/inputHandler.js";
 import ButtonChallenge from "./buttonChallenge.js";
 import ButtonArcade from "./buttonArcade.js";
 import ButtonEndless from "./buttonEndless.js";
+import ArcadeHandler from "./arcade/arcadeHandler.js";
 export default class Menu {
     constructor() {
         this.buttons = [];
@@ -45,21 +46,24 @@ export default class Menu {
         for (const button of this.buttons) {
             button.update(delta);
         }
-        if (!this.isFading) {
-            if (InputHandler.getHandler().isKeyBindingDown(KeyBindings.MENU_BUTTON_DOWN)) {
+        const listenToInputs = !ArcadeHandler.getHandler().isSelectingStages;
+        if (!this.isFading && listenToInputs) {
+            if (InputHandler.getHandler().isKeyBindingDown(KeyBindings.MENU_DOWN)) {
                 if (this._currentButtonIndex < this.buttons.length - 1) {
                     this.changeCurrentButton(1);
                     return;
                 }
             }
-            if (InputHandler.getHandler().isKeyBindingDown(KeyBindings.MENU_BUTTON_UP)) {
+            if (InputHandler.getHandler().isKeyBindingDown(KeyBindings.MENU_UP)) {
                 if (this._currentButtonIndex > 0) {
                     this.changeCurrentButton(-1);
                 }
             }
         }
-        if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_BUTTON_CLICK)) {
-            this._currentButton.onClick();
+        if (listenToInputs &&
+            (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_BUTTON_CLICK) ||
+                InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_RIGHT))) {
+            this._currentButton.click();
         }
     }
     updateCurrentButton() {
