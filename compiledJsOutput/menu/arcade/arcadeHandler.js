@@ -62,6 +62,7 @@ export default class ArcadeHandler {
                 }
             }
             if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_SELECT)) {
+                InputHandler.getHandler().clearCurrentFrameBindings();
                 this.startLevelSelect();
             }
             if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_BACK)) {

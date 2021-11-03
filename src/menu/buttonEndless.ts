@@ -22,7 +22,7 @@ export default class ButtonEndless extends MenuButton {
     }
 
     public onClick(): void {
-        StateHandler.getHandler().GAME.begin();
+        
     }
 
     public getText(): string {

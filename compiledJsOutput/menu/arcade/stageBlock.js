@@ -1,8 +1,11 @@
 import Transition from "../../effect/transition.js";
+import InputHandler, { KeyBindings } from "../../game/inputHandler.js";
+import StateHandler from "../../state/stateHandler.js";
 import ArcadeHandler from "./arcadeHandler.js";
 export default class StageBlock {
     constructor(relativeX, relativeY, level, stageButton) {
         this.textAlpha = 0;
+        this.selectionSize = 1;
         this.isSelected = false;
         this.x = relativeX;
         this.y = relativeY;
@@ -28,12 +31,25 @@ export default class StageBlock {
     onStageDeselected() {
         this.textAlphaTransition?.interruptNoCallback();
         this.textAlphaTransition = new Transition(value => this.textAlpha = value, this.textAlpha, 0, 12);
+        if (this.isSelected)
+            this.deselect();
     }
-    onSelect() {
+    select() {
+        this.selectionSizeTransition?.interruptNoCallback();
+        this.selectionSizeTransition = new Transition(value => this.selectionSize = value, this.selectionSize, 0.9, 8);
+        this.isSelected = true;
     }
-    onDeselect() {
+    deselect() {
+        this.selectionSizeTransition?.interruptNoCallback();
+        this.selectionSizeTransition = new Transition(value => this.selectionSize = value, this.selectionSize, 1, 8);
+        this.isSelected = false;
     }
     update(delta) {
+        if (this.isSelected && InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_SELECT)) {
+            const gameState = StateHandler.getHandler().GAME;
+            gameState.level = this.level;
+            gameState.begin();
+        }
     }
     getBlockSize() {
         return ArcadeHandler.getHandler().FIELD_SECTION_SIZE * this.stageButton.scale;
@@ -60,6 +76,7 @@ export default class StageBlock {
         context.fillStyle = this.getColor().rgbString;
         context.strokeStyle = `rgba(0, 0, 0, ${this.getColor().alpha})`;
         context.lineWidth = 2 * this.stageButton.scale;
+        //Draw block
         context.beginPath();
         context.moveTo(startX, startY);
         context.lineTo(startX + blockSize, startY);
@@ -67,6 +84,18 @@ export default class StageBlock {
         context.lineTo(startX, startY + blockSize);
         context.lineTo(startX, startY);
         context.fill();
+        context.stroke();
+        const selectionStartX = startX + blockSize * (1 - this.selectionSize);
+        const selectionStartY = startY + blockSize * (1 - this.selectionSize);
+        const selectionEndX = startX + blockSize * this.selectionSize;
+        const selectionEndY = startY + blockSize * this.selectionSize;
+        //Draw level selection
+        context.beginPath();
+        context.moveTo(selectionStartX, selectionStartY);
+        context.lineTo(selectionEndX, selectionStartY);
+        context.lineTo(selectionEndX, selectionEndY);
+        context.lineTo(selectionStartX, selectionEndY);
+        context.lineTo(selectionStartX, selectionStartY);
         context.stroke();
         this.drawLevelNumber(context);
     }

@@ -126,6 +126,7 @@ export default class StageButton implements Processable, Colorizable, Positionab
         this.moveEffect.easing = easeOutQuad;
 
         this.blocks.forEach(block => block.onStageSelected());
+        this.blocks[0].select();
     }
 
     public onDeselect(): void {
@@ -152,12 +153,11 @@ export default class StageButton implements Processable, Colorizable, Positionab
     }
 
     public update(delta: number): void {
+        this.blocks.forEach(block => block.update(delta));
     }
 
     public draw(context: CanvasRenderingContext2D): void {
-        for(const block of this.blocks) {
-            block.draw(context);
-        }
+        this.blocks.forEach(block => block.draw(context));
     }
 
     public setEndSection(sectionX: number, sectionY: number): void {

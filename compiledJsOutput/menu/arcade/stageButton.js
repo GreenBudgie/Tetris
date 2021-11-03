@@ -78,6 +78,7 @@ export default class StageButton {
         this.moveEffect = new MoveEffect(this, this.selectedX, this.selectedY, 12);
         this.moveEffect.easing = easeOutQuad;
         this.blocks.forEach(block => block.onStageSelected());
+        this.blocks[0].select();
     }
     onDeselect() {
         this.moveEffect?.interruptNoCallback();
@@ -97,11 +98,10 @@ export default class StageButton {
         this.fadeEffect = new ColorFadeEffect(this.currentColor, this.grayscale, 8);
     }
     update(delta) {
+        this.blocks.forEach(block => block.update(delta));
     }
     draw(context) {
-        for (const block of this.blocks) {
-            block.draw(context);
-        }
+        this.blocks.forEach(block => block.draw(context));
     }
     setEndSection(sectionX, sectionY) {
         this.endX = this.getRealXBySection(sectionX);

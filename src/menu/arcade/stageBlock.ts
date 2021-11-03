@@ -1,7 +1,9 @@
 import Colorizable from "../../color/colorizable.js";
 import RGBColor from "../../color/rgbColor.js";
 import Transition from "../../effect/transition.js";
+import InputHandler, {KeyBindings} from "../../game/inputHandler.js";
 import Level from "../../level/level.js";
+import StateHandler from "../../state/stateHandler.js";
 import Positionable from "../../util/positionable.js";
 import Processable from "../../util/processable.js";
 import ArcadeHandler from "./arcadeHandler.js";
@@ -15,7 +17,7 @@ export default class StageBlock implements Processable, Colorizable, Positionabl
     private stageButton: StageButton;
 
     private textAlpha = 0;
-
+    private selectionSize = 1;
     private isSelected = false;
 
     public constructor(relativeX: number, relativeY: number, level: Level, stageButton: StageButton) {
@@ -51,18 +53,29 @@ export default class StageBlock implements Processable, Colorizable, Positionabl
     public onStageDeselected(): void {
         this.textAlphaTransition?.interruptNoCallback();
         this.textAlphaTransition = new Transition(value => this.textAlpha = value, this.textAlpha, 0, 12);
+        if(this.isSelected) this.deselect();
     }
 
-    public onSelect(): void {
+    private selectionSizeTransition: Transition;
 
+    public select(): void {
+        this.selectionSizeTransition?.interruptNoCallback();
+        this.selectionSizeTransition = new Transition(value => this.selectionSize = value, this.selectionSize, 0.9, 8);
+        this.isSelected = true;
     }
 
-    public onDeselect(): void {
-
+    public deselect(): void {
+        this.selectionSizeTransition?.interruptNoCallback();
+        this.selectionSizeTransition = new Transition(value => this.selectionSize = value, this.selectionSize, 1, 8);
+        this.isSelected = false;
     }
 
     public update(delta: number): void {
-        
+        if(this.isSelected && InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_SELECT)) {
+            const gameState = StateHandler.getHandler().GAME;
+            gameState.level = this.level;
+            gameState.begin();
+        }
     }
 
     private getBlockSize(): number {
@@ -98,6 +111,7 @@ export default class StageBlock implements Processable, Colorizable, Positionabl
         context.strokeStyle = `rgba(0, 0, 0, ${this.getColor().alpha})`;
         context.lineWidth = 2 * this.stageButton.scale;
 
+        //Draw block
         context.beginPath();
         context.moveTo(startX, startY);
         context.lineTo(startX + blockSize, startY);
@@ -105,6 +119,20 @@ export default class StageBlock implements Processable, Colorizable, Positionabl
         context.lineTo(startX, startY + blockSize);
         context.lineTo(startX, startY);
         context.fill();
+        context.stroke();
+
+        const selectionStartX = startX + blockSize * (1 - this.selectionSize);
+        const selectionStartY = startY + blockSize * (1 - this.selectionSize);
+        const selectionEndX = startX + blockSize * this.selectionSize;
+        const selectionEndY = startY + blockSize * this.selectionSize;
+
+        //Draw level selection
+        context.beginPath();
+        context.moveTo(selectionStartX, selectionStartY);
+        context.lineTo(selectionEndX, selectionStartY);
+        context.lineTo(selectionEndX, selectionEndY);
+        context.lineTo(selectionStartX, selectionEndY);
+        context.lineTo(selectionStartX, selectionStartY);
         context.stroke();
         
         this.drawLevelNumber(context);
