@@ -92,6 +92,7 @@ export default class Effect implements Processable {
     }
 
     private end(): void {
+        if(!this.isActive) return;
         this.onEnd();
         this.callback();
         this._isActive = false;

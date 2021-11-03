@@ -76,6 +76,8 @@ export default class Effect {
         this.end();
     }
     end() {
+        if (!this.isActive)
+            return;
         this.onEnd();
         this.callback();
         this._isActive = false;
