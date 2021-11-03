@@ -1,6 +1,8 @@
+import Transition from "../../effect/transition.js";
 import ArcadeHandler from "./arcadeHandler.js";
 export default class StageBlock {
     constructor(relativeX, relativeY, level, stageButton) {
+        this.textAlpha = 0;
         this.isSelected = false;
         this.x = relativeX;
         this.y = relativeY;
@@ -19,9 +21,17 @@ export default class StageBlock {
     set y(y) {
         this._y = y;
     }
-    select() {
+    onStageSelected() {
+        this.textAlphaTransition?.interruptNoCallback();
+        this.textAlphaTransition = new Transition(value => this.textAlpha = value, this.textAlpha, 1, 12);
     }
-    deselect() {
+    onStageDeselected() {
+        this.textAlphaTransition?.interruptNoCallback();
+        this.textAlphaTransition = new Transition(value => this.textAlpha = value, this.textAlpha, 0, 12);
+    }
+    onSelect() {
+    }
+    onDeselect() {
     }
     update(delta) {
     }
@@ -58,17 +68,15 @@ export default class StageBlock {
         context.lineTo(startX, startY);
         context.fill();
         context.stroke();
-        if (ArcadeHandler.getHandler().state == "levelSelect" && this.stageButton.isHoveredOrSelected()) {
-            this.drawLevelNumber(context);
-        }
+        this.drawLevelNumber(context);
     }
     drawLevelNumber(context) {
         context.font = `${this.getScaledFontSize()}px ft_default`;
         context.textAlign = "center";
         context.textBaseline = "middle";
         context.lineWidth = 2;
-        context.strokeStyle = `rgba(0, 0, 0, ${this.stageButton.getColor().alpha})`;
-        context.fillStyle = `rgba(255, 255, 255, ${this.stageButton.getColor().alpha})`;
+        context.strokeStyle = `rgba(0, 0, 0, ${this.textAlpha})`;
+        context.fillStyle = `rgba(255, 255, 255, ${this.textAlpha})`;
         const centerX = this.getRealTextCenterX();
         const centerY = this.getRealTextCenterY();
         context.fillText(this.level.levelNumber.toString(), centerX, centerY);

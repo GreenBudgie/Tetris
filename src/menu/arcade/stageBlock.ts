@@ -1,7 +1,7 @@
 import Colorizable from "../../color/colorizable.js";
 import RGBColor from "../../color/rgbColor.js";
+import Transition from "../../effect/transition.js";
 import Level from "../../level/level.js";
-import State from "../../state/state.js";
 import Positionable from "../../util/positionable.js";
 import Processable from "../../util/processable.js";
 import ArcadeHandler from "./arcadeHandler.js";
@@ -13,6 +13,8 @@ export default class StageBlock implements Processable, Colorizable, Positionabl
     private _y: number;
     private level: Level;
     private stageButton: StageButton;
+
+    private textAlpha = 0;
 
     private isSelected = false;
 
@@ -39,11 +41,23 @@ export default class StageBlock implements Processable, Colorizable, Positionabl
         this._y = y;
     }
 
-    public select(): void {
+    private textAlphaTransition: Transition;
+
+    public onStageSelected(): void {
+        this.textAlphaTransition?.interruptNoCallback();
+        this.textAlphaTransition = new Transition(value => this.textAlpha = value, this.textAlpha, 1, 12);
+    }
+
+    public onStageDeselected(): void {
+        this.textAlphaTransition?.interruptNoCallback();
+        this.textAlphaTransition = new Transition(value => this.textAlpha = value, this.textAlpha, 0, 12);
+    }
+
+    public onSelect(): void {
 
     }
 
-    public deselect(): void {
+    public onDeselect(): void {
 
     }
 
@@ -92,10 +106,8 @@ export default class StageBlock implements Processable, Colorizable, Positionabl
         context.lineTo(startX, startY);
         context.fill();
         context.stroke();
-
-        if(ArcadeHandler.getHandler().state == "levelSelect" && this.stageButton.isHoveredOrSelected()) {
-            this.drawLevelNumber(context);
-        }
+        
+        this.drawLevelNumber(context);
     }
 
     private drawLevelNumber(context: CanvasRenderingContext2D): void {
@@ -103,8 +115,8 @@ export default class StageBlock implements Processable, Colorizable, Positionabl
         context.textAlign = "center";
         context.textBaseline = "middle";
         context.lineWidth = 2;
-        context.strokeStyle = `rgba(0, 0, 0, ${this.stageButton.getColor().alpha})`;
-        context.fillStyle = `rgba(255, 255, 255, ${this.stageButton.getColor().alpha})`;
+        context.strokeStyle = `rgba(0, 0, 0, ${this.textAlpha})`;
+        context.fillStyle = `rgba(255, 255, 255, ${this.textAlpha})`;
 
         const centerX = this.getRealTextCenterX();
         const centerY = this.getRealTextCenterY();

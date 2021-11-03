@@ -124,6 +124,8 @@ export default class StageButton implements Processable, Colorizable, Positionab
 
         this.moveEffect = new MoveEffect(this, this.selectedX, this.selectedY, 12);
         this.moveEffect.easing = easeOutQuad;
+
+        this.blocks.forEach(block => block.onStageSelected());
     }
 
     public onDeselect(): void {
@@ -135,6 +137,8 @@ export default class StageButton implements Processable, Colorizable, Positionab
 
         this.moveEffect = new MoveEffect(this, this.endX, this.endY, 12);
         this.moveEffect.easing = easeInQuad;
+
+        this.blocks.forEach(block => block.onStageDeselected());
     }
 
     public onHover(): void {
