@@ -3,6 +3,7 @@ import RGBColor from "../../color/rgbColor.js";
 import { easeInOutQuad, easeInQuad, easeOutQuad } from "../../effect/effectEasings.js";
 import MoveEffect from "../../effect/moveEffect.js";
 import ScaleEffect from "../../effect/scaleEffect.js";
+import InputHandler, { KeyBindings } from "../../game/inputHandler.js";
 import ArcadeHandler from "./arcadeHandler.js";
 export default class StageButton {
     constructor(index) {
@@ -98,7 +99,46 @@ export default class StageButton {
         this.fadeEffect = new ColorFadeEffect(this.currentColor, this.grayscale, 8);
     }
     update(delta) {
+        if (ArcadeHandler.getHandler().state == "levelSelect") {
+            this.handleSelectionMovement();
+        }
         this.blocks.forEach(block => block.update(delta));
+    }
+    handleSelectionMovement() {
+        let blockDeltaX = 0;
+        let blockDeltaY = 0;
+        const input = InputHandler.getHandler();
+        if (input.isKeyBindingPressed(KeyBindings.MENU_UP)) {
+            blockDeltaY = -1;
+        }
+        else if (input.isKeyBindingPressed(KeyBindings.MENU_RIGHT)) {
+            blockDeltaX = 1;
+        }
+        else if (input.isKeyBindingPressed(KeyBindings.MENU_DOWN)) {
+            blockDeltaY = 1;
+        }
+        else if (input.isKeyBindingPressed(KeyBindings.MENU_LEFT)) {
+            blockDeltaX = -1;
+        }
+        if (blockDeltaX != 0 || blockDeltaY != 0) {
+            const selectedBlock = this.getSelectedBlock();
+            if (selectedBlock != undefined) {
+                const nextBlock = this.getBlockByPos(selectedBlock.x + blockDeltaX, selectedBlock.y + blockDeltaY);
+                if (nextBlock != undefined) {
+                    selectedBlock.deselect();
+                    nextBlock.select();
+                }
+                else {
+                    ArcadeHandler.getHandler().stopLevelSelect();
+                }
+            }
+        }
+    }
+    getSelectedBlock() {
+        return this.blocks.find(block => block.isSelected);
+    }
+    getBlockByPos(relativeX, relativeY) {
+        return this.blocks.find(block => block.x == relativeX && block.y == relativeY);
     }
     draw(context) {
         this.blocks.forEach(block => block.draw(context));

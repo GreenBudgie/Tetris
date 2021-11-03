@@ -1,5 +1,6 @@
 import Colorizable from "../../color/colorizable.js";
 import RGBColor from "../../color/rgbColor.js";
+import {easeInOutQuad} from "../../effect/effectEasings.js";
 import Transition from "../../effect/transition.js";
 import InputHandler, {KeyBindings} from "../../game/inputHandler.js";
 import Level from "../../level/level.js";
@@ -18,7 +19,7 @@ export default class StageBlock implements Processable, Colorizable, Positionabl
 
     private textAlpha = 0;
     private selectionSize = 1;
-    private isSelected = false;
+    public isSelected = false;
 
     public constructor(relativeX: number, relativeY: number, level: Level, stageButton: StageButton) {
         this.x = relativeX;
@@ -61,12 +62,14 @@ export default class StageBlock implements Processable, Colorizable, Positionabl
     public select(): void {
         this.selectionSizeTransition?.interruptNoCallback();
         this.selectionSizeTransition = new Transition(value => this.selectionSize = value, this.selectionSize, 0.9, 8);
+        this.selectionSizeTransition.easing = easeInOutQuad;
         this.isSelected = true;
     }
 
     public deselect(): void {
         this.selectionSizeTransition?.interruptNoCallback();
         this.selectionSizeTransition = new Transition(value => this.selectionSize = value, this.selectionSize, 1, 8);
+        this.selectionSizeTransition.easing = easeInOutQuad;
         this.isSelected = false;
     }
 

@@ -4,6 +4,7 @@ import RGBColor from "../../color/rgbColor.js";
 import {easeInOutQuad, easeInQuad, easeOutQuad} from "../../effect/effectEasings.js";
 import MoveEffect from "../../effect/moveEffect.js";
 import ScaleEffect from "../../effect/scaleEffect.js";
+import InputHandler, {KeyBindings} from "../../game/inputHandler.js";
 import Positionable from "../../util/positionable.js";
 import Processable from "../../util/processable.js";
 import Scalable from "../../util/scalable.js";
@@ -153,7 +154,45 @@ export default class StageButton implements Processable, Colorizable, Positionab
     }
 
     public update(delta: number): void {
+        if(ArcadeHandler.getHandler().state == "levelSelect") {
+            this.handleSelectionMovement();
+        }
         this.blocks.forEach(block => block.update(delta));
+    }
+
+    private handleSelectionMovement(): void {
+        let blockDeltaX = 0;
+        let blockDeltaY = 0;
+        const input = InputHandler.getHandler();
+        if(input.isKeyBindingPressed(KeyBindings.MENU_UP)) {
+            blockDeltaY = -1;
+        } else if(input.isKeyBindingPressed(KeyBindings.MENU_RIGHT)) {
+            blockDeltaX = 1;
+        } else if(input.isKeyBindingPressed(KeyBindings.MENU_DOWN)) {
+            blockDeltaY = 1;
+        } else if(input.isKeyBindingPressed(KeyBindings.MENU_LEFT)) {
+            blockDeltaX = -1;
+        }
+        if(blockDeltaX != 0 || blockDeltaY != 0) {
+            const selectedBlock = this.getSelectedBlock();
+            if(selectedBlock != undefined) {
+                const nextBlock = this.getBlockByPos(selectedBlock.x + blockDeltaX, selectedBlock.y + blockDeltaY);
+                if(nextBlock != undefined) {
+                    selectedBlock.deselect();
+                    nextBlock.select();
+                } else {
+                    ArcadeHandler.getHandler().stopLevelSelect();
+                }
+            }
+        }
+    }
+
+    private getSelectedBlock(): StageBlock | undefined {
+        return this.blocks.find(block => block.isSelected);
+    }
+
+    private getBlockByPos(relativeX: number, relativeY: number): StageBlock | undefined {
+        return this.blocks.find(block => block.x == relativeX && block.y == relativeY);
     }
 
     public draw(context: CanvasRenderingContext2D): void {

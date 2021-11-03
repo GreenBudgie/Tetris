@@ -1,3 +1,4 @@
+import { easeInOutQuad } from "../../effect/effectEasings.js";
 import Transition from "../../effect/transition.js";
 import InputHandler, { KeyBindings } from "../../game/inputHandler.js";
 import StateHandler from "../../state/stateHandler.js";
@@ -37,11 +38,13 @@ export default class StageBlock {
     select() {
         this.selectionSizeTransition?.interruptNoCallback();
         this.selectionSizeTransition = new Transition(value => this.selectionSize = value, this.selectionSize, 0.9, 8);
+        this.selectionSizeTransition.easing = easeInOutQuad;
         this.isSelected = true;
     }
     deselect() {
         this.selectionSizeTransition?.interruptNoCallback();
         this.selectionSizeTransition = new Transition(value => this.selectionSize = value, this.selectionSize, 1, 8);
+        this.selectionSizeTransition.easing = easeInOutQuad;
         this.isSelected = false;
     }
     update(delta) {
