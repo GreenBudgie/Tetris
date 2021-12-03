@@ -1,6 +1,4 @@
-export default interface Processable {
+import Drawable from "./drawable.js";
+import Updatable from "./updatable.js";
 
-    update(delta: number): void;
-    draw(context: CanvasRenderingContext2D): void;
-
-}
+export default interface Processable extends Updatable, Drawable {}
