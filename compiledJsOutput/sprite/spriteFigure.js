@@ -6,6 +6,36 @@ export default class SpriteFigure extends Sprite {
         this._outlineMode = "border";
         this._outlineWidth = 2;
         this._shape = shape;
+        this.blockWidth = this.calculateBlockWidth();
+        this.blockHeight = this.calculateBlockHeight();
+    }
+    calculateBlockWidth() {
+        let maxX = 0;
+        for (const blockPos of this.shape) {
+            if (blockPos[0] > maxX)
+                maxX = blockPos[0];
+        }
+        return maxX + 1;
+    }
+    calculateBlockHeight() {
+        let maxY = 0;
+        for (const blockPos of this.shape) {
+            if (blockPos[1] > maxY)
+                maxY = blockPos[1];
+        }
+        return maxY + 1;
+    }
+    getBlockWidth() {
+        return this.blockWidth;
+    }
+    getBlockHeight() {
+        return this.blockHeight;
+    }
+    getRealWidth() {
+        return this.blockWidth * this.blockSize;
+    }
+    getRealHeight() {
+        return this.blockHeight * this.blockSize;
     }
     get shape() {
         return this._shape;

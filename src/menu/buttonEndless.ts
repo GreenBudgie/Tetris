@@ -1,7 +1,7 @@
 import BlockColor from "../color/blockColor.js";
 import RGBColor from "../color/rgbColor.js";
 import StateHandler from "../state/stateHandler.js";
-import MenuButton, {ButtonShape} from "./menuButton.js";
+import MenuButton from "./menuButton.js";
 
 export default class ButtonEndless extends MenuButton {
 
@@ -11,10 +11,6 @@ export default class ButtonEndless extends MenuButton {
 
     public override getColor(): RGBColor {
         return BlockColor.BLUE;
-    }
-
-    public override getShapeWidth(): number {
-        return 3;
     }
 
     public getTextSize(): number {
@@ -29,12 +25,12 @@ export default class ButtonEndless extends MenuButton {
         return "Endless";
     }
 
-    public getShape(): ButtonShape {
+    public getShape(): [number, number][] {
         return [
-            {x: 1, y: 0},
-            {x: 1, y: 1},
-            {x: 0, y: 1},
-            {x: 0, y: 2},
+            [1, 0],
+            [1, 1],
+            [0, 1],
+            [0, 2],
         ]
     }
 

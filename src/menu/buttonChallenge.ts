@@ -1,6 +1,6 @@
 import BlockColor from "../color/blockColor.js";
 import RGBColor from "../color/rgbColor.js";
-import MenuButton, {ButtonShape} from "./menuButton.js";
+import MenuButton from "./menuButton.js";
 
 export default class ButtonChallenge extends MenuButton {
 
@@ -24,12 +24,12 @@ export default class ButtonChallenge extends MenuButton {
         return 58;
     }
 
-    public getShape(): ButtonShape {
+    public getShape(): [number, number][] {
         return [
-            {x: 0, y: 1},
-            {x: 1, y: 1},
-            {x: 2, y: 1},
-            {x: 1, y: 0},
+            [0, 1],
+            [1, 1],
+            [2, 1],
+            [1, 0]
         ]
     }
 

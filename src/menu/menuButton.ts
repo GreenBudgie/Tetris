@@ -1,57 +1,44 @@
-import ColorFadeEffect from "../color/colorFadeEffect.js";
 import Colorizable from "../color/colorizable.js";
 import RGBColor from "../color/rgbColor.js";
 import Tetris from "../game/tetris.js";
+import SpriteFigure from "../sprite/spriteFigure.js";
 import Processable from "../util/processable.js";
 import Menu from "./menu.js";
 
 export default abstract class MenuButton implements Colorizable, Processable {
 
-    public readonly index: number;
-    public readonly blockSize = 85;
-    public readonly shape = this.getShape();
-    public readonly shapeWidth = this.getShapeWidth(); 
-    public readonly shapeHeight = this.getShapeHeight(); 
+    public readonly sprite: SpriteFigure;
 
-    public readonly x: number = this.blockSize;
-    public readonly textCenterX: number = this.x + this.getTextCenterPosition().x * this.blockSize;
-    
-    public readonly y: number;
+    public readonly index: number;
+
+    public readonly textCenterX: number;
     public readonly textCenterY: number;
 
-    public currentColor: RGBColor;
     public readonly grayColor = RGBColor.grayscale(200);
 
     public constructor(index: number) {
         this.index = index;
-        const startY: number = Tetris.instance.WINDOW_HEIGHT / 2 - this.blockSize * this.shapeHeight / 2;
-        this.y = startY + (index - 1) * this.blockSize * 1.5;
-        this.textCenterY = this.y + this.getTextCenterPosition().y * this.blockSize;
-        this.currentColor = index == 0 ? this.getColor().clone() : this.grayColor.clone();
+
+        this.sprite = new SpriteFigure(this.getShape());
+        this.sprite.blockSize = 85;
+        this.sprite.setOutlineWidthBasedOnBlockSize();
+
+        const startY: number = Tetris.instance.WINDOW_HEIGHT / 2 - this.sprite.getRealHeight() / 2;
+
+        this.sprite.x = this.sprite.blockSize;
+        this.sprite.y = startY + (index - 1) * this.sprite.blockSize * 1.5;
+        this.sprite.getColor().setTo(index == 0 ? this.getColor() : this.grayColor);
+
+        this.textCenterX = this.sprite.x + this.getTextCenterPosition().x * this.sprite.blockSize;
+        this.textCenterY = this.sprite.y + this.getTextCenterPosition().y * this.sprite.blockSize;
     }
 
     public abstract getColor(): RGBColor;
     public abstract onClick(): void;
     public abstract getText(): string;
-    public abstract getShape(): ButtonShape;
+    public abstract getShape(): [number, number][];
     public abstract getTextCenterPosition(): {x: number, y: number};
     public abstract getTextSize(): number;
-
-    public getShapeWidth(): number {
-        let maxX = 0;
-        for(const blockPos of this.shape) {
-            if(blockPos.x > maxX) maxX = blockPos.x;
-        }
-        return maxX + 1;
-    }
-
-    public getShapeHeight(): number {
-        let maxY = 0;
-        for(const blockPos of this.shape) {
-            if(blockPos.y > maxY) maxY = blockPos.y;
-        }
-        return maxY + 1;
-    }
 
     public isCurrent(): boolean {
         return Menu.getMenu().currentButton == this;
@@ -88,55 +75,7 @@ export default abstract class MenuButton implements Colorizable, Processable {
     }
 
     private drawFigure(context: CanvasRenderingContext2D): void {
-        context.strokeStyle = "black";
-        context.lineWidth = 4
-        context.lineCap = "square";
-        context.fillStyle = this.currentColor.rgbString;
-        
-        for(const blockPos of this.shape) {
-            const currentStartX = this.x + blockPos.x * this.blockSize;
-            const currentStartY = this.y + blockPos.y * this.blockSize;
-            context.beginPath();
-            context.moveTo(currentStartX - 1, currentStartY - 1);
-            context.lineTo(currentStartX + this.blockSize + 1, currentStartY - 1);
-            context.lineTo(currentStartX + this.blockSize + 1, currentStartY + this.blockSize + 1);
-            context.lineTo(currentStartX - 1, currentStartY + this.blockSize + 1);
-            context.lineTo(currentStartX - 1, currentStartY - 1);
-            context.fill();
-
-            context.beginPath();
-            context.moveTo(currentStartX, currentStartY);
-
-            if(this.isFree(blockPos, 0, -1)) {
-                context.lineTo(currentStartX + this.blockSize, currentStartY);
-            } else {
-                context.moveTo(currentStartX + this.blockSize, currentStartY);
-            }
-
-            if(this.isFree(blockPos, 1, 0)) {
-                context.lineTo(currentStartX + this.blockSize, currentStartY + this.blockSize);
-            } else {
-                context.moveTo(currentStartX + this.blockSize, currentStartY + this.blockSize);
-            }
-
-            if(this.isFree(blockPos, 0, 1)) {
-                context.lineTo(currentStartX, currentStartY + this.blockSize);
-            } else {
-                context.moveTo(currentStartX, currentStartY + this.blockSize);
-            }
-
-            if(this.isFree(blockPos, -1, 0)) {
-                context.lineTo(currentStartX, currentStartY);
-            }
-
-            context.stroke();
-        }
-    }
-
-    private isFree(blockPos: {x: number, y: number}, dx: number, dy: number) {
-        return !this.shape.some(pos => pos.x == blockPos.x + dx && pos.y == blockPos.y + dy);
+        this.sprite.draw(context);
     }
 
 }
-
-export type ButtonShape = {x: number, y: number}[];

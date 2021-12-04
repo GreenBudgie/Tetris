@@ -19,10 +19,10 @@ export default class ButtonArcade extends MenuButton {
     }
     getShape() {
         return [
-            { x: 0, y: 1 },
-            { x: 0, y: 0 },
-            { x: 1, y: 0 },
-            { x: 2, y: 0 },
+            [0, 1],
+            [0, 0],
+            [1, 0],
+            [2, 0],
         ];
     }
     onSelect() {

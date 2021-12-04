@@ -32,12 +32,12 @@ export default class Menu {
     changeCurrentButton(di) {
         this.isFading = true;
         const fadeTime = 12;
-        new ColorFadeEffect(this.currentButton.currentColor, this.currentButton.grayColor, fadeTime);
+        new ColorFadeEffect(this.currentButton.sprite.getColor(), this.currentButton.grayColor, fadeTime);
         this._currentButton.onDeselect();
         this._currentButtonIndex += di;
         this.updateCurrentButton();
         this._currentButton.onSelect();
-        const fadeEffect = new ColorFadeEffect(this.currentButton.currentColor, this.currentButton.getColor(), fadeTime);
+        const fadeEffect = new ColorFadeEffect(this.currentButton.sprite.getColor(), this.currentButton.getColor(), fadeTime);
         fadeEffect.callback = () => {
             this.isFading = false;
         };

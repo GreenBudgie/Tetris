@@ -1,7 +1,7 @@
 import BlockColor from "../color/blockColor.js";
 import RGBColor from "../color/rgbColor.js";
 import ArcadeHandler from "./arcade/arcadeHandler.js";
-import MenuButton, {ButtonShape} from "./menuButton.js";
+import MenuButton from "./menuButton.js";
 
 export default class ButtonArcade extends MenuButton {
 
@@ -25,12 +25,12 @@ export default class ButtonArcade extends MenuButton {
         return "Arcade";
     }
 
-    public getShape(): ButtonShape {
+    public getShape(): [number, number][] {
         return [
-            {x: 0, y: 1},
-            {x: 0, y: 0},
-            {x: 1, y: 0},
-            {x: 2, y: 0},
+            [0, 1],
+            [0, 0],
+            [1, 0],
+            [2, 0],
         ]
     }
 
