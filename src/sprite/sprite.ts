@@ -1,21 +1,37 @@
 import Colorizable from "../color/colorizable.js";
 import RGBColor from "../color/rgbColor.js";
-import rgbColor from "../color/rgbColor.js";
 import Drawable from "../util/drawable.js";
 import Positionable from "../util/positionable.js";
 import Scalable from "../util/scalable.js";
 
 /**
- * A sprite represents an image which is procedurally drawn
+ * A sprite represents a procedurally drawn image
  */
 export default abstract class Sprite implements Drawable, Positionable, Scalable, Colorizable {
 
-    private _x: number;
-    private _y: number;
-    private _scale: number;
-    private _color: RGBColor;
-
+    private _x: number = 0;
+    private _y: number = 0;
+    private _scale: number = 1;
+    private _rotation: number = 0;
+    private _rotationCenter: [number, number] = [0, 0];
+    private _color: RGBColor = RGBColor.grayscale(255);
     private _visible: boolean = true;
+
+    public get rotationCenter(): [number, number] {
+        return this._rotationCenter;
+    }
+
+    public set rotationCenter(rotationCenter: [number, number]) {
+        this._rotationCenter = rotationCenter;
+    }
+
+    public set rotation(rotation: number) {
+        this._rotation = rotation;
+    }
+
+    public get rotation() {
+        return this._rotation;
+    }
 
     public isVisible() {
         return this._visible;
@@ -62,10 +78,9 @@ export default abstract class Sprite implements Drawable, Positionable, Scalable
     }
 
     draw(context: CanvasRenderingContext2D): void {
-        if(this._visible) this.drawSprite(context, this._x, this._y, this._scale, this._color);
+        if(this._visible) this.drawSprite(context);
     }
 
-    protected abstract drawSprite(context: CanvasRenderingContext2D, 
-        x: number, y: number, scale: number, color: RGBColor): void;
+    protected abstract drawSprite(context: CanvasRenderingContext2D): void;
 
 }
