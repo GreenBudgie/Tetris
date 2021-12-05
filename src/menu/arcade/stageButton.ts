@@ -4,7 +4,7 @@ import RGBColor from "../../color/rgbColor.js";
 import {easeInOutQuad, easeInQuad, easeOutQuad} from "../../effect/effectEasings.js";
 import MoveEffect from "../../effect/moveEffect.js";
 import ScaleEffect from "../../effect/scaleEffect.js";
-import InputHandler, {KeyBindings} from "../../game/inputHandler.js";
+import InputHandler, {KeyBindings} from "../../main/inputHandler.js";
 import Positionable from "../../util/positionable.js";
 import Processable from "../../util/processable.js";
 import Scalable from "../../util/scalable.js";

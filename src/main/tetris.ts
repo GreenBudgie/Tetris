@@ -1,5 +1,5 @@
 import InputHandler from "./inputHandler.js";
-import Levels from "../level/levels.js";
+import Levels from "../game/levels.js";
 import StateHandler from "../state/stateHandler.js";
 import EffectHandler from "../effect/effectHandler.js";
 

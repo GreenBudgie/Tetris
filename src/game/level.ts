@@ -1,56 +1,82 @@
-import { Figures } from "../game/figure.js";
-import Tetris from "../game/tetris.js";
-export default class Level {
-    constructor(levelNumber) {
-        this.filled_rows = 0;
-        this.points = 0;
+import Field from "../game/field.js";
+import Figure, {Figures} from "../game/figure.js";
+import Tetris from "../main/tetris.js";
+import Processable from "../util/processable.js";
+
+export default class Level implements Processable {
+
+    public levelNumber: number;
+
+    public field: Field;
+    public filled_rows: number = 0;
+    public points: number = 0;
+    public requiredPoints: number;
+
+    public nextFigure: Figure;
+
+    public constructor(levelNumber: number) {
         this.levelNumber = levelNumber;
         this.selectNextFigure();
     }
-    selectNextFigure() {
+
+    public selectNextFigure() {
         this.nextFigure = Figures.createRandomFigure();
     }
-    createNextFigureAtField() {
+
+    public createNextFigureAtField() {
         this.field.createFallingFigure(this.nextFigure);
     }
-    update(delta) {
+
+    public update(delta: number) {
         this.field.update(delta);
     }
-    draw(context) {
+
+    public draw(context: CanvasRenderingContext2D) {
         this.field.draw(context);
         this.drawPoints(context);
         this.drawNextFigurePreview(context);
     }
-    getRightSideMiddle() {
+
+    public getRightSideMiddle() {
         const fieldEndX = this.field.getRealFieldX() + this.field.getRealFieldWidth();
         return Math.round((fieldEndX + Tetris.instance.WINDOW_WIDTH) / 2);
     }
-    getLeftSideMiddle() {
+
+    public getLeftSideMiddle() {
         return this.field.getRealFieldX() / 2;
     }
-    drawNextFigurePreview(context) {
+
+    private drawNextFigurePreview(context: CanvasRenderingContext2D) {
         context.font = "36px ft_default";
         context.fillStyle = "black";
         context.textBaseline = "top";
         context.textAlign = "center";
+        
         const leftMiddle = this.getLeftSideMiddle();
+
         context.fillText("- Next -", leftMiddle, this.field.getRealFieldY());
-        if (this.nextFigure != null) {
+
+        if(this.nextFigure != null) {
             this.nextFigure.drawAsPreview(context);
         }
     }
-    drawPoints(context) {
+
+    private drawPoints(context: CanvasRenderingContext2D) {
         context.font = "36px ft_default";
         context.fillStyle = "black";
         context.textBaseline = "top";
         context.textAlign = "center";
+
         const rightMiddle = this.getRightSideMiddle();
         const pointsY = this.field.getRealFieldY();
+
         context.fillText("- Points -", rightMiddle, pointsY);
         context.fillText(`${this.points} / ${this.requiredPoints}`, rightMiddle, pointsY + 45);
+
         const rowsY = pointsY + 150;
+
         context.fillText(`- Rows -`, rightMiddle, rowsY);
         context.fillText(`${this.filled_rows}`, rightMiddle, rowsY + 45);
     }
+
 }
-//# sourceMappingURL=level.js.map

@@ -1,4 +1,4 @@
-import Tetris from "../game/tetris.js";
+import Tetris from "../main/tetris.js";
 import Processable from "../util/processable.js";
 import {EasingFunction, noEasing} from "./effectEasings.js";
 import EffectHandler from "./effectHandler.js";

@@ -1,6 +1,6 @@
 import { easeInOutQuad } from "../../effect/effectEasings.js";
 import Transition from "../../effect/transition.js";
-import InputHandler, { KeyBindings } from "../../game/inputHandler.js";
+import InputHandler, { KeyBindings } from "../../main/inputHandler.js";
 import StateHandler from "../../state/stateHandler.js";
 import ArcadeHandler from "./arcadeHandler.js";
 export default class StageBlock {

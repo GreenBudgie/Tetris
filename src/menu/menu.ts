@@ -1,5 +1,5 @@
 import ColorFadeEffect from "../color/colorFadeEffect.js";
-import InputHandler, {KeyBindings} from "../game/inputHandler.js";
+import InputHandler, {KeyBindings} from "../main/inputHandler.js";
 import Processable from "../util/processable.js";
 import ButtonChallenge from "./buttonChallenge.js";
 import ButtonArcade from "./buttonArcade.js";

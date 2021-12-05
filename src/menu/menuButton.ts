@@ -1,6 +1,6 @@
 import Colorizable from "../color/colorizable.js";
 import RGBColor from "../color/rgbColor.js";
-import Tetris from "../game/tetris.js";
+import Tetris from "../main/tetris.js";
 import SpriteFigure from "../sprite/spriteFigure.js";
 import Processable from "../util/processable.js";
 import Menu from "./menu.js";

@@ -2,7 +2,7 @@ import StateHandler from "../state/stateHandler.js";
 import Processable from "../util/processable.js";
 import {FieldBlock} from "./block.js";
 import Figure, {Figures} from "./figure.js";
-import Tetris from "./tetris.js";
+import Tetris from "../main/tetris.js";
 
 /**
  * A field is a game element that stores and renders all the blocks and figures inside it

@@ -3,7 +3,7 @@ import RGBColor from "../../color/rgbColor.js";
 import { easeInOutQuad, easeInQuad, easeOutQuad } from "../../effect/effectEasings.js";
 import MoveEffect from "../../effect/moveEffect.js";
 import ScaleEffect from "../../effect/scaleEffect.js";
-import InputHandler, { KeyBindings } from "../../game/inputHandler.js";
+import InputHandler, { KeyBindings } from "../../main/inputHandler.js";
 import ArcadeHandler from "./arcadeHandler.js";
 export default class StageButton {
     constructor(index) {

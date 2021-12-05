@@ -1,5 +1,5 @@
 import RGBColor from "../color/rgbColor.js";
-import Tetris from "../game/tetris.js";
+import Tetris from "../main/tetris.js";
 import SpriteFigure from "../sprite/spriteFigure.js";
 import Menu from "./menu.js";
 export default class MenuButton {

@@ -1,4 +1,4 @@
-import Levels from "../level/levels.js";
+import Levels from "../game/levels.js";
 import State from "./state.js";
 export default class StateGame extends State {
     constructor() {

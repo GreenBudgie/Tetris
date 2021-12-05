@@ -4,8 +4,8 @@ import RGBColor from "../color/rgbColor.js";
 import StateHandler from "../state/stateHandler.js";
 import Processable from "../util/processable.js";
 import {FigureBlock, MoveResult} from "./block.js";
-import InputHandler, {KeyBindings} from "./inputHandler.js";
-import Tetris from "./tetris.js";
+import InputHandler, {KeyBindings} from "../main/inputHandler.js";
+import Tetris from "../main/tetris.js";
 
 /**
  * A figure is a collection of single blocks

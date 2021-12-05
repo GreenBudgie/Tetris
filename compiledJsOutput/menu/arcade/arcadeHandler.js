@@ -1,7 +1,7 @@
 import BlockColor from "../../color/blockColor.js";
-import InputHandler, { KeyBindings } from "../../game/inputHandler.js";
-import Tetris from "../../game/tetris.js";
-import Levels from "../../level/levels.js";
+import InputHandler, { KeyBindings } from "../../main/inputHandler.js";
+import Tetris from "../../main/tetris.js";
+import Levels from "../../game/levels.js";
 import StageBlock from "./stageBlock.js";
 import StageButton from "./stageButton.js";
 export default class ArcadeHandler {
