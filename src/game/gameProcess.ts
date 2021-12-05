@@ -15,6 +15,8 @@ export default class GameProcess implements Processable {
     public filledRows: number = 0;
     public nextFigure: Figure;
 
+    private _isPaused = false;
+
     public static initiate(level: Level): GameProcess {
         GameProcess.currentProcess = new GameProcess(level);
         return this.currentProcess;
@@ -34,6 +36,18 @@ export default class GameProcess implements Processable {
         this.field = Field.defaultSizeField();
     }
 
+    public pause() {
+        this._isPaused = true;
+    }
+
+    public resume() {
+        this._isPaused = false;
+    }
+
+    public get isPaused() {
+        return this._isPaused;
+    }
+
     public selectNextFigure() {
         this.nextFigure = Figures.createRandomFigure();
     }
@@ -43,7 +57,9 @@ export default class GameProcess implements Processable {
     }
 
     public update(delta: number) {
-        this.field.update(delta);
+        if(!this._isPaused) {
+            this.field.update(delta);
+        }
     }
 
     public draw(context: CanvasRenderingContext2D) {

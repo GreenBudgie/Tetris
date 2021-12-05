@@ -5,6 +5,7 @@ export default class GameProcess {
     constructor(level) {
         this.points = 0;
         this.filledRows = 0;
+        this._isPaused = false;
         this.level = level;
         this.selectNextFigure();
         this.field = Field.defaultSizeField();
@@ -19,6 +20,15 @@ export default class GameProcess {
     static getCurrentProcess() {
         return GameProcess.currentProcess;
     }
+    pause() {
+        this._isPaused = true;
+    }
+    resume() {
+        this._isPaused = false;
+    }
+    get isPaused() {
+        return this._isPaused;
+    }
     selectNextFigure() {
         this.nextFigure = Figures.createRandomFigure();
     }
@@ -26,7 +36,9 @@ export default class GameProcess {
         this.field.createFallingFigure(this.nextFigure);
     }
     update(delta) {
-        this.field.update(delta);
+        if (!this._isPaused) {
+            this.field.update(delta);
+        }
     }
     draw(context) {
         this.field.draw(context);
