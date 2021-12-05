@@ -1,21 +1,19 @@
+import GameProcess from "../game/gameProcess.js";
 import Levels from "../game/levels.js";
 import State from "./state.js";
 export default class StateGame extends State {
     constructor() {
         super();
-        this._level = Levels.LEVEL_1;
+        GameProcess.initiate(Levels.LEVEL_1);
     }
-    get level() {
-        return this._level;
-    }
-    set level(level) {
-        this._level = level;
+    onEnd() {
+        GameProcess.terminate();
     }
     update(delta) {
-        this._level.update(delta);
+        GameProcess.getCurrentProcess().update(delta);
     }
     draw(context) {
-        this._level.draw(context);
+        GameProcess.getCurrentProcess().draw(context);
     }
 }
 //# sourceMappingURL=stateGame.js.map

@@ -50,9 +50,7 @@ export default class StageBlock {
     }
     update(delta) {
         if (this.isSelected && InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_SELECT)) {
-            const gameState = StateHandler.getHandler().GAME;
-            gameState.level = this.level;
-            new StateChangeEffect(gameState);
+            new StateChangeEffect(StateHandler.getHandler().GAME);
         }
     }
     getBlockSize() {

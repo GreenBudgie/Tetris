@@ -1,8 +1,8 @@
 import BlockColor from "../color/blockColor.js";
-import StateHandler from "../state/stateHandler.js";
 import { FigureBlock, MoveResult } from "./block.js";
 import InputHandler, { KeyBindings } from "../main/inputHandler.js";
 import Tetris from "../main/tetris.js";
+import GameProcess from "./gameProcess.js";
 /**
  * A figure is a collection of single blocks
  */
@@ -33,11 +33,11 @@ export default class Figure {
         return new Figure(blocks);
     }
     getPreviewRealX() {
-        const level = StateHandler.getHandler().GAME.level;
-        return level.getLeftSideMiddle() - (this.getCurrentWidth() * level.field.realSectionSize) / 2;
+        const process = GameProcess.getCurrentProcess();
+        return process.getLeftSideMiddle() - (this.getCurrentWidth() * process.field.realSectionSize) / 2;
     }
     getPreviewRealY() {
-        return StateHandler.getHandler().GAME.level.field.getRealFieldY() + 60;
+        return GameProcess.getCurrentProcess().field.getRealFieldY() + 60;
     }
     getColor() {
         return this.color;
@@ -110,7 +110,7 @@ export default class Figure {
      * Interrupts the falling
      */
     land() {
-        StateHandler.getHandler().GAME.level.field.landFigure();
+        GameProcess.getCurrentProcess().field.landFigure();
     }
     update(delta) {
         this.movementHandle();

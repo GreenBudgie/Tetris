@@ -6,6 +6,7 @@ import Processable from "../util/processable.js";
 import {FigureBlock, MoveResult} from "./block.js";
 import InputHandler, {KeyBindings} from "../main/inputHandler.js";
 import Tetris from "../main/tetris.js";
+import GameProcess from "./gameProcess.js";
 
 /**
  * A figure is a collection of single blocks
@@ -49,12 +50,12 @@ export default class Figure implements Colorizable, Processable {
 	}
 
 	public getPreviewRealX() {
-		const level = StateHandler.getHandler().GAME.level;
-		return level.getLeftSideMiddle() - (this.getCurrentWidth() * level.field.realSectionSize) / 2;
+		const process = GameProcess.getCurrentProcess();
+		return process.getLeftSideMiddle() - (this.getCurrentWidth() * process.field.realSectionSize) / 2;
 	}
 
 	public getPreviewRealY() {
-		return StateHandler.getHandler().GAME.level.field.getRealFieldY() + 60;
+		return GameProcess.getCurrentProcess().field.getRealFieldY() + 60;
 	}
 
 	public getColor(): RGBColor {
@@ -134,7 +135,7 @@ export default class Figure implements Colorizable, Processable {
 	 * Interrupts the falling
 	 */
 	public land() {
-		StateHandler.getHandler().GAME.level.field.landFigure();
+		GameProcess.getCurrentProcess().field.landFigure();
 	}
 
 	public update(delta: number) {

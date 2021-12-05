@@ -52,7 +52,6 @@ export default class StateChangeEffect extends Effect {
                     }
                     this.state = "moveOut";
                     this.currentIndex = 0;
-                    this.pause(this.moveTime);
                 }
                 break;
             case "moveOut":

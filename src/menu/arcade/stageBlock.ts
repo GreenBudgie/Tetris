@@ -76,9 +76,7 @@ export default class StageBlock implements Processable, Colorizable, Positionabl
 
     public update(delta: number): void {
         if(this.isSelected && InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_SELECT)) {
-            const gameState = StateHandler.getHandler().GAME;
-            gameState.level = this.level;
-            new StateChangeEffect(gameState);
+            new StateChangeEffect(StateHandler.getHandler().GAME);
         }
     }
 

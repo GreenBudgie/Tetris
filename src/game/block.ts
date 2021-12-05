@@ -1,8 +1,8 @@
 import Colorizable from "../color/colorizable.js";
 import RGBColor from "../color/rgbColor.js";
-import StateHandler from "../state/stateHandler.js";
 import Processable from "../util/processable.js";
 import Figure from "./Figure.js";
+import GameProcess from "./gameProcess.js";
 
 export abstract class AbstractBlock implements Colorizable, Processable {
 	protected x: number;
@@ -36,7 +36,7 @@ export abstract class AbstractBlock implements Colorizable, Processable {
 	}
 
 	protected prepareContextPath(startX: number, startY: number, context: CanvasRenderingContext2D) {
-		const sectionSize = StateHandler.getHandler().GAME.level.field.realSectionSize;
+		const sectionSize = GameProcess.getCurrentProcess().field.realSectionSize;
 		context.beginPath();
 		context.moveTo(startX, startY);
 		context.lineTo(startX + sectionSize, startY);
@@ -91,13 +91,13 @@ export class FieldBlock extends AbstractBlock {
 	}
 
 	public calculateRealX() {
-		const level = StateHandler.getHandler().GAME.level;
-		this.realX = level.field.getRealFieldX() + this.getFieldSectionX() * level.field.realSectionSize;
+		const process = GameProcess.getCurrentProcess();
+		this.realX = process.field.getRealFieldX() + this.getFieldSectionX() * process.field.realSectionSize;
 	}
 
 	public calculateRealY() {
-		const level = StateHandler.getHandler().GAME.level;
-		this.realY = level.field.getRealFieldY() + this.getFieldSectionY() * level.field.realSectionSize;
+		const process = GameProcess.getCurrentProcess();
+		this.realY = process.field.getRealFieldY() + this.getFieldSectionY() * process.field.realSectionSize;
 	}
 
 	public getRealX(): number {
@@ -150,7 +150,7 @@ export class FigureBlock extends AbstractBlock {
 	 * @returns ALLOW if the block is able to move by specified deltas, BOUNDARY if a floor obstructs the movement, BLOCK if a block obstructs the movement
 	 */
 	public checkMove(dx: number, dy: number): MoveResult {
-		const field = StateHandler.getHandler().GAME.level.field;
+		const field = GameProcess.getCurrentProcess().field;
 		const newSectionX = this.getSectionX() + dx;
 		const newSectionY = this.getSectionY() + dy;
 		for(const block of field.blocks) {
@@ -161,13 +161,13 @@ export class FigureBlock extends AbstractBlock {
 	}
 
 	public getRealX(): number {
-		const level = StateHandler.getHandler().GAME.level;
-		return this.getSectionX() * level.field.realSectionSize + level.field.getRealFieldX();
+		const process = GameProcess.getCurrentProcess();
+		return this.getSectionX() * process.field.realSectionSize + process.field.getRealFieldX();
 	}
 
 	public getRealY(): number {
-		const level = StateHandler.getHandler().GAME.level;
-		return this.getSectionY() * level.field.realSectionSize + level.field.getRealFieldY();
+		const process = GameProcess.getCurrentProcess();
+		return this.getSectionY() * process.field.realSectionSize + process.field.getRealFieldY();
 	}
 
 	public getSectionX(): number {
@@ -183,12 +183,12 @@ export class FigureBlock extends AbstractBlock {
 	}
 
 	public getRealShadowY(): number {
-		const level = StateHandler.getHandler().GAME.level;
-		return level.field.getRealFieldY() + this.getShadowSectionY() * level.field.realSectionSize;
+		const process = GameProcess.getCurrentProcess();
+		return process.field.getRealFieldY() + this.getShadowSectionY() * process.field.realSectionSize;
 	}
 
 	public checkRotation(): MoveResult {
-		const field = StateHandler.getHandler().GAME.level.field;
+		const field = GameProcess.getCurrentProcess().field;
 		const rotatedFieldX = this.findRotatedRelativeX() + this.figure.sectionX;
 		const rotatedFieldY = this.findRotatedRelativeY() + this.figure.sectionY;
 		if(!field.isSectionInside(rotatedFieldX, rotatedFieldY)) return MoveResult.BOUNDARY;
@@ -227,11 +227,11 @@ export class FigureBlock extends AbstractBlock {
 	}
 
 	public getPreviewRealX(): number {
-		return this.x * StateHandler.getHandler().GAME.level.field.realSectionSize + this.figure.getPreviewRealX();
+		return this.x * GameProcess.getCurrentProcess().field.realSectionSize + this.figure.getPreviewRealX();
 	}
 
 	public getPreviewRealY(): number {
-		return this.y * StateHandler.getHandler().GAME.level.field.realSectionSize + this.figure.getPreviewRealY();
+		return this.y * GameProcess.getCurrentProcess().field.realSectionSize + this.figure.getPreviewRealY();
 	}
 
 	/**

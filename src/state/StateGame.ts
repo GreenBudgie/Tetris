@@ -1,30 +1,24 @@
-import Level from "../game/level.js";
+import GameProcess from "../game/gameProcess.js";
 import Levels from "../game/levels.js";
 import State from "./state.js";
 
 export default class StateGame extends State {
 
-    private _level: Level;
-
     public constructor() {
         super();
-        this._level = Levels.LEVEL_1;
+        GameProcess.initiate(Levels.LEVEL_1);
     }
 
-    public get level() {
-        return this._level;
-    }
-
-    public set level(level: Level) {
-        this._level = level;
+    public override onEnd() {
+        GameProcess.terminate();
     }
 
     public update(delta: number): void {
-        this._level.update(delta);
+        GameProcess.getCurrentProcess().update(delta);
     }
 
     public draw(context: CanvasRenderingContext2D): void {
-        this._level.draw(context);
+        GameProcess.getCurrentProcess().draw(context);
     }
     
 }

@@ -1,6 +1,6 @@
-import StateHandler from "../state/stateHandler.js";
 import { Figures } from "./figure.js";
 import Tetris from "../main/tetris.js";
+import GameProcess from "./gameProcess.js";
 /**
  * A field is a game element that stores and renders all the blocks and figures inside it
  */
@@ -58,9 +58,9 @@ export default class Field {
                     continue row_loop;
                 }
             }
-            const level = StateHandler.getHandler().GAME.level;
-            level.points += this.sectionX;
-            level.filled_rows++;
+            const process = GameProcess.getCurrentProcess();
+            process.points += this.sectionX;
+            process.filledRows++;
             this.blocks = this.blocks.filter(block => block.getFieldSectionY() != y);
             for (const block of this.blocks) {
                 if (block.getFieldSectionY() < y)
@@ -85,9 +85,9 @@ export default class Field {
         else {
             this.timeToCreateNewFigure -= delta * Tetris.FPS;
             if (this.timeToCreateNewFigure <= 0) {
-                const level = StateHandler.getHandler().GAME.level;
-                level.createNextFigureAtField();
-                level.selectNextFigure();
+                const process = GameProcess.getCurrentProcess();
+                process.createNextFigureAtField();
+                process.selectNextFigure();
             }
         }
     }
