@@ -9,6 +9,7 @@ import Positionable from "../../util/positionable.js";
 import Processable from "../../util/processable.js";
 import ArcadeHandler from "./arcadeHandler.js";
 import StageButton from "./stageButton.js";
+import StateChangeEffect from "../../effect/stateChangeEffect.js";
 
 export default class StageBlock implements Processable, Colorizable, Positionable {
 
@@ -77,7 +78,7 @@ export default class StageBlock implements Processable, Colorizable, Positionabl
         if(this.isSelected && InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_SELECT)) {
             const gameState = StateHandler.getHandler().GAME;
             gameState.level = this.level;
-            gameState.begin();
+            new StateChangeEffect(gameState);
         }
     }
 

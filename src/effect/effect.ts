@@ -12,6 +12,7 @@ export default class Effect implements Processable {
     public readonly maxTime: number;
     public time: number;
 
+    private _isInfinite: boolean = false;
     private _isActive: boolean = true;
     private _isPaused: boolean = false;
     private _pauseDelay: number = 0;
@@ -23,8 +24,13 @@ export default class Effect implements Processable {
     public constructor(time: number, initialDelay?: number) {
         this.maxTime = time;
         this.time = time;
+        if(time <= 0) this._isInfinite = true;
         if(initialDelay != null && initialDelay != undefined) this.pause(initialDelay);
         EffectHandler.getHandler().activeEffects.push(this);
+    }
+
+    public get isInfinite(): boolean {
+        return this._isInfinite;
     }
 
     public get progress(): number {
@@ -41,6 +47,7 @@ export default class Effect implements Processable {
 
     public onEnd(): void {}
     public onUpdate(delta: number): void {}
+    public onDraw(context: CanvasRenderingContext2D): void {}
 
     /**
      * Returns the progress of the effect clamped between specified values
@@ -106,9 +113,11 @@ export default class Effect implements Processable {
                 if(this._pauseDelay <= 0) this.resume();
             }
         } else {
-            this.time -= delta * Tetris.FPS;
-            this._progress = this.easing(1 - this.time / this.maxTime, 0, 1, 1);
-            if(this.time <= 0) {
+            if(!this._isInfinite) {
+                this.time -= delta * Tetris.FPS;
+                this._progress = this.easing(1 - this.time / this.maxTime, 0, 1, 1);
+            }
+            if(!this._isInfinite && this.time <= 0) {
                 this.end();
             } else {
                 this.onUpdate(delta);
@@ -118,6 +127,7 @@ export default class Effect implements Processable {
 
     public draw(context: CanvasRenderingContext2D): void {
         if(!this._isActive) return;
+        this.onDraw(context);
     }
     
 }

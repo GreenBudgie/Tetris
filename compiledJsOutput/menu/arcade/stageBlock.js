@@ -3,6 +3,7 @@ import Transition from "../../effect/transition.js";
 import InputHandler, { KeyBindings } from "../../main/inputHandler.js";
 import StateHandler from "../../state/stateHandler.js";
 import ArcadeHandler from "./arcadeHandler.js";
+import StateChangeEffect from "../../effect/stateChangeEffect.js";
 export default class StageBlock {
     constructor(relativeX, relativeY, level, stageButton) {
         this.textAlpha = 0;
@@ -51,7 +52,7 @@ export default class StageBlock {
         if (this.isSelected && InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_SELECT)) {
             const gameState = StateHandler.getHandler().GAME;
             gameState.level = this.level;
-            gameState.begin();
+            new StateChangeEffect(gameState);
         }
     }
     getBlockSize() {

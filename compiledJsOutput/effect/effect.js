@@ -7,6 +7,7 @@ import EffectHandler from "./effectHandler.js";
  */
 export default class Effect {
     constructor(time, initialDelay) {
+        this._isInfinite = false;
         this._isActive = true;
         this._isPaused = false;
         this._pauseDelay = 0;
@@ -15,9 +16,14 @@ export default class Effect {
         this.easing = noEasing;
         this.maxTime = time;
         this.time = time;
+        if (time <= 0)
+            this._isInfinite = true;
         if (initialDelay != null && initialDelay != undefined)
             this.pause(initialDelay);
         EffectHandler.getHandler().activeEffects.push(this);
+    }
+    get isInfinite() {
+        return this._isInfinite;
     }
     get progress() {
         return this._progress;
@@ -30,6 +36,7 @@ export default class Effect {
     }
     onEnd() { }
     onUpdate(delta) { }
+    onDraw(context) { }
     /**
      * Returns the progress of the effect clamped between specified values
      * @example If the real progress is 0.5, min = 1, max = 3, this will return 2
@@ -93,9 +100,11 @@ export default class Effect {
             }
         }
         else {
-            this.time -= delta * Tetris.FPS;
-            this._progress = this.easing(1 - this.time / this.maxTime, 0, 1, 1);
-            if (this.time <= 0) {
+            if (!this._isInfinite) {
+                this.time -= delta * Tetris.FPS;
+                this._progress = this.easing(1 - this.time / this.maxTime, 0, 1, 1);
+            }
+            if (!this._isInfinite && this.time <= 0) {
                 this.end();
             }
             else {
@@ -106,6 +115,7 @@ export default class Effect {
     draw(context) {
         if (!this._isActive)
             return;
+        this.onDraw(context);
     }
 }
 //# sourceMappingURL=effect.js.map
