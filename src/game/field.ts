@@ -104,6 +104,10 @@ export default class Field implements Processable {
 		return sectionX >= 0 && sectionX < this.sectionX && sectionY >= 0 && sectionY < this.sectionsY;
 	}
 
+	public isSectionInsideOrAbove(sectionX: number, sectionY: number): boolean {
+		return sectionX >= 0 && sectionX < this.sectionX && sectionY < this.sectionsY;
+	}
+
 	public update(delta: number) {
 		if(this.fallingFigure != null) {
 			this.fallingFigure.update(delta);

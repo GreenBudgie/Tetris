@@ -80,6 +80,19 @@ export default class SpriteFigure extends Sprite {
         this._outlineWidth = Math.round(this.blockSize / 20);
     }
 
+    private getBlockDrawStartPosition(blockPos: [number, number]): [number, number] {
+        const xNoRotation = this.x + blockPos[0] * this.blockSize;
+        const yNoRotation = this.y + blockPos[1] * this.blockSize;
+        if(this.rotation == 0) {
+            return [xNoRotation, yNoRotation];
+        }
+        const originX = xNoRotation - this.getRealRotationCenter()[0];
+        const originY = yNoRotation - this.getRealRotationCenter()[1];
+        const rotatedX = originX * this.rotationSinCos[1] - originY * this.rotationSinCos[0];
+        const rotatedY = originX * this.rotationSinCos[0] + originY * this.rotationSinCos[1];
+        return [rotatedX + this.getRealRotationCenter()[0], rotatedY + this.getRealRotationCenter()[1]];
+    }
+
     protected drawSprite(context: CanvasRenderingContext2D): void {
         context.fillStyle = this.getColor().rgbString;
         context.strokeStyle = "black";
@@ -88,8 +101,9 @@ export default class SpriteFigure extends Sprite {
         const shift = this._outlineWidth % 2 == 0 ? 0 : 0.5;
         const outlineBlocks = this._outlineMode == "block";
         for(const blockPos of this.shape) {
-            let currentStartX = this.x + blockPos[0] * this.blockSize;
-            let currentStartY = this.y + blockPos[1] * this.blockSize;
+            const startPos = this.getBlockDrawStartPosition(blockPos);
+            let currentStartX = startPos[0];
+            let currentStartY = startPos[1];
             context.beginPath();
             context.moveTo(currentStartX - 1, currentStartY - 1);
             context.lineTo(currentStartX + this.blockSize + 1, currentStartY - 1);

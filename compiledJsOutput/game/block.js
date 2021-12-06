@@ -137,7 +137,7 @@ export class FigureBlock extends AbstractBlock {
         const field = GameProcess.getCurrentProcess().field;
         const rotatedFieldX = this.findRotatedRelativeX() + this.figure.sectionX;
         const rotatedFieldY = this.findRotatedRelativeY() + this.figure.sectionY;
-        if (!field.isSectionInside(rotatedFieldX, rotatedFieldY))
+        if (!field.isSectionInsideOrAbove(rotatedFieldX, rotatedFieldY))
             return MoveResult.BOUNDARY;
         for (const field_block of field.blocks) {
             if (field_block.getFieldSectionX() == rotatedFieldX && field_block.getFieldSectionY() == rotatedFieldY)

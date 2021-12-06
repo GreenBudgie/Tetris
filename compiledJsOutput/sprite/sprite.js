@@ -8,6 +8,7 @@ export default class Sprite {
         this._y = 0;
         this._scale = 1;
         this._rotation = 0;
+        this.rotationSinCos = [0, 1];
         this._rotationCenter = [0, 0];
         this._color = RGBColor.grayscale(255);
         this._visible = true;
@@ -18,8 +19,12 @@ export default class Sprite {
     set rotationCenter(rotationCenter) {
         this._rotationCenter = rotationCenter;
     }
+    getRealRotationCenter() {
+        return [this._rotationCenter[0] + this.x, this._rotationCenter[1] + this.y];
+    }
     set rotation(rotation) {
-        this._rotation = rotation;
+        this._rotation = rotation % (2 * Math.PI);
+        this.rotationSinCos = [Math.sin(this._rotation), Math.cos(this._rotation)];
     }
     get rotation() {
         return this._rotation;

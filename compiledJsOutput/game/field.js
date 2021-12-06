@@ -78,6 +78,9 @@ export default class Field {
     isSectionInside(sectionX, sectionY) {
         return sectionX >= 0 && sectionX < this.sectionX && sectionY >= 0 && sectionY < this.sectionsY;
     }
+    isSectionInsideOrAbove(sectionX, sectionY) {
+        return sectionX >= 0 && sectionX < this.sectionX && sectionY < this.sectionsY;
+    }
     update(delta) {
         if (this.fallingFigure != null) {
             this.fallingFigure.update(delta);

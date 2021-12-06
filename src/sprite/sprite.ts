@@ -13,6 +13,7 @@ export default abstract class Sprite implements Drawable, Positionable, Scalable
     private _y: number = 0;
     private _scale: number = 1;
     private _rotation: number = 0;
+    protected rotationSinCos: [number, number] = [0, 1];
     private _rotationCenter: [number, number] = [0, 0];
     private _color: RGBColor = RGBColor.grayscale(255);
     private _visible: boolean = true;
@@ -25,8 +26,13 @@ export default abstract class Sprite implements Drawable, Positionable, Scalable
         this._rotationCenter = rotationCenter;
     }
 
+    public getRealRotationCenter(): [number, number] {
+        return [this._rotationCenter[0] + this.x, this._rotationCenter[1] + this.y];
+    }
+
     public set rotation(rotation: number) {
-        this._rotation = rotation;
+        this._rotation = rotation % (2 * Math.PI);
+        this.rotationSinCos = [Math.sin(this._rotation), Math.cos(this._rotation)];
     }
 
     public get rotation() {
