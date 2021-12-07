@@ -1,8 +1,9 @@
 import BlockColor from "../color/blockColor.js";
+import Point, { PointArray } from "../util/point.js";
 import MenuButton from "./menuButton.js";
 export default class ButtonChallenge extends MenuButton {
     getTextCenterPosition() {
-        return { x: 1.5, y: 1.5 };
+        return new Point(1.5, 1.5);
     }
     getColor() {
         return BlockColor.RED;
@@ -16,12 +17,7 @@ export default class ButtonChallenge extends MenuButton {
         return 58;
     }
     getShape() {
-        return [
-            [0, 1],
-            [1, 1],
-            [2, 1],
-            [1, 0]
-        ];
+        return PointArray.begin(0, 1).add(1, 1).add(2, 1).add(1, 0).build();
     }
 }
 //# sourceMappingURL=buttonChallenge.js.map

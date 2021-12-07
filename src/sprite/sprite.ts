@@ -1,33 +1,26 @@
 import Colorizable from "../color/colorizable.js";
 import RGBColor from "../color/rgbColor.js";
-import Drawable from "../util/drawable.js";
-import Positionable from "../util/positionable.js";
-import Scalable from "../util/scalable.js";
+import Point, {Positionable} from "../util/point.js";
+import {Drawable} from "../util/processable.js";
 
 /**
  * A sprite represents a procedurally drawn image
  */
-export default abstract class Sprite implements Drawable, Positionable, Scalable, Colorizable {
+export default abstract class Sprite implements Drawable, Positionable, Colorizable {
 
-    private _x: number = 0;
-    private _y: number = 0;
-    private _scale: number = 1;
+    private _position: Point = Point.zero();
     private _rotation: number = 0;
     protected rotationSinCos: [number, number] = [0, 1];
-    private _rotationCenter: [number, number] = [0, 0];
+    private _rotationCenter: Point = Point.zero();
     private _color: RGBColor = RGBColor.grayscale(255);
     private _visible: boolean = true;
 
-    public get rotationCenter(): [number, number] {
+    public get rotationCenter(): Point {
         return this._rotationCenter;
     }
 
-    public set rotationCenter(rotationCenter: [number, number]) {
-        this._rotationCenter = rotationCenter;
-    }
-
-    public getRealRotationCenter(): [number, number] {
-        return [this._rotationCenter[0] + this.x, this._rotationCenter[1] + this.y];
+    public getRealRotationCenter(): Point {
+        return new Point(this._rotationCenter.x + this.position.x, this._rotationCenter.y + this.position.y);
     }
 
     public set rotation(rotation: number) {
@@ -59,28 +52,8 @@ export default abstract class Sprite implements Drawable, Positionable, Scalable
         return this._color;
     }
 
-    get x(): number {
-        return this._x;
-    }
-
-    set x(x: number) {
-        this._x = x;
-    }
-
-    get y(): number {
-        return this._y;
-    }
-
-    set y(y: number) {
-        this._y = y;
-    }
-
-    get scale(): number {
-        return this._scale;
-    }
-
-    set scale(scale: number) {
-        this._scale = scale;
+    public get position(): Point {
+        return this._position;
     }
 
     draw(context: CanvasRenderingContext2D): void {

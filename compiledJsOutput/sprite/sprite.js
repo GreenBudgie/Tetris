@@ -1,26 +1,22 @@
 import RGBColor from "../color/rgbColor.js";
+import Point from "../util/point.js";
 /**
  * A sprite represents a procedurally drawn image
  */
 export default class Sprite {
     constructor() {
-        this._x = 0;
-        this._y = 0;
-        this._scale = 1;
+        this._position = Point.zero();
         this._rotation = 0;
         this.rotationSinCos = [0, 1];
-        this._rotationCenter = [0, 0];
+        this._rotationCenter = Point.zero();
         this._color = RGBColor.grayscale(255);
         this._visible = true;
     }
     get rotationCenter() {
         return this._rotationCenter;
     }
-    set rotationCenter(rotationCenter) {
-        this._rotationCenter = rotationCenter;
-    }
     getRealRotationCenter() {
-        return [this._rotationCenter[0] + this.x, this._rotationCenter[1] + this.y];
+        return new Point(this._rotationCenter.x + this.position.x, this._rotationCenter.y + this.position.y);
     }
     set rotation(rotation) {
         this._rotation = rotation % (2 * Math.PI);
@@ -44,23 +40,8 @@ export default class Sprite {
     getColor() {
         return this._color;
     }
-    get x() {
-        return this._x;
-    }
-    set x(x) {
-        this._x = x;
-    }
-    get y() {
-        return this._y;
-    }
-    set y(y) {
-        this._y = y;
-    }
-    get scale() {
-        return this._scale;
-    }
-    set scale(scale) {
-        this._scale = scale;
+    get position() {
+        return this._position;
     }
     draw(context) {
         if (this._visible)

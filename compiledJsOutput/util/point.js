@@ -3,82 +3,66 @@
  * The point is mutable, use clone() to create a new point.
  */
 export default class Point {
-
-    private _x: number;
-    private _y: number;
-
-    public constructor(x: number, y: number) {
+    constructor(x, y) {
         this._x = x;
         this._y = y;
     }
-
     /**
      * Creates a new point with coordinates set to zero
      */
-    public static zero(): Point {
+    static zero() {
         return new Point(0, 0);
     }
-
     /**
      * Creates a copy of the current point
      */
-    public clone(): Point {
+    clone() {
         return new Point(this.x, this.y);
     }
-
-    get x(): number {
+    get x() {
         return this._x;
     }
-
-    set x(x: number) {
+    set x(x) {
         this._x = x;
     }
-
-    get y(): number {
+    get y() {
         return this._y;
     }
-
-    set y(y: number) {
+    set y(y) {
         this._y = y;
     }
-
-    public setPosition(x: number, y: number) {
+    setPosition(x, y) {
         this.x = x;
         this.y = y;
     }
-
-    public setPositionTo(point: Point) {
+    setPositionTo(point) {
         this.x = point.x;
         this.y = point.y;
     }
-
-    public moveBy(x: number, y: number) {
+    moveBy(x, y) {
         this.x += x;
         this.y += y;
     }
-
     /**
      * Gets the SQUARED distance between this point and another one
      */
-    public distanceSq(point: Point): number {
+    distanceSq(point) {
         const xDiff = this.x - point.x;
         const yDiff = this.y - point.y;
         return xDiff * xDiff + yDiff * yDiff;
     }
-
     /**
      * Gets the distance between this point and another one
      */
-    public distance(point: Point): number {
+    distance(point) {
         return Math.sqrt(this.distanceSq(point));
     }
-
     /**
      * Rotates the point by the specified angle around the origin
      * @param angleInRadians Angle in radians
      * @param origin A point to rotate the current point around
      */
-    public rotate(angleInRadians: number, origin: Point) {
+    rotate(angleInRadians, origin) {
         const angleSin = Math.sin(angleInRadians);
         const angleCos = Math.cos(angleInRadians);
         this.x -= origin.x;
@@ -88,30 +72,20 @@ export default class Point {
         this.x = rotatedX + origin.x;
         this.y = rotatedY + origin.y;
     }
-
 }
-
 export class PointArray {
-
-    private points: Point[] = [];
-
-    public static begin(x: number, y: number): PointArray {
+    constructor() {
+        this.points = [];
+    }
+    static begin(x, y) {
         return new PointArray().add(x, y);
     }
-
-    public add(x: number, y: number): PointArray {
+    add(x, y) {
         this.points.push(new Point(x, y));
         return this;
     }
-
-    public build(): Point[] {
+    build() {
         return this.points;
     }
-    
 }
-
-export interface Positionable {
-
-    get position(): Point;
-
-}
+//# sourceMappingURL=point.js.map

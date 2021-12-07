@@ -1,31 +1,26 @@
-import Positionable from "../util/positionable.js";
+import Point, {Positionable} from "../util/point.js";
 import Effect from "./effect.js";
 
 export default class MoveEffect extends Effect {
 
     private readonly toMove: Positionable;
-    private readonly startX: number;
-    private readonly startY: number;
-    private readonly endX: number;
-    private readonly endY: number;
+    private readonly startPos: Point;
+    private readonly targetPos: Point;
 
-    public constructor(toMove: Positionable, x: number, y: number, time: number) {
+    public constructor(toMove: Positionable, target: Point, time: number) {
         super(time);
         this.toMove = toMove;
-        this.startX = toMove.x;
-        this.startY = toMove.y;
-        this.endX = x;
-        this.endY = y;
+        this.startPos = toMove.position.clone();
+        this.targetPos = target.clone();
     }
 
     public override onUpdate(delta: number) {
-        this.toMove.x = this.startX + (this.endX - this.startX) * this.progress;
-        this.toMove.y = this.startY + (this.endY - this.startY) * this.progress;
+        this.toMove.position.x = this.startPos.x + (this.targetPos.x - this.startPos.x) * this.progress;
+        this.toMove.position.y = this.startPos.y + (this.targetPos.y - this.startPos.y) * this.progress;
     }
 
     public override onEnd() {
-        this.toMove.x = this.endX;
-        this.toMove.y = this.endY;
+        this.toMove.position.setPositionTo(this.targetPos);
     }
 
 }

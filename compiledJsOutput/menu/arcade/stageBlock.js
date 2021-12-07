@@ -5,26 +5,16 @@ import StateHandler from "../../state/stateHandler.js";
 import ArcadeHandler from "./arcadeHandler.js";
 import StateChangeEffect from "../../effect/stateChangeEffect.js";
 export default class StageBlock {
-    constructor(relativeX, relativeY, level, stageButton) {
+    constructor(relativePosition, level, stageButton) {
         this.textAlpha = 0;
         this.selectionSize = 1;
         this.isSelected = false;
-        this.x = relativeX;
-        this.y = relativeY;
+        this._position = relativePosition;
         this.level = level;
         this.stageButton = stageButton;
     }
-    get x() {
-        return this._x;
-    }
-    set x(x) {
-        this._x = x;
-    }
-    get y() {
-        return this._y;
-    }
-    set y(y) {
-        this._y = y;
+    get position() {
+        return this._position;
     }
     onStageSelected() {
         this.textAlphaTransition?.interruptNoCallback();
@@ -57,10 +47,10 @@ export default class StageBlock {
         return ArcadeHandler.getHandler().FIELD_SECTION_SIZE * this.stageButton.scale;
     }
     getRealStartX() {
-        return this.stageButton.x + this.x * this.getBlockSize();
+        return this.stageButton.position.x + this.position.x * this.getBlockSize();
     }
     getRealStartY() {
-        return this.stageButton.y + this.y * this.getBlockSize();
+        return this.stageButton.position.y + this.position.y * this.getBlockSize();
     }
     getRealTextCenterX() {
         return this.getRealStartX() + this.getBlockSize() / 2;

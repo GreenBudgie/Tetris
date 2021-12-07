@@ -2,6 +2,7 @@ import Colorizable from "../color/colorizable.js";
 import RGBColor from "../color/rgbColor.js";
 import Tetris from "../main/tetris.js";
 import SpriteFigure from "../sprite/spriteFigure.js";
+import Point from "../util/point.js";
 import Processable from "../util/processable.js";
 import Menu from "./menu.js";
 
@@ -11,8 +12,7 @@ export default abstract class MenuButton implements Colorizable, Processable {
 
     public readonly index: number;
 
-    public readonly textCenterX: number;
-    public readonly textCenterY: number;
+    public readonly textCenterPosition: Point;
 
     public readonly grayColor = RGBColor.grayscale(200);
 
@@ -25,19 +25,21 @@ export default abstract class MenuButton implements Colorizable, Processable {
 
         const startY: number = Tetris.instance.WINDOW_HEIGHT / 2 - this.sprite.getRealHeight() / 2;
 
-        this.sprite.x = this.sprite.blockSize;
-        this.sprite.y = startY + (index - 1) * this.sprite.blockSize * 1.5;
+        this.sprite.position.x = this.sprite.blockSize;
+        this.sprite.position.y = startY + (index - 1) * this.sprite.blockSize * 1.5;
         this.sprite.getColor().setTo(index == 0 ? this.getColor() : this.grayColor);
 
-        this.textCenterX = this.sprite.x + this.getTextCenterPosition().x * this.sprite.blockSize;
-        this.textCenterY = this.sprite.y + this.getTextCenterPosition().y * this.sprite.blockSize;
+        this.textCenterPosition = new Point(
+            this.sprite.position.x + this.getTextCenterPosition().x * this.sprite.blockSize,
+            this.sprite.position.y + this.getTextCenterPosition().y * this.sprite.blockSize
+        );
     }
 
     public abstract getColor(): RGBColor;
     public abstract onClick(): void;
     public abstract getText(): string;
-    public abstract getShape(): [number, number][];
-    public abstract getTextCenterPosition(): {x: number, y: number};
+    public abstract getShape(): Point[];
+    public abstract getTextCenterPosition(): Point;
     public abstract getTextSize(): number;
 
     public isCurrent(): boolean {
@@ -68,10 +70,10 @@ export default abstract class MenuButton implements Colorizable, Processable {
         context.textAlign = "center";
         context.textBaseline = "middle";
         context.font = this.getTextSize() + "px ft_default";
-        context.fillText(this.getText(), this.textCenterX, this.textCenterY);
+        context.fillText(this.getText(), this.textCenterPosition.x, this.textCenterPosition.y);
         context.strokeStyle = "black";
         context.lineWidth = 2;
-        context.strokeText(this.getText(), this.textCenterX, this.textCenterY);
+        context.strokeText(this.getText(), this.textCenterPosition.x, this.textCenterPosition.y);
     }
 
     private drawFigure(context: CanvasRenderingContext2D): void {

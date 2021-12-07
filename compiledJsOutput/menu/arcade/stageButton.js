@@ -2,12 +2,14 @@ import ColorFadeEffect from "../../color/colorFadeEffect.js";
 import RGBColor from "../../color/rgbColor.js";
 import { easeInOutQuad, easeInQuad, easeOutQuad } from "../../effect/effectEasings.js";
 import MoveEffect from "../../effect/moveEffect.js";
-import ScaleEffect from "../../effect/scaleEffect.js";
+import Transition from "../../effect/transition.js";
 import InputHandler, { KeyBindings } from "../../main/inputHandler.js";
+import Point from "../../util/point.js";
 import ArcadeHandler from "./arcadeHandler.js";
 export default class StageButton {
     constructor(index) {
         this._scale = 1;
+        this.startPos = Point.zero();
         this.grayscale = RGBColor.grayscale(200);
         this.targetScale = 2;
         this.EFFECT_SPEED = 10;
@@ -19,17 +21,8 @@ export default class StageButton {
     set scale(scale) {
         this._scale = scale;
     }
-    get x() {
-        return this._x;
-    }
-    set x(x) {
-        this._x = x;
-    }
-    get y() {
-        return this._y;
-    }
-    set y(y) {
-        this._y = y;
+    get position() {
+        return this._position;
     }
     getColor() {
         return this.currentColor;
@@ -41,19 +34,17 @@ export default class StageButton {
         this.fadeEffect?.interruptNoCallback();
         this.moveEffect?.interruptNoCallback();
         this.currentColor.alpha = 0;
-        this.x = this.startX;
-        this.y = this.startY;
+        this.position.setPositionTo(this.startPos);
         this.fadeEffect = new ColorFadeEffect(this.currentColor, this.grayscale, this.EFFECT_SPEED);
-        this.moveEffect = new MoveEffect(this, this.endX, this.endY, this.EFFECT_SPEED);
+        this.moveEffect = new MoveEffect(this, this.endPos, this.EFFECT_SPEED);
         this.moveEffect.pause(this.EFFECT_SPEED);
         this.moveEffect.easing = easeInOutQuad;
     }
     playDisappearEffect() {
         this.fadeEffect?.interruptNoCallback();
         this.moveEffect?.interruptNoCallback();
-        this.x = this.endX;
-        this.y = this.endY;
-        this.moveEffect = new MoveEffect(this, this.startX, this.startY, this.EFFECT_SPEED);
+        this.position.setPositionTo(this.endPos);
+        this.moveEffect = new MoveEffect(this, this.startPos, this.EFFECT_SPEED);
         this.moveEffect.easing = easeInOutQuad;
         const zeroAlpha = this.currentColor.clone();
         zeroAlpha.alpha = 0;
@@ -73,20 +64,20 @@ export default class StageButton {
     }
     onSelect() {
         this.moveEffect?.interruptNoCallback();
-        this.scaleEffect?.interruptNoCallback();
-        this.scaleEffect = new ScaleEffect(this, this.targetScale, 12);
-        this.scaleEffect.easing = easeInQuad;
-        this.moveEffect = new MoveEffect(this, this.selectedX, this.selectedY, 12);
+        this.scaleTransition?.interruptNoCallback();
+        this.scaleTransition = new Transition(value => { this.scale = value; }, this.scale, this.targetScale, 12);
+        this.scaleTransition.easing = easeInQuad;
+        this.moveEffect = new MoveEffect(this, this.selectedPos, 12);
         this.moveEffect.easing = easeOutQuad;
         this.blocks.forEach(block => block.onStageSelected());
         this.blocks[0].select();
     }
     onDeselect() {
         this.moveEffect?.interruptNoCallback();
-        this.scaleEffect?.interruptNoCallback();
-        this.scaleEffect = new ScaleEffect(this, 1, 12);
-        this.scaleEffect.easing = easeOutQuad;
-        this.moveEffect = new MoveEffect(this, this.endX, this.endY, 12);
+        this.scaleTransition?.interruptNoCallback();
+        this.scaleTransition = new Transition(value => { this.scale = value; }, this.scale, 1, 12);
+        this.scaleTransition.easing = easeOutQuad;
+        this.moveEffect = new MoveEffect(this, this.endPos, 12);
         this.moveEffect.easing = easeInQuad;
         this.blocks.forEach(block => block.onStageDeselected());
     }
@@ -123,7 +114,7 @@ export default class StageButton {
         if (blockDeltaX != 0 || blockDeltaY != 0) {
             const selectedBlock = this.getSelectedBlock();
             if (selectedBlock != undefined) {
-                const nextBlock = this.getBlockByPos(selectedBlock.x + blockDeltaX, selectedBlock.y + blockDeltaY);
+                const nextBlock = this.getBlockByPos(selectedBlock.position.x + blockDeltaX, selectedBlock.position.y + blockDeltaY);
                 if (nextBlock != undefined) {
                     selectedBlock.deselect();
                     nextBlock.select();
@@ -138,42 +129,36 @@ export default class StageButton {
         return this.blocks.find(block => block.isSelected);
     }
     getBlockByPos(relativeX, relativeY) {
-        return this.blocks.find(block => block.x == relativeX && block.y == relativeY);
+        return this.blocks.find(block => block.position.x == relativeX && block.position.y == relativeY);
     }
     draw(context) {
         this.blocks.forEach(block => block.draw(context));
     }
-    setEndSection(sectionX, sectionY) {
-        this.endX = this.getRealXBySection(sectionX);
-        this.endY = this.getRealYBySection(sectionY);
+    setEndSection(sectionPosition) {
+        this.endPos = this.getRealPositionBySection(sectionPosition);
     }
-    setStartSection(sectionX, sectionY) {
-        this.startX = this.getRealXBySection(sectionX);
-        this.startY = this.getRealYBySection(sectionY);
-        this.x = this.startX;
-        this.y = this.startY;
+    setStartSection(sectionPosition) {
+        this.startPos = this.getRealPositionBySection(sectionPosition);
+        this._position = this.startPos.clone();
     }
-    getRealXBySection(sectionX) {
-        return ArcadeHandler.getHandler().FIELD_START_X + sectionX * ArcadeHandler.getHandler().FIELD_SECTION_SIZE;
-    }
-    getRealYBySection(sectionY) {
-        return ArcadeHandler.getHandler().FIELD_START_Y + sectionY * ArcadeHandler.getHandler().FIELD_SECTION_SIZE;
+    getRealPositionBySection(sectionPosition) {
+        const handler = ArcadeHandler.getHandler();
+        return new Point(handler.FIELD_START_POSITION.x + sectionPosition.x * handler.FIELD_SECTION_SIZE, handler.FIELD_START_POSITION.y + sectionPosition.y * handler.FIELD_SECTION_SIZE);
     }
     setBlocks(blocks) {
         this.blocks = blocks;
         let maxX = 0;
         let maxY = 0;
         for (const block of this.blocks) {
-            if (block.x > maxX)
-                maxX = block.x;
-            if (block.y > maxY)
-                maxY = block.y;
+            if (block.position.x > maxX)
+                maxX = block.position.x;
+            if (block.position.y > maxY)
+                maxY = block.position.y;
         }
         const handler = ArcadeHandler.getHandler();
         const scaledRealWidth = (maxX + 1) * this.targetScale * handler.FIELD_SECTION_SIZE;
         const scaledRealHeight = (maxY + 1) * this.targetScale * handler.FIELD_SECTION_SIZE;
-        this.selectedX = handler.FIELD_START_X + (handler.REAL_FIELD_WIDTH / 2) - (scaledRealWidth / 2);
-        this.selectedY = handler.FIELD_START_Y + (handler.REAL_FIELD_HEIGHT / 2) - (scaledRealHeight / 2);
+        this.selectedPos = new Point(handler.FIELD_START_POSITION.x + (handler.REAL_FIELD_WIDTH / 2) - (scaledRealWidth / 2), handler.FIELD_START_POSITION.y + (handler.REAL_FIELD_HEIGHT / 2) - (scaledRealHeight / 2));
     }
     setColor(color) {
         this.color = color.clone();

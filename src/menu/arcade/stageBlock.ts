@@ -5,7 +5,7 @@ import Transition from "../../effect/transition.js";
 import InputHandler, {KeyBindings} from "../../main/inputHandler.js";
 import Level from "../../game/level.js";
 import StateHandler from "../../state/stateHandler.js";
-import Positionable from "../../util/positionable.js";
+import Point, {Positionable} from "../../util/point.js";
 import Processable from "../../util/processable.js";
 import ArcadeHandler from "./arcadeHandler.js";
 import StageButton from "./stageButton.js";
@@ -13,8 +13,7 @@ import StateChangeEffect from "../../effect/stateChangeEffect.js";
 
 export default class StageBlock implements Processable, Colorizable, Positionable {
 
-    private _x: number;
-    private _y: number;
+    private _position: Point;
     private level: Level;
     private stageButton: StageButton;
 
@@ -22,27 +21,14 @@ export default class StageBlock implements Processable, Colorizable, Positionabl
     private selectionSize = 1;
     public isSelected = false;
 
-    public constructor(relativeX: number, relativeY: number, level: Level, stageButton: StageButton) {
-        this.x = relativeX;
-        this.y = relativeY;
+    public constructor(relativePosition: Point, level: Level, stageButton: StageButton) {
+        this._position = relativePosition;
         this.level = level;
         this.stageButton = stageButton;
     }
 
-    public get x(): number {
-        return this._x;
-    }
-
-    public set x(x: number) {
-        this._x = x;
-    }
-
-    public get y(): number {
-        return this._y;
-    }
-
-    public set y(y: number) {
-        this._y = y;
+    public get position(): Point {
+        return this._position;
     }
 
     private textAlphaTransition: Transition;
@@ -85,11 +71,11 @@ export default class StageBlock implements Processable, Colorizable, Positionabl
     }
 
     private getRealStartX(): number {
-        return this.stageButton.x + this.x * this.getBlockSize();
+        return this.stageButton.position.x + this.position.x * this.getBlockSize();
     }
 
     private getRealStartY(): number {
-        return this.stageButton.y + this.y * this.getBlockSize();
+        return this.stageButton.position.y + this.position.y * this.getBlockSize();
     }
 
     private getRealTextCenterX(): number {

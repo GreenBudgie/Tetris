@@ -1,8 +1,9 @@
+import Point from "../util/point.js";
 import Sprite from "./sprite.js";
 
 export default class SpriteFigure extends Sprite {
 
-    private readonly _shape: [number, number][];
+    private readonly _shape: Point[];
     private _blockSize: number = 32;
     private _outlineMode: "block" | "border" | "none" = "border";
     private _outlineWidth: number = 2;
@@ -10,7 +11,7 @@ export default class SpriteFigure extends Sprite {
     private readonly blockWidth: number;
     private readonly blockHeight: number;
 
-    public constructor(shape: [number, number][]) {
+    public constructor(shape: Point[]) {
         super();
         this._shape = shape;
         this.blockWidth = this.calculateBlockWidth();
@@ -20,7 +21,7 @@ export default class SpriteFigure extends Sprite {
     private calculateBlockWidth(): number {
         let maxX = 0;
         for(const blockPos of this.shape) {
-            if(blockPos[0] > maxX) maxX = blockPos[0];
+            if(blockPos.x > maxX) maxX = blockPos.x;
         }
         return maxX + 1;
     }
@@ -28,7 +29,7 @@ export default class SpriteFigure extends Sprite {
     private calculateBlockHeight(): number {
         let maxY = 0;
         for(const blockPos of this.shape) {
-            if(blockPos[1] > maxY) maxY = blockPos[1];
+            if(blockPos.y > maxY) maxY = blockPos.y;
         }
         return maxY + 1;
     }
@@ -80,17 +81,17 @@ export default class SpriteFigure extends Sprite {
         this._outlineWidth = Math.round(this.blockSize / 20);
     }
 
-    private getBlockDrawStartPosition(blockPos: [number, number]): [number, number] {
-        const xNoRotation = this.x + blockPos[0] * this.blockSize;
-        const yNoRotation = this.y + blockPos[1] * this.blockSize;
+    private getBlockDrawStartPosition(blockPos: Point): Point {
+        const xNoRotation = this.position.x + blockPos.x * this.blockSize;
+        const yNoRotation = this.position.y + blockPos.y * this.blockSize;
         if(this.rotation == 0) {
-            return [xNoRotation, yNoRotation];
+            return new Point(xNoRotation, yNoRotation);
         }
-        const originX = xNoRotation - this.getRealRotationCenter()[0];
-        const originY = yNoRotation - this.getRealRotationCenter()[1];
+        const originX = xNoRotation - this.getRealRotationCenter().x;
+        const originY = yNoRotation - this.getRealRotationCenter().y;
         const rotatedX = originX * this.rotationSinCos[1] - originY * this.rotationSinCos[0];
         const rotatedY = originX * this.rotationSinCos[0] + originY * this.rotationSinCos[1];
-        return [rotatedX + this.getRealRotationCenter()[0], rotatedY + this.getRealRotationCenter()[1]];
+        return new Point(rotatedX + this.getRealRotationCenter().x, rotatedY + this.getRealRotationCenter().y);
     }
 
     protected drawSprite(context: CanvasRenderingContext2D): void {
@@ -102,8 +103,8 @@ export default class SpriteFigure extends Sprite {
         const outlineBlocks = this._outlineMode == "block";
         for(const blockPos of this.shape) {
             const startPos = this.getBlockDrawStartPosition(blockPos);
-            let currentStartX = startPos[0];
-            let currentStartY = startPos[1];
+            let currentStartX = startPos.x;
+            let currentStartY = startPos.y;
             context.beginPath();
             context.moveTo(currentStartX - 1, currentStartY - 1);
             context.lineTo(currentStartX + this.blockSize + 1, currentStartY - 1);
@@ -145,8 +146,8 @@ export default class SpriteFigure extends Sprite {
         }
     }
 
-    private isFree(blockPos: [number, number], dx: number, dy: number) {
-        return !this.shape.some(pos => pos[0] == blockPos[0] + dx && pos[1] == blockPos[1] + dy);
+    private isFree(blockPos: Point, dx: number, dy: number) {
+        return !this.shape.some(pos => pos.x == blockPos.x + dx && pos.y == blockPos.y + dy);
     }
 
 }

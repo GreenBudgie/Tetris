@@ -4,6 +4,7 @@ import Tetris from "../../main/tetris.js";
 import Levels from "../../game/levels.js";
 import StageBlock from "./stageBlock.js";
 import StageButton from "./stageButton.js";
+import Point from "../../util/point.js";
 export default class ArcadeHandler {
     constructor() {
         this.FIELD_WIDTH = 6;
@@ -11,8 +12,7 @@ export default class ArcadeHandler {
         this.FIELD_SECTION_SIZE = 50;
         this.REAL_FIELD_WIDTH = this.FIELD_WIDTH * this.FIELD_SECTION_SIZE;
         this.REAL_FIELD_HEIGHT = this.FIELD_HEIGHT * this.FIELD_SECTION_SIZE;
-        this.FIELD_START_X = 400;
-        this.FIELD_START_Y = Tetris.instance.WINDOW_HEIGHT / 2 - this.REAL_FIELD_HEIGHT / 2;
+        this.FIELD_START_POSITION = new Point(400, Tetris.instance.WINDOW_HEIGHT / 2 - this.REAL_FIELD_HEIGHT / 2);
         this.stageButtons = [];
         this._hoveredButtonIndex = 0;
         this.state = "hide";
@@ -118,47 +118,47 @@ export default class ArcadeHandler {
     registerStages() {
         const stage1 = new StageButton(0);
         stage1.setBlocks([
-            new StageBlock(0, 0, Levels.LEVEL_1, stage1),
-            new StageBlock(0, 1, Levels.LEVEL_1, stage1),
-            new StageBlock(0, 2, Levels.LEVEL_1, stage1),
-            new StageBlock(1, 1, Levels.LEVEL_1, stage1),
+            new StageBlock(new Point(0, 0), Levels.LEVEL_1, stage1),
+            new StageBlock(new Point(0, 1), Levels.LEVEL_1, stage1),
+            new StageBlock(new Point(0, 2), Levels.LEVEL_1, stage1),
+            new StageBlock(new Point(1, 1), Levels.LEVEL_1, stage1),
         ]);
         stage1.setColor(BlockColor.GREEN);
-        stage1.setStartSection(2, 2);
-        stage1.setEndSection(0, 0);
+        stage1.setStartSection(new Point(2, 2));
+        stage1.setEndSection(new Point(0, 0));
         this.stageButtons.push(stage1);
         const stage2 = new StageButton(1);
         stage2.setBlocks([
-            new StageBlock(0, 0, Levels.LEVEL_1, stage2),
-            new StageBlock(0, 1, Levels.LEVEL_1, stage2),
-            new StageBlock(1, 1, Levels.LEVEL_1, stage2),
-            new StageBlock(1, 2, Levels.LEVEL_1, stage2),
+            new StageBlock(new Point(0, 0), Levels.LEVEL_1, stage2),
+            new StageBlock(new Point(0, 1), Levels.LEVEL_1, stage2),
+            new StageBlock(new Point(1, 1), Levels.LEVEL_1, stage2),
+            new StageBlock(new Point(1, 2), Levels.LEVEL_1, stage2),
         ]);
         stage2.setColor(BlockColor.BLUE);
-        stage2.setStartSection(3, 1);
-        stage2.setEndSection(4, 0);
+        stage2.setStartSection(new Point(3, 1));
+        stage2.setEndSection(new Point(4, 0));
         this.stageButtons.push(stage2);
         const stage3 = new StageButton(2);
         stage3.setBlocks([
-            new StageBlock(0, 0, Levels.LEVEL_1, stage3),
-            new StageBlock(0, 1, Levels.LEVEL_1, stage3),
-            new StageBlock(0, 2, Levels.LEVEL_1, stage3),
-            new StageBlock(1, 2, Levels.LEVEL_1, stage3),
+            new StageBlock(new Point(0, 0), Levels.LEVEL_1, stage3),
+            new StageBlock(new Point(0, 1), Levels.LEVEL_1, stage3),
+            new StageBlock(new Point(0, 2), Levels.LEVEL_1, stage3),
+            new StageBlock(new Point(1, 2), Levels.LEVEL_1, stage3),
         ]);
         stage3.setColor(BlockColor.ORANGE);
-        stage3.setStartSection(1, 3);
-        stage3.setEndSection(0, 4);
+        stage3.setStartSection(new Point(1, 3));
+        stage3.setEndSection(new Point(0, 4));
         this.stageButtons.push(stage3);
         const stage4 = new StageButton(3);
         stage4.setBlocks([
-            new StageBlock(0, 0, Levels.LEVEL_1, stage4),
-            new StageBlock(0, 1, Levels.LEVEL_1, stage4),
-            new StageBlock(1, 0, Levels.LEVEL_1, stage4),
-            new StageBlock(1, 1, Levels.LEVEL_1, stage4),
+            new StageBlock(new Point(0, 0), Levels.LEVEL_1, stage4),
+            new StageBlock(new Point(0, 1), Levels.LEVEL_1, stage4),
+            new StageBlock(new Point(1, 0), Levels.LEVEL_1, stage4),
+            new StageBlock(new Point(1, 1), Levels.LEVEL_1, stage4),
         ]);
         stage4.setColor(BlockColor.RED);
-        stage4.setStartSection(3, 4);
-        stage4.setEndSection(4, 5);
+        stage4.setStartSection(new Point(3, 4));
+        stage4.setEndSection(new Point(4, 5));
         this.stageButtons.push(stage4);
     }
 }

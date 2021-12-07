@@ -1,9 +1,10 @@
 import BlockColor from "../color/blockColor.js";
+import Point, { PointArray } from "../util/point.js";
 import ArcadeHandler from "./arcade/arcadeHandler.js";
 import MenuButton from "./menuButton.js";
 export default class ButtonArcade extends MenuButton {
     getTextCenterPosition() {
-        return { x: 1.5, y: 0.5 };
+        return new Point(1.5, 0.5);
     }
     getColor() {
         return BlockColor.ORANGE;
@@ -18,12 +19,7 @@ export default class ButtonArcade extends MenuButton {
         return "Arcade";
     }
     getShape() {
-        return [
-            [0, 1],
-            [0, 0],
-            [1, 0],
-            [2, 0],
-        ];
+        return PointArray.begin(0, 1).add(0, 0).add(1, 0).add(2, 0).build();
     }
     onSelect() {
         ArcadeHandler.getHandler().state = "show";

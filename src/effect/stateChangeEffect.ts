@@ -2,6 +2,7 @@ import BlockColor from "../color/blockColor.js";
 import Tetris from "../main/tetris.js";
 import SpriteFigure from "../sprite/spriteFigure.js";
 import State from "../state/state.js";
+import Point, {PointArray} from "../util/point.js";
 import Effect from "./effect.js";
 import {easeInOutQuad} from "./effectEasings.js";
 import MoveEffect from "./moveEffect.js";
@@ -15,14 +16,14 @@ export default class StateChangeEffect extends Effect {
     private readonly moveTime = 25;
 
     private readonly FIGURES = [
-        new SpriteFigure([[0, 0], [0, 1], [0, 2], [1, 2]]),
-        new SpriteFigure([[0, 1], [1, 1], [2, 1], [1, 0]]),
-        new SpriteFigure([[0, 1], [1, 1], [1, 0], [2, 0]]),
-        new SpriteFigure([[0, 0], [1, 0], [2, 0], [1, 1]]),
-        new SpriteFigure([[0, 0], [1, 0], [1, 1], [1, 2]])
+        new SpriteFigure(PointArray.begin(0, 0).add(0, 1).add(0, 2).add(1, 2).build()),
+        new SpriteFigure(PointArray.begin(0, 1).add(1, 1).add(2, 1).add(1, 0).build()),
+        new SpriteFigure(PointArray.begin(0, 1).add(1, 1).add(1, 0).add(2, 0).build()),
+        new SpriteFigure(PointArray.begin(0, 0).add(1, 0).add(2, 0).add(1, 1).build()),
+        new SpriteFigure(PointArray.begin(0, 0).add(1, 0).add(1, 1).add(1, 2).build())
     ];
 
-    private readonly POSITIONS: [number, number][] = [[0, 1], [2, 2], [1, 1], [0, 0], [3, 0]];
+    private readonly POSITIONS: Point[] = PointArray.begin(0, 1).add(2, 2).add(1, 1).add(0, 0).add(3, 0).build();
 
     public constructor(changeTo: State) {
         super(-1);
@@ -32,8 +33,8 @@ export default class StateChangeEffect extends Effect {
             figure.blockSize = this.blockSize;
             figure.outlineMode = "border";
             figure.setOutlineWidthBasedOnBlockSize();
-            figure.x = this.POSITIONS[index][0] * this.blockSize;
-            figure.y = this.POSITIONS[index][1] * this.blockSize - Tetris.instance.WINDOW_HEIGHT - figure.outlineWidth;
+            figure.position.x = this.POSITIONS[index].x * this.blockSize;
+            figure.position.y = this.POSITIONS[index].y * this.blockSize - Tetris.instance.WINDOW_HEIGHT - figure.outlineWidth;
         });
     }
 
@@ -81,15 +82,15 @@ export default class StateChangeEffect extends Effect {
 
     private moveIn(figureIndex: number) {
         const figure = this.FIGURES[figureIndex];
-        const yPos = this.POSITIONS[figureIndex][1];
-        const effect = new MoveEffect(figure, figure.x, yPos * this.blockSize, this.moveTime);
+        const yPos = this.POSITIONS[figureIndex].y;
+        const effect = new MoveEffect(figure, new Point(figure.position.x, yPos * this.blockSize), this.moveTime);
         effect.easing = easeInOutQuad;
     }
 
     private moveOut(figureIndex: number) {
         const figure = this.FIGURES[figureIndex];
-        const yPos = this.POSITIONS[figureIndex][1] * this.blockSize + Tetris.instance.WINDOW_HEIGHT + figure.outlineWidth;
-        const effect = new MoveEffect(figure, figure.x, yPos, this.moveTime);
+        const yPos = this.POSITIONS[figureIndex].y * this.blockSize + Tetris.instance.WINDOW_HEIGHT + figure.outlineWidth;
+        const effect = new MoveEffect(figure, new Point(figure.position.x, yPos), this.moveTime);
         effect.easing = easeInOutQuad;
     }
 

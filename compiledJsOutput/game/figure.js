@@ -220,4 +220,4 @@ Figures.L_SHAPE = Figures.register(FigurePattern.builder().block(0, 0).block(1, 
 Figures.I_SHAPE = Figures.register(FigurePattern.builder().block(0, 0).block(1, 0).block(2, 0).block(3, 0).rotationCenter(1.5, 0.5));
 Figures.Z_SHAPE = Figures.register(FigurePattern.builder().block(0, 0).block(1, 0).block(1, 1).block(2, 1).rotationCenter(1, 0));
 Figures.CORNER_SHAPE = Figures.register(FigurePattern.builder().block(0, 0).block(1, 0).block(1, 1).rotationCenter(0.5, 0.5));
-//# sourceMappingURL=figure.js.map
+//# sourceMappingURL=Figure.js.map

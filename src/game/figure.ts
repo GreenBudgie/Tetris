@@ -1,7 +1,6 @@
 import BlockColor from "../color/blockColor.js";
 import Colorizable from "../color/colorizable.js";
 import RGBColor from "../color/rgbColor.js";
-import StateHandler from "../state/stateHandler.js";
 import Processable from "../util/processable.js";
 import {FigureBlock, MoveResult} from "./block.js";
 import InputHandler, {KeyBindings} from "../main/inputHandler.js";

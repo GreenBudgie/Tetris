@@ -1,4 +1,3 @@
-import StateHandler from "../state/stateHandler.js";
 import Processable from "../util/processable.js";
 import {FieldBlock} from "./block.js";
 import Figure, {Figures} from "./figure.js";

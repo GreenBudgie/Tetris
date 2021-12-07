@@ -9,6 +9,7 @@ import {easeInQuad, easeOutQuad} from "../effect/effectEasings.js";
 import ArcadeHandler from "./arcade/arcadeHandler.js";
 import SpriteFigure from "../sprite/spriteFigure.js";
 import Transition from "../effect/transition.js";
+import {PointArray} from "../util/point.js";
 
 export default class Menu implements Processable {
 
@@ -29,9 +30,8 @@ export default class Menu implements Processable {
         this._currentButton = this.buttons[this._currentButtonIndex];
         this._currentButton.onSelect();
 
-        this.test.x = 300;
-        this.test.y = 300;
-        this.test.rotationCenter = [this.test.blockSize, this.test.blockSize];
+        this.test.position.setPosition(300, 300);
+        this.test.rotationCenter.setPosition(this.test.blockSize, this.test.blockSize);
         this.test.outlineMode = "block";
         this.test.getColor().setComponents(255, 90, 90);
         new Transition(value => {this.test.rotation = value}, 0, 10 * Math.PI, 300);
@@ -96,7 +96,7 @@ export default class Menu implements Processable {
         this._currentButton = this.buttons[this._currentButtonIndex];
     }
 
-    private test: SpriteFigure = new SpriteFigure([[0, 0], [0, 1], [0, 2], [1, 2]]);
+    private test: SpriteFigure = new SpriteFigure(PointArray.begin(0, 0).add(0, 1).add(0, 2).add(1, 2).build());
 
     public draw(context: CanvasRenderingContext2D): void {
         for(const button of this.buttons) {

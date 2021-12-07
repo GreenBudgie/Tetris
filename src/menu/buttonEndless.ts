@@ -1,12 +1,12 @@
 import BlockColor from "../color/blockColor.js";
 import RGBColor from "../color/rgbColor.js";
-import StateHandler from "../state/stateHandler.js";
+import Point, {PointArray} from "../util/point.js";
 import MenuButton from "./menuButton.js";
 
 export default class ButtonEndless extends MenuButton {
 
-    public getTextCenterPosition(): {x: number; y: number;} {
-        return {x: 1, y: 1.5};
+    public getTextCenterPosition(): Point {
+        return new Point(1, 1.5);
     }
 
     public override getColor(): RGBColor {
@@ -25,13 +25,8 @@ export default class ButtonEndless extends MenuButton {
         return "Endless";
     }
 
-    public getShape(): [number, number][] {
-        return [
-            [1, 0],
-            [1, 1],
-            [0, 1],
-            [0, 2],
-        ]
+    public getShape(): Point[] {
+        return PointArray.begin(1, 0).add(1, 1).add(0, 1).add(0, 2).build();
     }
 
 }

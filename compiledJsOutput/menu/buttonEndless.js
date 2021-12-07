@@ -1,8 +1,9 @@
 import BlockColor from "../color/blockColor.js";
+import Point, { PointArray } from "../util/point.js";
 import MenuButton from "./menuButton.js";
 export default class ButtonEndless extends MenuButton {
     getTextCenterPosition() {
-        return { x: 1, y: 1.5 };
+        return new Point(1, 1.5);
     }
     getColor() {
         return BlockColor.BLUE;
@@ -16,12 +17,7 @@ export default class ButtonEndless extends MenuButton {
         return "Endless";
     }
     getShape() {
-        return [
-            [1, 0],
-            [1, 1],
-            [0, 1],
-            [0, 2],
-        ];
+        return PointArray.begin(1, 0).add(1, 1).add(0, 1).add(0, 2).build();
     }
 }
 //# sourceMappingURL=buttonEndless.js.map

@@ -1,4 +1,3 @@
-import Field from "./field.js";
 import Level from "./level.js";
 
 export default class Levels {

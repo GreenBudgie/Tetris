@@ -1,20 +1,17 @@
 import Effect from "./effect.js";
 export default class MoveEffect extends Effect {
-    constructor(toMove, x, y, time) {
+    constructor(toMove, target, time) {
         super(time);
         this.toMove = toMove;
-        this.startX = toMove.x;
-        this.startY = toMove.y;
-        this.endX = x;
-        this.endY = y;
+        this.startPos = toMove.position.clone();
+        this.targetPos = target.clone();
     }
     onUpdate(delta) {
-        this.toMove.x = this.startX + (this.endX - this.startX) * this.progress;
-        this.toMove.y = this.startY + (this.endY - this.startY) * this.progress;
+        this.toMove.position.x = this.startPos.x + (this.targetPos.x - this.startPos.x) * this.progress;
+        this.toMove.position.y = this.startPos.y + (this.targetPos.y - this.startPos.y) * this.progress;
     }
     onEnd() {
-        this.toMove.x = this.endX;
-        this.toMove.y = this.endY;
+        this.toMove.position.setPositionTo(this.targetPos);
     }
 }
 //# sourceMappingURL=moveEffect.js.map

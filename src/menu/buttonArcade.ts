@@ -1,12 +1,13 @@
 import BlockColor from "../color/blockColor.js";
 import RGBColor from "../color/rgbColor.js";
+import Point, {PointArray} from "../util/point.js";
 import ArcadeHandler from "./arcade/arcadeHandler.js";
 import MenuButton from "./menuButton.js";
 
 export default class ButtonArcade extends MenuButton {
 
-    public getTextCenterPosition(): {x: number; y: number;} {
-        return {x: 1.5, y: 0.5};
+    public getTextCenterPosition(): Point {
+        return new Point(1.5, 0.5);
     }
 
     public override getColor(): RGBColor {
@@ -25,13 +26,8 @@ export default class ButtonArcade extends MenuButton {
         return "Arcade";
     }
 
-    public getShape(): [number, number][] {
-        return [
-            [0, 1],
-            [0, 0],
-            [1, 0],
-            [2, 0],
-        ]
+    public getShape(): Point[] {
+        return PointArray.begin(0, 1).add(0, 0).add(1, 0).add(2, 0).build();
     }
 
     public override onSelect() {
