@@ -4,6 +4,7 @@
  */
 export default class Point {
     constructor(x, y) {
+        this.immutable = false;
         this._x = x;
         this._y = y;
     }
@@ -12,6 +13,13 @@ export default class Point {
      */
     static zero() {
         return new Point(0, 0);
+    }
+    /**
+     * Makes this point immutable so you cannot change its coordinates
+     */
+    makeImmutable() {
+        this.immutable = true;
+        return this;
     }
     /**
      * Creates a copy of the current point
@@ -31,17 +39,27 @@ export default class Point {
     set y(y) {
         this._y = y;
     }
+    throwIfImmutable() {
+        if (this.immutable)
+            throw "Cannot change coordinates of an immutable point";
+    }
     setPosition(x, y) {
+        this.throwIfImmutable();
         this.x = x;
         this.y = y;
+        return this;
     }
     setPositionTo(point) {
+        this.throwIfImmutable();
         this.x = point.x;
         this.y = point.y;
+        return this;
     }
     moveBy(x, y) {
+        this.throwIfImmutable();
         this.x += x;
         this.y += y;
+        return this;
     }
     /**
      * Gets the SQUARED distance between this point and another one
@@ -63,6 +81,7 @@ export default class Point {
      * @param origin A point to rotate the current point around
      */
     rotate(angleInRadians, origin) {
+        this.throwIfImmutable();
         const angleSin = Math.sin(angleInRadians);
         const angleCos = Math.cos(angleInRadians);
         this.x -= origin.x;
@@ -71,6 +90,7 @@ export default class Point {
         const rotatedY = this.x * angleSin + this.y * angleCos;
         this.x = rotatedX + origin.x;
         this.y = rotatedY + origin.y;
+        return this;
     }
 }
 export class PointArray {

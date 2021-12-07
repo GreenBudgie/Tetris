@@ -6,6 +6,7 @@ export default class Point {
 
     private _x: number;
     private _y: number;
+    private immutable: boolean = false;
 
     public constructor(x: number, y: number) {
         this._x = x;
@@ -17,6 +18,14 @@ export default class Point {
      */
     public static zero(): Point {
         return new Point(0, 0);
+    }
+
+    /**
+     * Makes this point immutable so you cannot change its coordinates
+     */
+    public makeImmutable(): Point {
+        this.immutable = true;
+        return this;
     }
 
     /**
@@ -42,19 +51,29 @@ export default class Point {
         this._y = y;
     }
 
-    public setPosition(x: number, y: number) {
+    private throwIfImmutable() {
+        if(this.immutable) throw "Cannot change coordinates of an immutable point";
+    }
+
+    public setPosition(x: number, y: number): Point {
+        this.throwIfImmutable();
         this.x = x;
         this.y = y;
+        return this;
     }
 
-    public setPositionTo(point: Point) {
+    public setPositionTo(point: Point): Point {
+        this.throwIfImmutable();
         this.x = point.x;
         this.y = point.y;
+        return this;
     }
 
-    public moveBy(x: number, y: number) {
+    public moveBy(x: number, y: number): Point {
+        this.throwIfImmutable();
         this.x += x;
         this.y += y;
+        return this;
     }
 
     /**
@@ -78,7 +97,8 @@ export default class Point {
      * @param angleInRadians Angle in radians
      * @param origin A point to rotate the current point around
      */
-    public rotate(angleInRadians: number, origin: Point) {
+    public rotate(angleInRadians: number, origin: Point): Point {
+        this.throwIfImmutable();
         const angleSin = Math.sin(angleInRadians);
         const angleCos = Math.cos(angleInRadians);
         this.x -= origin.x;
@@ -87,6 +107,7 @@ export default class Point {
         const rotatedY = this.x * angleSin + this.y * angleCos;
         this.x = rotatedX + origin.x;
         this.y = rotatedY + origin.y;
+        return this;
     }
 
 }
