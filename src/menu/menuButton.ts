@@ -22,6 +22,7 @@ export default abstract class MenuButton implements Colorizable, Processable {
         this.sprite = new SpriteFigure(this.getShape());
         this.sprite.blockSize = 85;
         this.sprite.setOutlineWidthBasedOnBlockSize();
+        this.sprite.outlineMode = "border";
 
         const startY: number = Tetris.instance.WINDOW_HEIGHT / 2 - this.sprite.getRealHeight() / 2;
 

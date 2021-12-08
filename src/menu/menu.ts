@@ -21,7 +21,6 @@ export default class Menu implements Processable {
 
     public isFading = false;
 
-    private test: SpriteBlock = new SpriteBlock();
     private constructor() {
         Menu.instance = this;
         this.buttons = [
@@ -31,12 +30,6 @@ export default class Menu implements Processable {
         ];
         this._currentButton = this.buttons[this._currentButtonIndex];
         this._currentButton.onSelect();
-
-        this.test.position.setPosition(300, 300);
-        this.test.rotationCenter.setPosition(-1, -1);
-        this.test.outline = true;
-        this.test.getColor().setComponents(255, 90, 90);
-        new Transition(value => {this.test.rotation = value}, 0, Math.PI * (3 / 4), 100);
     }
 
     public get currentButton(): MenuButton {
@@ -102,7 +95,6 @@ export default class Menu implements Processable {
         for(const button of this.buttons) {
             button.draw(context);
         }
-        this.test.draw(context);
     }
     
 }

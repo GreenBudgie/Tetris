@@ -1,11 +1,15 @@
-import Point from "../util/point.js";
 import Sprite from "./sprite.js";
+import SpriteBlock from "./spriteBlock.js";
 export default class SpriteFigure extends Sprite {
     constructor(shape) {
         super();
+        this.blocks = [];
         this._blockSize = 32;
         this._outlineMode = "border";
         this._outlineWidth = 2;
+        shape.forEach(point => {
+            this.blocks.push(new SpriteBlock());
+        });
         this._shape = shape;
         this.blockWidth = this.calculateBlockWidth();
         this.blockHeight = this.calculateBlockHeight();
@@ -62,65 +66,36 @@ export default class SpriteFigure extends Sprite {
     setOutlineWidthBasedOnBlockSize() {
         this._outlineWidth = Math.round(this.blockSize / 20);
     }
-    getBlockDrawStartPosition(blockPos) {
-        const xNoRotation = this.position.x + blockPos.x * this.blockSize;
-        const yNoRotation = this.position.y + blockPos.y * this.blockSize;
-        if (this.rotation == 0) {
-            return new Point(xNoRotation, yNoRotation);
-        }
-        const originX = xNoRotation - this.getRealRotationCenter().x;
-        const originY = yNoRotation - this.getRealRotationCenter().y;
-        const rotatedX = originX * this.rotationSinCos[1] - originY * this.rotationSinCos[0];
-        const rotatedY = originX * this.rotationSinCos[0] + originY * this.rotationSinCos[1];
-        return new Point(rotatedX + this.getRealRotationCenter().x, rotatedY + this.getRealRotationCenter().y);
-    }
     drawSprite(context) {
-        context.fillStyle = this.getColor().rgbString;
-        context.strokeStyle = "black";
-        context.lineWidth = this._outlineWidth;
-        context.lineCap = "square";
-        const shift = this._outlineWidth % 2 == 0 ? 0 : 0.5;
-        const outlineBlocks = this._outlineMode == "block";
-        for (const blockPos of this.shape) {
-            const startPos = this.getBlockDrawStartPosition(blockPos);
-            let currentStartX = startPos.x;
-            let currentStartY = startPos.y;
-            context.beginPath();
-            context.moveTo(currentStartX - 1, currentStartY - 1);
-            context.lineTo(currentStartX + this.blockSize + 1, currentStartY - 1);
-            context.lineTo(currentStartX + this.blockSize + 1, currentStartY + this.blockSize + 1);
-            context.lineTo(currentStartX - 1, currentStartY + this.blockSize + 1);
-            context.lineTo(currentStartX - 1, currentStartY - 1);
-            context.fill();
-            if (this._outlineMode == "none")
-                continue;
-            currentStartX -= shift;
-            currentStartY -= shift;
-            context.beginPath();
-            context.moveTo(currentStartX, currentStartY);
-            if (this.isFree(blockPos, 0, -1) || outlineBlocks) {
-                context.lineTo(currentStartX + this.blockSize, currentStartY);
+        this.blocks.forEach((block, index) => {
+            const blockPos = this.shape[index];
+            block.getColor().setTo(this.getColor());
+            block.size = this.blockSize;
+            block.outline = this.outlineMode != "none";
+            block.outlineWidth = this.outlineWidth;
+            block.rotation = this.rotation;
+            block.rotationCenter.setPosition(this.rotationCenter.x - this._shape[index].x, this.rotationCenter.y - this._shape[index].y);
+            block.position.setPosition(this.position.x + this._shape[index].x * this.blockSize, this.position.y + this._shape[index].y * this.blockSize);
+            if (this.outlineMode == "border") {
+                block.outlineEdges = [false, false, false, false];
+                if (this.isFree(blockPos, 0, -1)) {
+                    block.outlineEdges[0] = true;
+                }
+                if (this.isFree(blockPos, 1, 0)) {
+                    block.outlineEdges[1] = true;
+                }
+                if (this.isFree(blockPos, 0, 1)) {
+                    block.outlineEdges[2] = true;
+                }
+                if (this.isFree(blockPos, -1, 0)) {
+                    block.outlineEdges[3] = true;
+                }
             }
             else {
-                context.moveTo(currentStartX + this.blockSize, currentStartY);
+                block.outlineEdges = [true, true, true, true];
             }
-            if (this.isFree(blockPos, 1, 0) || outlineBlocks) {
-                context.lineTo(currentStartX + this.blockSize, currentStartY + this.blockSize);
-            }
-            else {
-                context.moveTo(currentStartX + this.blockSize, currentStartY + this.blockSize);
-            }
-            if (this.isFree(blockPos, 0, 1) || outlineBlocks) {
-                context.lineTo(currentStartX, currentStartY + this.blockSize);
-            }
-            else {
-                context.moveTo(currentStartX, currentStartY + this.blockSize);
-            }
-            if (this.isFree(blockPos, -1, 0) || outlineBlocks) {
-                context.lineTo(currentStartX, currentStartY);
-            }
-            context.stroke();
-        }
+            block.draw(context);
+        });
     }
     isFree(blockPos, dx, dy) {
         return !this.shape.some(pos => pos.x == blockPos.x + dx && pos.y == blockPos.y + dy);

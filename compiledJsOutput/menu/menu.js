@@ -4,14 +4,11 @@ import ButtonChallenge from "./buttonChallenge.js";
 import ButtonArcade from "./buttonArcade.js";
 import ButtonEndless from "./buttonEndless.js";
 import ArcadeHandler from "./arcade/arcadeHandler.js";
-import Transition from "../effect/transition.js";
-import SpriteBlock from "../sprite/spriteBlock.js";
 export default class Menu {
     constructor() {
         this.buttons = [];
         this._currentButtonIndex = 0;
         this.isFading = false;
-        this.test = new SpriteBlock();
         Menu.instance = this;
         this.buttons = [
             new ButtonArcade(0),
@@ -20,11 +17,6 @@ export default class Menu {
         ];
         this._currentButton = this.buttons[this._currentButtonIndex];
         this._currentButton.onSelect();
-        this.test.position.setPosition(300, 300);
-        this.test.rotationCenter.setPosition(-1, -1);
-        this.test.outline = true;
-        this.test.getColor().setComponents(255, 90, 90);
-        new Transition(value => { this.test.rotation = value; }, 0, Math.PI * (3 / 4), 100);
     }
     get currentButton() {
         return this._currentButton;
@@ -81,7 +73,6 @@ export default class Menu {
         for (const button of this.buttons) {
             button.draw(context);
         }
-        this.test.draw(context);
     }
 }
 Menu.instance = null;
