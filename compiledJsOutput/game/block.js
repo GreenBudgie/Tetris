@@ -1,79 +1,45 @@
+import SpriteBlock from "../sprite/spriteBlock.js";
 import GameProcess from "./gameProcess.js";
 export class AbstractBlock {
-    constructor(x, y) {
-        this.x = x;
-        this.y = y;
+    constructor(section) {
+        this.section = section;
+        this.sprite = new SpriteBlock();
+        this.sprite.outline = true;
+        this.sprite.outlineWidth = 1;
     }
     update(delta) { }
     draw(context) {
-        const blockStartX = this.getRealX() + 0.5;
-        const blockStartY = this.getRealY() + 0.5;
-        this.prepareContextPath(blockStartX, blockStartY, context);
-        this.fillBlock(this.getColor().rgbString, context);
-        this.outlineBlock(context);
-    }
-    prepareContextPath(startX, startY, context) {
-        const sectionSize = GameProcess.getCurrentProcess().field.realSectionSize;
-        context.beginPath();
-        context.moveTo(startX, startY);
-        context.lineTo(startX + sectionSize, startY);
-        context.lineTo(startX + sectionSize, startY + sectionSize);
-        context.lineTo(startX, startY + sectionSize);
-        context.closePath();
-    }
-    outlineBlock(context) {
-        context.lineWidth = 1;
-        context.strokeStyle = 'black';
-        context.stroke();
-    }
-    fillBlock(color, context) {
-        context.fillStyle = color;
-        context.fill();
+        this.sprite.draw(context);
     }
 }
 /**
  * Represents a block that takes place at the field
  */
 export class FieldBlock extends AbstractBlock {
-    constructor(x, y) {
-        super(x, y);
-        this.calculateRealX();
-        this.calculateRealY();
-    }
-    getColor() {
-        return this.color;
+    constructor(section) {
+        super(section);
+        this.setSpritePosition();
     }
     moveDown() {
-        this.y++;
-        this.calculateRealY();
+        this.section.y += 1;
+        this.setSpritePosition();
     }
-    getFieldSectionX() {
-        return this.x;
-    }
-    getFieldSectionY() {
-        return this.y;
-    }
-    calculateRealX() {
+    setSpritePosition() {
         const process = GameProcess.getCurrentProcess();
-        this.realX = process.field.getRealFieldX() + this.getFieldSectionX() * process.field.realSectionSize;
-    }
-    calculateRealY() {
-        const process = GameProcess.getCurrentProcess();
-        this.realY = process.field.getRealFieldY() + this.getFieldSectionY() * process.field.realSectionSize;
-    }
-    getRealX() {
-        return this.realX;
-    }
-    getRealY() {
-        return this.realY;
+        this.sprite.position.x = process.field.getRealFieldPosition().x + this.section.x * process.field.realSectionSize;
+        this.sprite.position.y = process.field.getRealFieldPosition().y + this.section.y * process.field.realSectionSize;
     }
 }
 /**
  * Represents a block that is attached to a figure
  */
 export class FigureBlock extends AbstractBlock {
-    getColor() {
-        return this.figure.color;
+    get figure() {
+        return this._figure;
+    }
+    set figure(value) {
+        this._figure = value;
+        this.sprite.getColor().setTo(this._figure.getColor());
     }
     /**
      * Checks whether the block is able to move right
@@ -105,7 +71,7 @@ export class FigureBlock extends AbstractBlock {
         const newSectionX = this.getSectionX() + dx;
         const newSectionY = this.getSectionY() + dy;
         for (const block of field.blocks) {
-            if (newSectionX == block.getFieldSectionX() && newSectionY == block.getFieldSectionY())
+            if (newSectionX == block.section.x && newSectionY == block.section.y)
                 return MoveResult.BLOCK;
         }
         if (field.isSectionInside(newSectionX, newSectionY))
@@ -121,13 +87,13 @@ export class FigureBlock extends AbstractBlock {
         return this.getSectionY() * process.field.realSectionSize + process.field.getRealFieldY();
     }
     getSectionX() {
-        return this.x + this.figure.sectionX;
+        return this.x + this._figure.sectionX;
     }
     getSectionY() {
-        return this.y + this.figure.sectionY;
+        return this.y + this._figure.sectionY;
     }
     getShadowSectionY() {
-        return this.y + this.figure.getShadowSectionY();
+        return this.y + this._figure.getShadowSectionY();
     }
     getRealShadowY() {
         const process = GameProcess.getCurrentProcess();
@@ -135,8 +101,8 @@ export class FigureBlock extends AbstractBlock {
     }
     checkRotation() {
         const field = GameProcess.getCurrentProcess().field;
-        const rotatedFieldX = this.findRotatedRelativeX() + this.figure.sectionX;
-        const rotatedFieldY = this.findRotatedRelativeY() + this.figure.sectionY;
+        const rotatedFieldX = this.findRotatedRelativeX() + this._figure.sectionX;
+        const rotatedFieldY = this.findRotatedRelativeY() + this._figure.sectionY;
         if (!field.isSectionInsideOrAbove(rotatedFieldX, rotatedFieldY))
             return MoveResult.BOUNDARY;
         for (const field_block of field.blocks) {
@@ -146,14 +112,14 @@ export class FigureBlock extends AbstractBlock {
         return MoveResult.ALLOW;
     }
     findRotatedRelativeX() {
-        const originY = this.y - this.figure.rotationCenterY;
+        const originY = this.y - this._figure.rotationCenterY;
         const rotatedOriginX = -originY;
-        return rotatedOriginX + this.figure.rotationCenterX;
+        return rotatedOriginX + this._figure.rotationCenterX;
     }
     findRotatedRelativeY() {
-        const originX = this.x - this.figure.rotationCenterX;
+        const originX = this.x - this._figure.rotationCenterX;
         const rotatedOriginY = originX;
-        return rotatedOriginY + this.figure.rotationCenterY;
+        return rotatedOriginY + this._figure.rotationCenterY;
     }
     rotateNoRestrictions() {
         const rotatedX = this.findRotatedRelativeX();
@@ -168,10 +134,10 @@ export class FigureBlock extends AbstractBlock {
         return this.y;
     }
     getPreviewRealX() {
-        return this.x * GameProcess.getCurrentProcess().field.realSectionSize + this.figure.getPreviewRealX();
+        return this.x * GameProcess.getCurrentProcess().field.realSectionSize + this._figure.getPreviewRealX();
     }
     getPreviewRealY() {
-        return this.y * GameProcess.getCurrentProcess().field.realSectionSize + this.figure.getPreviewRealY();
+        return this.y * GameProcess.getCurrentProcess().field.realSectionSize + this._figure.getPreviewRealY();
     }
     /**
      * Creates a field block with the same coordinates and color

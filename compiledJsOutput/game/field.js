@@ -1,6 +1,7 @@
 import { Figures } from "./figure.js";
 import Tetris from "../main/tetris.js";
 import GameProcess from "./gameProcess.js";
+import Point from "../util/point.js";
 /**
  * A field is a game element that stores and renders all the blocks and figures inside it
  */
@@ -24,11 +25,8 @@ export default class Field {
     static defaultSizeField() {
         return new Field(12, 20);
     }
-    getRealFieldX() {
-        return Math.round(Tetris.instance.WINDOW_WIDTH / 2 - this.getRealFieldWidth() / 2);
-    }
-    getRealFieldY() {
-        return Math.round(Tetris.instance.WINDOW_HEIGHT / 2 - this.getRealFieldHeight() / 2);
+    getRealFieldPosition() {
+        return new Point(Math.round(Tetris.instance.WINDOW_WIDTH / 2 - this.getRealFieldWidth() / 2), Math.round(Tetris.instance.WINDOW_HEIGHT / 2 - this.getRealFieldHeight() / 2));
     }
     getRealFieldWidth() {
         return this.realSectionSize * this.sectionX;

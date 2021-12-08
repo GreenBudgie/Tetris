@@ -3,6 +3,7 @@ import {FieldBlock} from "./block.js";
 import Figure, {Figures} from "./figure.js";
 import Tetris from "../main/tetris.js";
 import GameProcess from "./gameProcess.js";
+import Point from "../util/point.js";
 
 /**
  * A field is a game element that stores and renders all the blocks and figures inside it
@@ -41,12 +42,11 @@ export default class Field implements Processable {
 		return new Field(12, 20);
 	}
 
-	public getRealFieldX() {
-		return Math.round(Tetris.instance.WINDOW_WIDTH / 2 - this.getRealFieldWidth() / 2);
-	}
-
-	public getRealFieldY() {
-		return Math.round(Tetris.instance.WINDOW_HEIGHT / 2 - this.getRealFieldHeight() / 2);
+	public getRealFieldPosition(): Point {
+		return new Point(
+			Math.round(Tetris.instance.WINDOW_WIDTH / 2 - this.getRealFieldWidth() / 2),
+			Math.round(Tetris.instance.WINDOW_HEIGHT / 2 - this.getRealFieldHeight() / 2)
+		);
 	}
 
 	public getRealFieldWidth(): number {

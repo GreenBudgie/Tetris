@@ -6,6 +6,7 @@ import {FigureBlock, MoveResult} from "./block.js";
 import InputHandler, {KeyBindings} from "../main/inputHandler.js";
 import Tetris from "../main/tetris.js";
 import GameProcess from "./gameProcess.js";
+import Point from "../util/point.js";
 
 /**
  * A figure is a collection of single blocks
@@ -32,10 +33,10 @@ export default class Figure implements Colorizable, Processable {
 	 * @example An input "[0, 0], [1, 0], [2, 0], [1, 1]" will create a T-shaped figure
 	 * @returns A figure with currently defined blocks
 	 */
-	public static createByRelativeBlockSections(...sections: [number, number][]): Figure {
+	public static createFromShape(shape: Point[]): Figure {
 		const blocks: FigureBlock[] = [];
-		for(let section of sections) {
-			blocks.push(new FigureBlock(section[0], section[1]));
+		for(const point of shape) {
+			blocks.push(new FigureBlock(point));
 		}
 		return new Figure(blocks);
 	}
@@ -202,8 +203,8 @@ export default class Figure implements Colorizable, Processable {
 
 export class FigurePattern {
 
-	private shape: [number, number][] = [];
-	private centerOfRotation: [number, number];
+	private shape: Point[] = [];
+	private centerOfRotation: Point;
 
 	private maxX = 0;
 
@@ -213,29 +214,26 @@ export class FigurePattern {
 		return new FigurePattern();
 	}
 
-	public block(relative_x: number, relative_y: number): FigurePattern {
-		if(relative_x > this.maxX) this.maxX = relative_x;
-		this.shape.push([relative_x, relative_y]);
+	public block(relativeX: number, relativeY: number): FigurePattern {
+		if(relativeX > this.maxX) this.maxX = relativeX;
+		this.shape.push(new Point(relativeX, relativeY));
 		return this;
 	}
 
-	public rotationCenter(relative_x: number, relative_y: number): FigurePattern {
-		this.centerOfRotation = [relative_x, relative_y];
+	public rotationCenter(relativeX: number, relativeY: number): FigurePattern {
+		this.centerOfRotation = new Point(relativeX, relativeY);
 		return this;
 	}
 
 	public createFigure(): Figure {
 		const doFlip = Math.random() < 0.5;
-		let finalShape: [number, number][] = [];
-		this.shape.forEach((coords) => {
-			finalShape.push([coords[0], coords[1]]);
-		});
+		let finalShape: Point[] = this.shape.map(point => point.clone());
 		if(doFlip) {
-			finalShape.forEach((coords) => {
-				coords[0] = this.maxX - coords[0];
+			finalShape.forEach(point => {
+				point.x = this.maxX - point.x;
 			});
 		}
-		const figure = Figure.createByRelativeBlockSections(...finalShape);
+		const figure = Figure.createFromShape(...finalShape);
 		figure.rotationCenterX = this.centerOfRotation[0];
 		figure.rotationCenterY = this.centerOfRotation[1];
 		return figure;

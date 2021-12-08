@@ -1,59 +1,27 @@
 import Colorizable from "../color/colorizable.js";
 import RGBColor from "../color/rgbColor.js";
+import SpriteBlock from "../sprite/spriteBlock.js";
+import Point from "../util/point.js";
 import Processable from "../util/processable.js";
 import Figure from "./Figure.js";
 import GameProcess from "./gameProcess.js";
 
-export abstract class AbstractBlock implements Colorizable, Processable {
-	protected x: number;
-	protected y: number;
+export abstract class AbstractBlock implements Processable {
+
+	public readonly section: Point;
+	public readonly sprite: SpriteBlock;
 	
-	constructor(x: number, y: number) {
-		this.x = x;
-		this.y = y;
+	constructor(section: Point) {
+		this.section = section;
+		this.sprite = new SpriteBlock();
+		this.sprite.outline = true;
+		this.sprite.outlineWidth = 1;
 	}
 
 	public update(delta: number): void {}
 
-	public abstract getColor(): RGBColor;
-
-	/**
-	 * Gets the real X section position of the current block on the screen
-	 */
-	public abstract getRealX(): number;
-
-	/**
-	 * Gets the real Y section position of the current block on the screen
-	 */
-	public abstract getRealY(): number;
-
 	public draw(context: CanvasRenderingContext2D) {
-		const blockStartX = this.getRealX() + 0.5;
-		const blockStartY = this.getRealY() + 0.5;
-		this.prepareContextPath(blockStartX, blockStartY, context);
-		this.fillBlock(this.getColor().rgbString, context);
-		this.outlineBlock(context);
-	}
-
-	protected prepareContextPath(startX: number, startY: number, context: CanvasRenderingContext2D) {
-		const sectionSize = GameProcess.getCurrentProcess().field.realSectionSize;
-		context.beginPath();
-		context.moveTo(startX, startY);
-		context.lineTo(startX + sectionSize, startY);
-		context.lineTo(startX + sectionSize, startY + sectionSize);
-		context.lineTo(startX, startY + sectionSize);
-		context.closePath();
-	}
-
-	protected outlineBlock(context: CanvasRenderingContext2D) {
-		context.lineWidth = 1;
-		context.strokeStyle = 'black';
-		context.stroke();
-	}
-
-	protected fillBlock(color: string, context: CanvasRenderingContext2D) {
-		context.fillStyle = color;
-		context.fill();
+		this.sprite.draw(context);
 	}
 
 }
@@ -63,49 +31,20 @@ export abstract class AbstractBlock implements Colorizable, Processable {
  */
 export class FieldBlock extends AbstractBlock {
 
-	public color: RGBColor;
-	private realX: number;
-	private realY: number;
-
-	constructor(x: number, y: number) {
-		super(x, y);
-		this.calculateRealX();
-		this.calculateRealY();
-	}
-
-	public getColor(): RGBColor {
-		return this.color;
+	constructor(section: Point) {
+		super(section);
+		this.setSpritePosition();
 	}
 
 	public moveDown() {
-		this.y++;
-		this.calculateRealY();
+		this.section.y += 1;
+		this.setSpritePosition();
 	}
 
-	public getFieldSectionX(): number {
-		return this.x;
-	}
-
-	public getFieldSectionY(): number {
-		return this.y;
-	}
-
-	public calculateRealX() {
+	public setSpritePosition() {
 		const process = GameProcess.getCurrentProcess();
-		this.realX = process.field.getRealFieldX() + this.getFieldSectionX() * process.field.realSectionSize;
-	}
-
-	public calculateRealY() {
-		const process = GameProcess.getCurrentProcess();
-		this.realY = process.field.getRealFieldY() + this.getFieldSectionY() * process.field.realSectionSize;
-	}
-
-	public getRealX(): number {
-		return this.realX;
-	}
-
-	public getRealY(): number {
-		return this.realY;
+		this.sprite.position.x = process.field.getRealFieldPosition().x + this.section.x * process.field.realSectionSize;
+		this.sprite.position.y = process.field.getRealFieldPosition().y + this.section.y * process.field.realSectionSize;
 	}
 
 }
@@ -115,10 +54,15 @@ export class FieldBlock extends AbstractBlock {
  */
 export class FigureBlock extends AbstractBlock {
 
-	public figure: Figure;
+	private _figure: Figure;
 
-	public getColor(): RGBColor {
-		return this.figure.color;
+	public get figure(): Figure {
+		return this._figure;
+	}
+
+	public set figure(value: Figure) {
+		this._figure = value;
+		this.sprite.getColor().setTo(this._figure.getColor());
 	}
 
 	/**
@@ -154,7 +98,7 @@ export class FigureBlock extends AbstractBlock {
 		const newSectionX = this.getSectionX() + dx;
 		const newSectionY = this.getSectionY() + dy;
 		for(const block of field.blocks) {
-			if(newSectionX == block.getFieldSectionX() && newSectionY == block.getFieldSectionY()) return MoveResult.BLOCK;
+			if(newSectionX == block.section.x && newSectionY == block.section.y) return MoveResult.BLOCK;
 		}
 		if(field.isSectionInside(newSectionX, newSectionY)) return MoveResult.ALLOW;
 		return MoveResult.BOUNDARY;
@@ -171,15 +115,15 @@ export class FigureBlock extends AbstractBlock {
 	}
 
 	public getSectionX(): number {
-		return this.x + this.figure.sectionX;
+		return this.x + this._figure.sectionX;
 	}
 
 	public getSectionY(): number {
-		return this.y + this.figure.sectionY;
+		return this.y + this._figure.sectionY;
 	}
 
 	public getShadowSectionY(): number {
-		return this.y + this.figure.getShadowSectionY();
+		return this.y + this._figure.getShadowSectionY();
 	}
 
 	public getRealShadowY(): number {
@@ -189,8 +133,8 @@ export class FigureBlock extends AbstractBlock {
 
 	public checkRotation(): MoveResult {
 		const field = GameProcess.getCurrentProcess().field;
-		const rotatedFieldX = this.findRotatedRelativeX() + this.figure.sectionX;
-		const rotatedFieldY = this.findRotatedRelativeY() + this.figure.sectionY;
+		const rotatedFieldX = this.findRotatedRelativeX() + this._figure.sectionX;
+		const rotatedFieldY = this.findRotatedRelativeY() + this._figure.sectionY;
 		if(!field.isSectionInsideOrAbove(rotatedFieldX, rotatedFieldY)) return MoveResult.BOUNDARY;
 		for(const field_block of field.blocks) {
 			if(field_block.getFieldSectionX() == rotatedFieldX && field_block.getFieldSectionY() == rotatedFieldY) 
@@ -200,15 +144,15 @@ export class FigureBlock extends AbstractBlock {
 	}
 
 	public findRotatedRelativeX(): number {
-		const originY = this.y - this.figure.rotationCenterY;
+		const originY = this.y - this._figure.rotationCenterY;
 		const rotatedOriginX = -originY;
-		return rotatedOriginX + this.figure.rotationCenterX;
+		return rotatedOriginX + this._figure.rotationCenterX;
 	}
 
 	public findRotatedRelativeY(): number {
-		const originX = this.x - this.figure.rotationCenterX;
+		const originX = this.x - this._figure.rotationCenterX;
 		const rotatedOriginY = originX;
-		return rotatedOriginY + this.figure.rotationCenterY;
+		return rotatedOriginY + this._figure.rotationCenterY;
 	}
 
 	public rotateNoRestrictions() {
@@ -227,11 +171,11 @@ export class FigureBlock extends AbstractBlock {
 	}
 
 	public getPreviewRealX(): number {
-		return this.x * GameProcess.getCurrentProcess().field.realSectionSize + this.figure.getPreviewRealX();
+		return this.x * GameProcess.getCurrentProcess().field.realSectionSize + this._figure.getPreviewRealX();
 	}
 
 	public getPreviewRealY(): number {
-		return this.y * GameProcess.getCurrentProcess().field.realSectionSize + this.figure.getPreviewRealY();
+		return this.y * GameProcess.getCurrentProcess().field.realSectionSize + this._figure.getPreviewRealY();
 	}
 
 	/**
