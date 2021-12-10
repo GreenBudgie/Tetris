@@ -35,6 +35,10 @@ export default class Point {
         return new Point(this.x, this.y);
     }
 
+    public equals(point: Point): boolean {
+        return this.x == point.x && this.y == point.y;
+    }
+
     get x(): number {
         return this._x;
     }
@@ -74,6 +78,14 @@ export default class Point {
         this.x += x;
         this.y += y;
         return this;
+    }
+
+    public add(point: Point): Point {
+        return this.moveBy(point.x, point.y);
+    }
+
+    public subtract(point: Point): Point {
+        return this.moveBy(point.x, point.y);
     }
 
     /**

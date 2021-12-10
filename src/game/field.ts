@@ -85,26 +85,26 @@ export default class Field implements Processable {
 			const process = GameProcess.getCurrentProcess();
 			process.points += this.sectionX;
 			process.filledRows++;
-			this.blocks = this.blocks.filter(block => block.getFieldSectionY() != y);
+			this.blocks = this.blocks.filter(block => block.getFieldSection().y != y);
 			for(const block of this.blocks) {
-				if(block.getFieldSectionY() < y) block.moveDown();
+				if(block.getFieldSection().y < y) block.moveDown();
 			}
 		}
 	}
 
 	public getBlockAt(sectionX: number, sectionY: number): FieldBlock | null {
 		for(const block of this.blocks) {
-			if(block.getFieldSectionX() == sectionX && block.getFieldSectionY() == sectionY) return block;
+			if(block.getFieldSection().x == sectionX && block.getFieldSection().x == sectionY) return block;
 		}
 		return null;
 	}
 
-	public isSectionInside(sectionX: number, sectionY: number): boolean {
-		return sectionX >= 0 && sectionX < this.sectionX && sectionY >= 0 && sectionY < this.sectionsY;
+	public isSectionInside(section: Point): boolean {
+		return section.x >= 0 && section.x < this.sectionX && section.y >= 0 && section.y < this.sectionsY;
 	}
 
-	public isSectionInsideOrAbove(sectionX: number, sectionY: number): boolean {
-		return sectionX >= 0 && sectionX < this.sectionX && sectionY < this.sectionsY;
+	public isSectionInsideOrAbove(section: Point): boolean {
+		return section.x >= 0 && section.x < this.sectionX && section.y < this.sectionsY;
 	}
 
 	public update(delta: number) {
@@ -127,18 +127,17 @@ export default class Field implements Processable {
 	}
 
 	private drawSections(context: CanvasRenderingContext2D) {
-		const startX = this.getRealFieldX();
-		const startY = this.getRealFieldY();
+		const startPosition = this.getRealFieldPosition();
 		context.strokeStyle = "rgb(189, 189, 189)";
 		context.lineWidth = 1;
 		context.beginPath();
 		for(let xSection: number = 0; xSection <= this.sectionX; xSection++) {
-			context.moveTo(startX + xSection * this.realSectionSize + 0.5, startY);
-			context.lineTo(startX + xSection * this.realSectionSize + 0.5, startY + this.getRealFieldHeight());
+			context.moveTo(startPosition.x + xSection * this.realSectionSize + 0.5, startPosition.y);
+			context.lineTo(startPosition.x + xSection * this.realSectionSize + 0.5, startPosition.y + this.getRealFieldHeight());
 		}
 		for(let ySection: number = 0; ySection <= this.sectionsY; ySection++) {
-			context.moveTo(startX, startY + ySection * this.realSectionSize + 0.5);
-			context.lineTo(startX + this.getRealFieldWidth(), startY + ySection * this.realSectionSize + 0.5);
+			context.moveTo(startPosition.x, startPosition.y + ySection * this.realSectionSize + 0.5);
+			context.lineTo(startPosition.x + this.getRealFieldWidth(), startPosition.y + ySection * this.realSectionSize + 0.5);
 		}
 		context.closePath();
 		context.stroke();

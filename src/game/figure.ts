@@ -13,11 +13,8 @@ import Point from "../util/point.js";
  */
 export default class Figure implements Colorizable, Processable {
 	
-	public sectionX: number = 0;
-	public sectionY: number = 0;
-
-	public rotationCenterX: number;
-	public rotationCenterY: number;
+	public section: Point = Point.zero();
+	public rotationCenter: Point;
 
 	private _blocks: FigureBlock[];
 
@@ -55,7 +52,7 @@ export default class Figure implements Colorizable, Processable {
 	}
 
 	public getPreviewRealY() {
-		return GameProcess.getCurrentProcess().field.getRealFieldY() + 60;
+		return GameProcess.getCurrentProcess().field.getRealFieldPosition().y + 60;
 	}
 
 	public getColor(): RGBColor {
@@ -69,7 +66,7 @@ export default class Figure implements Colorizable, Processable {
 	public getCurrentWidth(): number {
 		let maxRelativeBlockX: number = 0;
 		for(const block of this._blocks) {
-			if(block.getRelativeX() > maxRelativeBlockX) maxRelativeBlockX = block.getRelativeX();
+			if(block.getRelativeSection().x > maxRelativeBlockX) maxRelativeBlockX = block.getRelativeSection().x;
 		}
 		return maxRelativeBlockX + 1;
 	}
@@ -77,7 +74,7 @@ export default class Figure implements Colorizable, Processable {
 	public getCurrentHeight(): number {
 		let maxRelativeBlockY: number = 0;
 		for(const block of this._blocks) {
-			if(block.getRelativeY() > maxRelativeBlockY) maxRelativeBlockY = block.getRelativeY();
+			if(block.getRelativeSection().y > maxRelativeBlockY) maxRelativeBlockY = block.getRelativeSection().y;
 		}
 		return maxRelativeBlockY + 1;
 	}
@@ -127,8 +124,7 @@ export default class Figure implements Colorizable, Processable {
 	 * @param dy Y movement
 	 */
 	public moveNoRestrictions(dx: number, dy: number) {
-		this.sectionX += dx;
-		this.sectionY += dy;
+		this.section.moveBy(dx, dy);
 	}
 
 	/**
@@ -183,7 +179,7 @@ export default class Figure implements Colorizable, Processable {
 		for(const currentBlock of this._blocks) {
 			const shadowY = currentBlock.getShadowSectionY();
 			for(const blockToCheck of this._blocks) {
-				if(blockToCheck.getSectionY() >= shadowY) return false;
+				if(blockToCheck.getFieldSection().y >= shadowY) return false;
 			}
 		}
 		return true;
@@ -193,7 +189,7 @@ export default class Figure implements Colorizable, Processable {
 		for(let yShift = 1;; yShift++) {
 			for(const block of this._blocks) {
 				if(block.checkMove(0, yShift) != MoveResult.ALLOW) {
-					return this.sectionY + yShift - 1;
+					return this.section.y + yShift - 1;
 				}
 			}
 		}
@@ -233,9 +229,8 @@ export class FigurePattern {
 				point.x = this.maxX - point.x;
 			});
 		}
-		const figure = Figure.createFromShape(...finalShape);
-		figure.rotationCenterX = this.centerOfRotation[0];
-		figure.rotationCenterY = this.centerOfRotation[1];
+		const figure = Figure.createFromShape(finalShape);
+		figure.rotationCenter = this.centerOfRotation.clone();
 		return figure;
 	}
 
