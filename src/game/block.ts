@@ -58,6 +58,8 @@ export class FigureBlock extends AbstractBlock {
 
 	private _figure: Figure;
 
+	private readonly shadow: SpriteBlock;
+
 	public get figure(): Figure {
 		return this._figure;
 	}
@@ -150,30 +152,14 @@ export class FigureBlock extends AbstractBlock {
 		return this.section;
 	}
 
-	public getPreviewRealPosition(): number {
-		return this.x * GameProcess.getCurrentProcess().field.realSectionSize + this._figure.getPreviewRealX();
-	}
-
-	public getPreviewRealY(): number {
-		return this.y * GameProcess.getCurrentProcess().field.realSectionSize + this._figure.getPreviewRealY();
-	}
-
 	/**
 	 * Creates a field block with the same coordinates and color
 	 * @returns A new field block
 	 */
 	public toFieldBlock(): FieldBlock {
-		const fieldBlock = new FieldBlock(this.getSectionX(), this.getSectionY());
-		fieldBlock.color = this.getColor();
+		const fieldBlock = new FieldBlock(this.getFieldSection());
+		fieldBlock.sprite.getColor().setTo(this.sprite.getColor());
 		return fieldBlock;
-	}
-
-	public drawAsPreview(context: CanvasRenderingContext2D) {
-		const startX = this.getPreviewRealX() + 0.5;
-		const startY = this.getPreviewRealY() + 0.5;
-		this.prepareContextPath(startX, startY, context);
-		this.fillBlock(this.getColor().rgbString, context);
-		this.outlineBlock(context);
 	}
 
 	public override draw(context: CanvasRenderingContext2D) {
@@ -181,15 +167,11 @@ export class FigureBlock extends AbstractBlock {
 	}
 
 	public drawShadow(context: CanvasRenderingContext2D) {
-		const shadowSectionY = this.getShadowSectionY();
-		const currentSectionY = this.getSectionY();
-		if(shadowSectionY != currentSectionY) {
-			const shadowRealX = this.getRealX() + 0.5;
-			const shadowRealY = this.getRealShadowY() + 0.5;
-			this.prepareContextPath(shadowRealX, shadowRealY, context);
-			this.fillBlock("rgb(230, 230, 230)", context);
-			this.outlineBlock(context);
-		}
+		const shadowRealX = this.getRealX() + 0.5;
+		const shadowRealY = this.getRealShadowY() + 0.5;
+		this.prepareContextPath(shadowRealX, shadowRealY, context);
+		this.fillBlock("rgb(230, 230, 230)", context);
+		this.outlineBlock(context);
 	}
 
 }
