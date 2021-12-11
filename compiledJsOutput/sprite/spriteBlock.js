@@ -64,6 +64,9 @@ export default class SpriteBlock extends Sprite {
         const fullOutline = this.doFullOutline();
         context.fillStyle = this.getColor().rgbString;
         const corners = this.getRotatedCorners(fullOutline ? this.getRawCorners() : this.getEnlargedCorners());
+        if (this.outlineWidth % 2 != 0) {
+            corners.forEach(corner => corner.moveBy(0.5, 0.5));
+        }
         context.beginPath();
         context.moveTo(corners[0].x, corners[0].y);
         for (let i = 1; i < corners.length; i++) {

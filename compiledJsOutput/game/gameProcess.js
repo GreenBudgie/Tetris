@@ -1,4 +1,5 @@
 import Tetris from "../main/tetris.js";
+import Point from "../util/point.js";
 import Field from "./field.js";
 import { Figures } from "./figure.js";
 export default class GameProcess {
@@ -6,13 +7,14 @@ export default class GameProcess {
         this.points = 0;
         this.filledRows = 0;
         this._isPaused = false;
+        GameProcess.currentProcess = this;
         this.level = level;
-        this.selectNextFigure();
         this.field = Field.defaultSizeField();
+        this.selectNextFigure();
     }
     static initiate(level) {
-        GameProcess.currentProcess = new GameProcess(level);
-        return this.currentProcess;
+        new GameProcess(level);
+        return GameProcess.currentProcess;
     }
     static terminate() {
         GameProcess.currentProcess = null;
@@ -46,11 +48,14 @@ export default class GameProcess {
         this.drawNextFigurePreview(context);
     }
     getRightSideMiddle() {
-        const fieldEndX = this.field.getRealFieldX() + this.field.getRealFieldWidth();
+        const fieldEndX = this.field.getRealFieldPosition().x + this.field.getRealFieldWidth();
         return Math.round((fieldEndX + Tetris.instance.WINDOW_WIDTH) / 2);
     }
     getLeftSideMiddle() {
-        return this.field.getRealFieldX() / 2;
+        return this.field.getRealFieldPosition().x / 2;
+    }
+    getPreviewCenterPosition() {
+        return new Point(this.getLeftSideMiddle(), this.field.getRealFieldPosition().y + 60);
     }
     drawNextFigurePreview(context) {
         context.font = "36px ft_default";
@@ -58,9 +63,9 @@ export default class GameProcess {
         context.textBaseline = "top";
         context.textAlign = "center";
         const leftMiddle = this.getLeftSideMiddle();
-        context.fillText("- Next -", leftMiddle, this.field.getRealFieldY());
+        context.fillText("- Next -", leftMiddle, this.field.getRealFieldPosition().y);
         if (this.nextFigure != null) {
-            this.nextFigure.drawAsPreview(context);
+            this.nextFigure.drawPreview(context);
         }
     }
     drawPoints(context) {
@@ -69,7 +74,7 @@ export default class GameProcess {
         context.textBaseline = "top";
         context.textAlign = "center";
         const rightMiddle = this.getRightSideMiddle();
-        const pointsY = this.field.getRealFieldY();
+        const pointsY = this.field.getRealFieldPosition().y;
         context.fillText("- Points -", rightMiddle, pointsY);
         context.fillText(`${this.points} / ${this.level.requiredPoints}`, rightMiddle, pointsY + 45);
         const rowsY = pointsY + 150;

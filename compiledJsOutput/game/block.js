@@ -1,9 +1,14 @@
+import { easeOutQuad } from "../effect/effectEasings.js";
+import MoveEffect from "../effect/moveEffect.js";
+import Transition from "../effect/transition.js";
 import SpriteBlock from "../sprite/spriteBlock.js";
+import Point from "../util/point.js";
 import GameProcess from "./gameProcess.js";
 export class AbstractBlock {
     constructor(section) {
         this.section = section;
         this.sprite = new SpriteBlock();
+        this.sprite.size = GameProcess.getCurrentProcess().field.realSectionSize;
         this.sprite.outline = true;
         this.sprite.outlineWidth = 1;
     }
@@ -19,6 +24,9 @@ export class FieldBlock extends AbstractBlock {
     constructor(section) {
         super(section);
         this.setSpritePosition();
+    }
+    getFieldSection() {
+        return this.section;
     }
     moveDown() {
         this.section.y += 1;
@@ -40,6 +48,7 @@ export class FigureBlock extends AbstractBlock {
     set figure(value) {
         this._figure = value;
         this.sprite.getColor().setTo(this._figure.getColor());
+        this.sprite.rotationCenter.setPositionTo(this._figure.rotationCenter.clone().add(this.section));
     }
     /**
      * Checks whether the block is able to move right
@@ -68,106 +77,78 @@ export class FigureBlock extends AbstractBlock {
      */
     checkMove(dx, dy) {
         const field = GameProcess.getCurrentProcess().field;
-        const newSectionX = this.getSectionX() + dx;
-        const newSectionY = this.getSectionY() + dy;
+        const newSection = this.getFieldSection().clone().moveBy(dx, dy);
         for (const block of field.blocks) {
-            if (newSectionX == block.section.x && newSectionY == block.section.y)
+            if (newSection.x == block.getFieldSection().x && newSection.y == block.getFieldSection().y)
                 return MoveResult.BLOCK;
         }
-        if (field.isSectionInside(newSectionX, newSectionY))
+        if (field.isSectionInside(newSection))
             return MoveResult.ALLOW;
         return MoveResult.BOUNDARY;
     }
-    getRealX() {
+    getFieldSection() {
+        return this.section.clone().add(this._figure.section);
+    }
+    getRealPosition() {
+        const field = GameProcess.getCurrentProcess().field;
+        return new Point(this.getFieldSection().x * field.realSectionSize + field.getRealFieldPosition().x, this.getFieldSection().y * field.realSectionSize + field.getRealFieldPosition().y);
+    }
+    getShadowSection() {
+        return this._figure.getShadowSection().add(this._figure.section);
+    }
+    getRealShadowPosition() {
         const process = GameProcess.getCurrentProcess();
-        return this.getSectionX() * process.field.realSectionSize + process.field.getRealFieldX();
-    }
-    getRealY() {
-        const process = GameProcess.getCurrentProcess();
-        return this.getSectionY() * process.field.realSectionSize + process.field.getRealFieldY();
-    }
-    getSectionX() {
-        return this.x + this._figure.sectionX;
-    }
-    getSectionY() {
-        return this.y + this._figure.sectionY;
-    }
-    getShadowSectionY() {
-        return this.y + this._figure.getShadowSectionY();
-    }
-    getRealShadowY() {
-        const process = GameProcess.getCurrentProcess();
-        return process.field.getRealFieldY() + this.getShadowSectionY() * process.field.realSectionSize;
+        return new Point(process.field.getRealFieldPosition().x + this.getShadowSection().x * process.field.realSectionSize, process.field.getRealFieldPosition().y + this.getShadowSection().y * process.field.realSectionSize);
     }
     checkRotation() {
         const field = GameProcess.getCurrentProcess().field;
-        const rotatedFieldX = this.findRotatedRelativeX() + this._figure.sectionX;
-        const rotatedFieldY = this.findRotatedRelativeY() + this._figure.sectionY;
-        if (!field.isSectionInsideOrAbove(rotatedFieldX, rotatedFieldY))
+        const rotatedFieldSection = this.findRotatedRelativeSection().add(this._figure.section);
+        if (!field.isSectionInsideOrAbove(rotatedFieldSection))
             return MoveResult.BOUNDARY;
         for (const field_block of field.blocks) {
-            if (field_block.getFieldSectionX() == rotatedFieldX && field_block.getFieldSectionY() == rotatedFieldY)
+            if (field_block.getFieldSection().equals(rotatedFieldSection))
                 return MoveResult.BLOCK;
         }
         return MoveResult.ALLOW;
     }
-    findRotatedRelativeX() {
-        const originY = this.y - this._figure.rotationCenterY;
-        const rotatedOriginX = -originY;
-        return rotatedOriginX + this._figure.rotationCenterX;
-    }
-    findRotatedRelativeY() {
-        const originX = this.x - this._figure.rotationCenterX;
-        const rotatedOriginY = originX;
-        return rotatedOriginY + this._figure.rotationCenterY;
+    findRotatedRelativeSection() {
+        const origin = this.section.clone().subtract(this._figure.rotationCenter);
+        const rotatedOrigin = new Point(-origin.y, origin.x);
+        return rotatedOrigin.add(this._figure.rotationCenter);
     }
     rotateNoRestrictions() {
-        const rotatedX = this.findRotatedRelativeX();
-        const rotatedY = this.findRotatedRelativeY();
-        this.x = rotatedX;
-        this.y = rotatedY;
+        this.section.setPositionTo(this.findRotatedRelativeSection());
+        this.rotateSpriteWithEffect();
     }
-    getRelativeX() {
-        return this.x;
-    }
-    getRelativeY() {
-        return this.y;
-    }
-    getPreviewRealX() {
-        return this.x * GameProcess.getCurrentProcess().field.realSectionSize + this._figure.getPreviewRealX();
-    }
-    getPreviewRealY() {
-        return this.y * GameProcess.getCurrentProcess().field.realSectionSize + this._figure.getPreviewRealY();
+    getRelativeSection() {
+        return this.section;
     }
     /**
      * Creates a field block with the same coordinates and color
      * @returns A new field block
      */
     toFieldBlock() {
-        const fieldBlock = new FieldBlock(this.getSectionX(), this.getSectionY());
-        fieldBlock.color = this.getColor();
+        const fieldBlock = new FieldBlock(this.getFieldSection());
+        fieldBlock.sprite.getColor().setTo(this.sprite.getColor());
         return fieldBlock;
     }
-    drawAsPreview(context) {
-        const startX = this.getPreviewRealX() + 0.5;
-        const startY = this.getPreviewRealY() + 0.5;
-        this.prepareContextPath(startX, startY, context);
-        this.fillBlock(this.getColor().rgbString, context);
-        this.outlineBlock(context);
+    updateSpritePosition() {
+        this.sprite.position.setPositionTo(this.getRealPosition());
+    }
+    moveSpriteWithEffect() {
+        if (this.moveEffect != null)
+            this.moveEffect.interruptNoCallback();
+        this.moveEffect = new MoveEffect(this.sprite, this.getRealPosition(), 20);
+        this.moveEffect.easing = easeOutQuad;
+    }
+    rotateSpriteWithEffect() {
+        if (this.rotationEffect != null)
+            this.rotationEffect.interruptNoCallback();
+        this.rotationEffect = new Transition(value => this.sprite.rotation = value, this.sprite.rotation, this.sprite.rotation + Math.PI / 2, 20);
+        this.rotationEffect.easing = easeOutQuad;
     }
     draw(context) {
         super.draw(context);
-    }
-    drawShadow(context) {
-        const shadowSectionY = this.getShadowSectionY();
-        const currentSectionY = this.getSectionY();
-        if (shadowSectionY != currentSectionY) {
-            const shadowRealX = this.getRealX() + 0.5;
-            const shadowRealY = this.getRealShadowY() + 0.5;
-            this.prepareContextPath(shadowRealX, shadowRealY, context);
-            this.fillBlock("rgb(230, 230, 230)", context);
-            this.outlineBlock(context);
-        }
     }
 }
 export var MoveResult;

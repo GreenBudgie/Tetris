@@ -19,8 +19,8 @@ export default class GameProcess implements Processable {
     private _isPaused = false;
 
     public static initiate(level: Level): GameProcess {
-        GameProcess.currentProcess = new GameProcess(level);
-        return this.currentProcess;
+        new GameProcess(level);
+        return GameProcess.currentProcess;
     }
 
     public static terminate() {
@@ -32,9 +32,10 @@ export default class GameProcess implements Processable {
     }
 
     private constructor(level: Level) {
+        GameProcess.currentProcess = this;
         this.level = level;
-        this.selectNextFigure();
         this.field = Field.defaultSizeField();
+        this.selectNextFigure();
     }
 
     public pause() {
@@ -93,7 +94,7 @@ export default class GameProcess implements Processable {
         
         const leftMiddle = this.getLeftSideMiddle();
 
-        context.fillText("- Next -", leftMiddle, this.field.getRealFieldPosition().x);
+        context.fillText("- Next -", leftMiddle, this.field.getRealFieldPosition().y);
 
         if(this.nextFigure != null) {
             this.nextFigure.drawPreview(context);

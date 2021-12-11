@@ -27,6 +27,9 @@ export default class Point {
     clone() {
         return new Point(this.x, this.y);
     }
+    equals(point) {
+        return this.x == point.x && this.y == point.y;
+    }
     get x() {
         return this._x;
     }
@@ -60,6 +63,12 @@ export default class Point {
         this.x += x;
         this.y += y;
         return this;
+    }
+    add(point) {
+        return this.moveBy(point.x, point.y);
+    }
+    subtract(point) {
+        return this.moveBy(point.x, point.y);
     }
     /**
      * Gets the SQUARED distance between this point and another one

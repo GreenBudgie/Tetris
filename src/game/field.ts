@@ -35,7 +35,6 @@ export default class Field implements Processable {
 	public constructor(sectionsX: number, sectionsY: number) {
 		this.sectionX = sectionsX;
 		this.sectionsY = sectionsY;
-		this.createFallingFigure(Figures.createRandomFigure());
 	}
 
 	public static defaultSizeField(): Field {

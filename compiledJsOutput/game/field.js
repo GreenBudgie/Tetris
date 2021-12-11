@@ -1,4 +1,3 @@
-import { Figures } from "./figure.js";
 import Tetris from "../main/tetris.js";
 import GameProcess from "./gameProcess.js";
 import Point from "../util/point.js";
@@ -20,7 +19,6 @@ export default class Field {
         this.timeToCreateNewFigure = this.maxTimeToCreateNewFigure;
         this.sectionX = sectionsX;
         this.sectionsY = sectionsY;
-        this.createFallingFigure(Figures.createRandomFigure());
     }
     static defaultSizeField() {
         return new Field(12, 20);
@@ -59,25 +57,25 @@ export default class Field {
             const process = GameProcess.getCurrentProcess();
             process.points += this.sectionX;
             process.filledRows++;
-            this.blocks = this.blocks.filter(block => block.getFieldSectionY() != y);
+            this.blocks = this.blocks.filter(block => block.getFieldSection().y != y);
             for (const block of this.blocks) {
-                if (block.getFieldSectionY() < y)
+                if (block.getFieldSection().y < y)
                     block.moveDown();
             }
         }
     }
     getBlockAt(sectionX, sectionY) {
         for (const block of this.blocks) {
-            if (block.getFieldSectionX() == sectionX && block.getFieldSectionY() == sectionY)
+            if (block.getFieldSection().x == sectionX && block.getFieldSection().x == sectionY)
                 return block;
         }
         return null;
     }
-    isSectionInside(sectionX, sectionY) {
-        return sectionX >= 0 && sectionX < this.sectionX && sectionY >= 0 && sectionY < this.sectionsY;
+    isSectionInside(section) {
+        return section.x >= 0 && section.x < this.sectionX && section.y >= 0 && section.y < this.sectionsY;
     }
-    isSectionInsideOrAbove(sectionX, sectionY) {
-        return sectionX >= 0 && sectionX < this.sectionX && sectionY < this.sectionsY;
+    isSectionInsideOrAbove(section) {
+        return section.x >= 0 && section.x < this.sectionX && section.y < this.sectionsY;
     }
     update(delta) {
         if (this.fallingFigure != null) {
@@ -99,18 +97,17 @@ export default class Field {
             this.fallingFigure.draw(context);
     }
     drawSections(context) {
-        const startX = this.getRealFieldX();
-        const startY = this.getRealFieldY();
+        const startPosition = this.getRealFieldPosition();
         context.strokeStyle = "rgb(189, 189, 189)";
         context.lineWidth = 1;
         context.beginPath();
         for (let xSection = 0; xSection <= this.sectionX; xSection++) {
-            context.moveTo(startX + xSection * this.realSectionSize + 0.5, startY);
-            context.lineTo(startX + xSection * this.realSectionSize + 0.5, startY + this.getRealFieldHeight());
+            context.moveTo(startPosition.x + xSection * this.realSectionSize + 0.5, startPosition.y);
+            context.lineTo(startPosition.x + xSection * this.realSectionSize + 0.5, startPosition.y + this.getRealFieldHeight());
         }
         for (let ySection = 0; ySection <= this.sectionsY; ySection++) {
-            context.moveTo(startX, startY + ySection * this.realSectionSize + 0.5);
-            context.lineTo(startX + this.getRealFieldWidth(), startY + ySection * this.realSectionSize + 0.5);
+            context.moveTo(startPosition.x, startPosition.y + ySection * this.realSectionSize + 0.5);
+            context.lineTo(startPosition.x + this.getRealFieldWidth(), startPosition.y + ySection * this.realSectionSize + 0.5);
         }
         context.closePath();
         context.stroke();

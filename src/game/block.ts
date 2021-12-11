@@ -1,3 +1,6 @@
+import {easeInOutQuad, easeOutQuad} from "../effect/effectEasings.js";
+import MoveEffect from "../effect/moveEffect.js";
+import Transition from "../effect/transition.js";
 import SpriteBlock from "../sprite/spriteBlock.js";
 import Point from "../util/point.js";
 import Processable from "../util/processable.js";
@@ -12,6 +15,7 @@ export abstract class AbstractBlock implements Processable {
 	constructor(section: Point) {
 		this.section = section;
 		this.sprite = new SpriteBlock();
+		this.sprite.size = GameProcess.getCurrentProcess().field.realSectionSize;
 		this.sprite.outline = true;
 		this.sprite.outlineWidth = 1;
 	}
@@ -67,6 +71,7 @@ export class FigureBlock extends AbstractBlock {
 	public set figure(value: Figure) {
 		this._figure = value;
 		this.sprite.getColor().setTo(this._figure.getColor());
+		this.sprite.rotationCenter.setPositionTo(this._figure.rotationCenter.clone().add(this.section));
 	}
 
 	/**
@@ -107,6 +112,10 @@ export class FigureBlock extends AbstractBlock {
 		return MoveResult.BOUNDARY;
 	}
 
+	public getFieldSection(): Point {
+		return this.section.clone().add(this._figure.section);
+	}
+
 	public getRealPosition(): Point {
 		const field = GameProcess.getCurrentProcess().field;
 		return new Point(
@@ -115,17 +124,16 @@ export class FigureBlock extends AbstractBlock {
 		);
 	}
 
-	public getFieldSection(): Point {
-		return this.section.clone().add(this._figure.section);
+	public getShadowSection(): Point {
+		return this._figure.getShadowSection().add(this._figure.section);
 	}
 
-	public getShadowSectionY(): number {
-		return this.section.y + this._figure.getShadowSectionY();
-	}
-
-	public getRealShadowY(): number {
+	public getRealShadowPosition(): Point {
 		const process = GameProcess.getCurrentProcess();
-		return process.field.getRealFieldPosition().y + this.getShadowSectionY() * process.field.realSectionSize;
+		return new Point(
+			process.field.getRealFieldPosition().x + this.getShadowSection().x * process.field.realSectionSize,
+			process.field.getRealFieldPosition().y + this.getShadowSection().y * process.field.realSectionSize
+		);
 	}
 
 	public checkRotation(): MoveResult {
@@ -146,6 +154,7 @@ export class FigureBlock extends AbstractBlock {
 
 	public rotateNoRestrictions() {
 		this.section.setPositionTo(this.findRotatedRelativeSection());
+		this.rotateSpriteWithEffect();
 	}
 
 	public getRelativeSection(): Point {
@@ -162,16 +171,28 @@ export class FigureBlock extends AbstractBlock {
 		return fieldBlock;
 	}
 
-	public override draw(context: CanvasRenderingContext2D) {
-		super.draw(context);
+	public updateSpritePosition() {
+		this.sprite.position.setPositionTo(this.getRealPosition());
 	}
 
-	public drawShadow(context: CanvasRenderingContext2D) {
-		const shadowRealX = this.getRealX() + 0.5;
-		const shadowRealY = this.getRealShadowY() + 0.5;
-		this.prepareContextPath(shadowRealX, shadowRealY, context);
-		this.fillBlock("rgb(230, 230, 230)", context);
-		this.outlineBlock(context);
+	private moveEffect: MoveEffect;
+
+	public moveSpriteWithEffect() {
+		if(this.moveEffect != null) this.moveEffect.interruptNoCallback();
+		this.moveEffect = new MoveEffect(this.sprite, this.getRealPosition(), 20);
+		this.moveEffect.easing = easeOutQuad;
+	}
+
+	private rotationEffect: Transition;
+
+	public rotateSpriteWithEffect() {
+		if(this.rotationEffect != null) this.rotationEffect.interruptNoCallback();
+		this.rotationEffect = new Transition(value => this.sprite.rotation = value, this.sprite.rotation, this.sprite.rotation + Math.PI / 2, 20);
+		this.rotationEffect.easing = easeOutQuad;
+	}
+
+	public override draw(context: CanvasRenderingContext2D) {
+		super.draw(context);
 	}
 
 }

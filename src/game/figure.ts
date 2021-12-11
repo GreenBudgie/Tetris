@@ -11,47 +11,35 @@ import SpriteFigure from "../sprite/spriteFigure.js";
 
 export default class Figure implements Colorizable, Processable {
 	
-	public section: Point = Point.zero();
-	public rotationCenter: Point;
+	public readonly section: Point = Point.zero();
+	public readonly rotationCenter: Point;
 
 	private _blocks: FigureBlock[];
 
 	private readonly maxFallingTime: number = 45;
 	private fallingTimer: number = this.maxFallingTime;
 
-	private sprite: SpriteFigure;
-	private shadowSprite: SpriteFigure;
 	private previewSprite: SpriteFigure;
 
 	public color: RGBColor;
 
-	constructor(shape: Point[]) {
+	constructor(shape: Point[], rotationCenter: Point) {
+		this.rotationCenter = rotationCenter;
 		const blocks: FigureBlock[] = [];
-		shape.forEach(point => blocks.push(new FigureBlock(point)));
+		shape.forEach(point => blocks.push(new FigureBlock(point.clone())));
 		this._blocks = blocks;
 		this.color = BlockColor.getRandomColor();
 		this._blocks.forEach(block => {
 			block.figure = this;
 		});
 
-		this.sprite = new SpriteFigure(shape);
-		this.setupSprite(this.sprite);
-		this.sprite.getColor().setTo(this.color);
-
 		this.previewSprite = new SpriteFigure(shape);
-		this.setupSprite(this.previewSprite);
+		this.previewSprite.blockSize = GameProcess.getCurrentProcess().field.realSectionSize;
+		this.previewSprite.rotationCenter.setPositionTo(this.rotationCenter);
+		this.previewSprite.outlineMode = "block";
+		this.previewSprite.outlineWidth = 1;
 		this.previewSprite.getColor().setTo(this.color);
 		this.previewSprite.position.setPositionTo(this.getPreviewRealPosition());
-
-		this.shadowSprite = new SpriteFigure(shape);
-		this.setupSprite(this.shadowSprite);
-		this.shadowSprite.getColor().setTo(RGBColor.grayscale(230));
-	}
-
-	private setupSprite(sprite: SpriteFigure) {
-		sprite.blockSize = GameProcess.getCurrentProcess().field.realSectionSize;
-		sprite.outlineMode = "block";
-		sprite.outlineWidth = 1;
 	}
 
 	public getPreviewRealPosition(): Point {
@@ -64,7 +52,7 @@ export default class Figure implements Colorizable, Processable {
 		return this.color;
 	}
 
-	get blocks() {
+	public get blocks() {
 		return this._blocks;
 	}
 
@@ -123,6 +111,14 @@ export default class Figure implements Colorizable, Processable {
 		this.moveNoRestrictions(dx, dy);
 	}
 
+	private getRealPosition(): Point {
+		const field = GameProcess.getCurrentProcess().field;
+		return new Point(
+			this.section.x * field.realSectionSize + field.getRealFieldPosition().x,
+			this.section.y * field.realSectionSize + field.getRealFieldPosition().y
+		);
+	}
+
 	/**
 	 * Moves all blocks of the figure by the specified deltas ignoring movement restrictions.
 	 * @param dx X movement
@@ -130,6 +126,7 @@ export default class Figure implements Colorizable, Processable {
 	 */
 	public moveNoRestrictions(dx: number, dy: number) {
 		this.section.moveBy(dx, dy);
+		this._blocks.forEach(block => block.moveSpriteWithEffect());
 	}
 
 	/**
@@ -168,18 +165,13 @@ export default class Figure implements Colorizable, Processable {
 		this.previewSprite.draw(context);
 	}
 
-	public drawShadow(context: CanvasRenderingContext2D) {
-		this.shadowSprite.draw(context);
-	}
-
 	public draw(context: CanvasRenderingContext2D) {
-		const drawShadow = this.needsToDrawShadow();
-		
+		this._blocks.forEach(block => block.draw(context));
 	}
 
 	private needsToDrawShadow(): boolean {
 		for(const currentBlock of this._blocks) {
-			const shadowY = currentBlock.getShadowSectionY();
+			const shadowY = currentBlock.getShadowSection().y;
 			for(const blockToCheck of this._blocks) {
 				if(blockToCheck.getFieldSection().y >= shadowY) return false;
 			}
@@ -187,11 +179,11 @@ export default class Figure implements Colorizable, Processable {
 		return true;
 	}
 
-	public getShadowSectionY(): number {
+	public getShadowSection(): Point {
 		for(let yShift = 1;; yShift++) {
 			for(const block of this._blocks) {
 				if(block.checkMove(0, yShift) != MoveResult.ALLOW) {
-					return this.section.y + yShift - 1;
+					return this.section.clone().moveBy(0, yShift - 1);
 				}
 			}
 		}
@@ -231,8 +223,7 @@ export class FigurePattern {
 				point.x = this.maxX - point.x;
 			});
 		}
-		const figure = new Figure(finalShape);
-		figure.rotationCenter = this.centerOfRotation.clone();
+		const figure = new Figure(finalShape, this.centerOfRotation.clone());
 		return figure;
 	}
 

@@ -4,41 +4,32 @@ import InputHandler, { KeyBindings } from "../main/inputHandler.js";
 import Tetris from "../main/tetris.js";
 import GameProcess from "./gameProcess.js";
 import Point from "../util/point.js";
-/**
- * A figure is a collection of single blocks
- */
+import SpriteFigure from "../sprite/spriteFigure.js";
 export default class Figure {
-    constructor(blocks) {
-        this.sectionX = 0;
-        this.sectionY = 0;
+    constructor(shape, rotationCenter) {
+        this.section = Point.zero();
         this.maxFallingTime = 45;
         this.fallingTimer = this.maxFallingTime;
+        this.rotationCenter = rotationCenter;
+        const blocks = [];
+        shape.forEach(point => blocks.push(new FigureBlock(point.clone())));
         this._blocks = blocks;
         this.color = BlockColor.getRandomColor();
         this._blocks.forEach(block => {
             block.figure = this;
         });
+        this.previewSprite = new SpriteFigure(shape);
+        this.previewSprite.blockSize = GameProcess.getCurrentProcess().field.realSectionSize;
+        this.previewSprite.rotationCenter.setPositionTo(this.rotationCenter);
+        this.previewSprite.outlineMode = "block";
+        this.previewSprite.outlineWidth = 1;
+        this.previewSprite.getColor().setTo(this.color);
+        this.previewSprite.position.setPositionTo(this.getPreviewRealPosition());
     }
-    /**
-     * Creates a figure based on section coordinates.
-     * 0, 0 represents the top-left corner of the figure.
-     * @param sections An array of tuples in which the first element is relative section x, the second is relative section y coordinate
-     * @example An input "[0, 0], [1, 0], [2, 0], [1, 1]" will create a T-shaped figure
-     * @returns A figure with currently defined blocks
-     */
-    static createFromShape(shape) {
-        const blocks = [];
-        for (const point of shape) {
-            blocks.push(new FigureBlock(point));
-        }
-        return new Figure(blocks);
-    }
-    getPreviewRealX() {
+    getPreviewRealPosition() {
         const process = GameProcess.getCurrentProcess();
-        return process.getLeftSideMiddle() - (this.getCurrentWidth() * process.field.realSectionSize) / 2;
-    }
-    getPreviewRealY() {
-        return GameProcess.getCurrentProcess().field.getRealFieldY() + 60;
+        const halfSectionSize = process.field.realSectionSize / 2;
+        return process.getPreviewCenterPosition().moveBy(-this.getCurrentWidth() * halfSectionSize, -this.getCurrentHeight() * halfSectionSize);
     }
     getColor() {
         return this.color;
@@ -49,16 +40,16 @@ export default class Figure {
     getCurrentWidth() {
         let maxRelativeBlockX = 0;
         for (const block of this._blocks) {
-            if (block.getRelativeX() > maxRelativeBlockX)
-                maxRelativeBlockX = block.getRelativeX();
+            if (block.getRelativeSection().x > maxRelativeBlockX)
+                maxRelativeBlockX = block.getRelativeSection().x;
         }
         return maxRelativeBlockX + 1;
     }
     getCurrentHeight() {
         let maxRelativeBlockY = 0;
         for (const block of this._blocks) {
-            if (block.getRelativeY() > maxRelativeBlockY)
-                maxRelativeBlockY = block.getRelativeY();
+            if (block.getRelativeSection().y > maxRelativeBlockY)
+                maxRelativeBlockY = block.getRelativeSection().y;
         }
         return maxRelativeBlockY + 1;
     }
@@ -98,14 +89,18 @@ export default class Figure {
         }
         this.moveNoRestrictions(dx, dy);
     }
+    getRealPosition() {
+        const field = GameProcess.getCurrentProcess().field;
+        return new Point(this.section.x * field.realSectionSize + field.getRealFieldPosition().x, this.section.y * field.realSectionSize + field.getRealFieldPosition().y);
+    }
     /**
      * Moves all blocks of the figure by the specified deltas ignoring movement restrictions.
      * @param dx X movement
      * @param dy Y movement
      */
     moveNoRestrictions(dx, dy) {
-        this.sectionX += dx;
-        this.sectionY += dy;
+        this.section.moveBy(dx, dy);
+        this._blocks.forEach(block => block.moveSpriteWithEffect());
     }
     /**
      * Interrupts the falling
@@ -136,35 +131,27 @@ export default class Figure {
             this.rotate();
         }
     }
-    drawAsPreview(context) {
-        for (const block of this._blocks) {
-            block.drawAsPreview(context);
-        }
+    drawPreview(context) {
+        this.previewSprite.draw(context);
     }
     draw(context) {
-        const drawShadow = this.needsToDrawShadow();
-        for (const block of this._blocks) {
-            block.draw(context);
-            if (drawShadow) {
-                block.drawShadow(context);
-            }
-        }
+        this._blocks.forEach(block => block.draw(context));
     }
     needsToDrawShadow() {
         for (const currentBlock of this._blocks) {
-            const shadowY = currentBlock.getShadowSectionY();
+            const shadowY = currentBlock.getShadowSection().y;
             for (const blockToCheck of this._blocks) {
-                if (blockToCheck.getSectionY() >= shadowY)
+                if (blockToCheck.getFieldSection().y >= shadowY)
                     return false;
             }
         }
         return true;
     }
-    getShadowSectionY() {
+    getShadowSection() {
         for (let yShift = 1;; yShift++) {
             for (const block of this._blocks) {
                 if (block.checkMove(0, yShift) != MoveResult.ALLOW) {
-                    return this.sectionY + yShift - 1;
+                    return this.section.clone().moveBy(0, yShift - 1);
                 }
             }
         }
@@ -196,9 +183,7 @@ export class FigurePattern {
                 point.x = this.maxX - point.x;
             });
         }
-        const figure = Figure.createFromShape(...finalShape);
-        figure.rotationCenterX = this.centerOfRotation[0];
-        figure.rotationCenterY = this.centerOfRotation[1];
+        const figure = new Figure(finalShape, this.centerOfRotation.clone());
         return figure;
     }
 }
