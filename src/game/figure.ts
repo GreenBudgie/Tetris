@@ -6,11 +6,9 @@ import {FigureBlock, MoveResult} from "./block.js";
 import InputHandler, {KeyBindings} from "../main/inputHandler.js";
 import Tetris from "../main/tetris.js";
 import GameProcess from "./gameProcess.js";
-import Point from "../util/point.js";
+import Point, {PointArray} from "../util/point.js";
+import SpriteFigure from "../sprite/spriteFigure.js";
 
-/**
- * A figure is a collection of single blocks
- */
 export default class Figure implements Colorizable, Processable {
 	
 	public section: Point = Point.zero();
@@ -21,38 +19,45 @@ export default class Figure implements Colorizable, Processable {
 	private readonly maxFallingTime: number = 45;
 	private fallingTimer: number = this.maxFallingTime;
 
+	private sprite: SpriteFigure;
+	private shadowSprite: SpriteFigure;
+	private previewSprite: SpriteFigure;
+
 	public color: RGBColor;
 
-	/**
-	 * Creates a figure based on section coordinates.
-	 * 0, 0 represents the top-left corner of the figure.
-	 * @param sections An array of tuples in which the first element is relative section x, the second is relative section y coordinate
-	 * @example An input "[0, 0], [1, 0], [2, 0], [1, 1]" will create a T-shaped figure
-	 * @returns A figure with currently defined blocks
-	 */
-	public static createFromShape(shape: Point[]): Figure {
+	constructor(shape: Point[]) {
 		const blocks: FigureBlock[] = [];
-		for(const point of shape) {
-			blocks.push(new FigureBlock(point));
-		}
-		return new Figure(blocks);
-	}
-
-	constructor(blocks: FigureBlock[]) {
+		shape.forEach(point => blocks.push(new FigureBlock(point)));
 		this._blocks = blocks;
 		this.color = BlockColor.getRandomColor();
 		this._blocks.forEach(block => {
 			block.figure = this;
 		});
+
+		this.sprite = new SpriteFigure(shape);
+		this.setupSprite(this.sprite);
+		this.sprite.getColor().setTo(this.color);
+
+		this.previewSprite = new SpriteFigure(shape);
+		this.setupSprite(this.previewSprite);
+		this.previewSprite.getColor().setTo(this.color);
+		this.previewSprite.position.setPositionTo(this.getPreviewRealPosition());
+
+		this.shadowSprite = new SpriteFigure(shape);
+		this.setupSprite(this.shadowSprite);
+		this.shadowSprite.getColor().setTo(RGBColor.grayscale(230));
 	}
 
-	public getPreviewRealX() {
+	private setupSprite(sprite: SpriteFigure) {
+		sprite.blockSize = GameProcess.getCurrentProcess().field.realSectionSize;
+		sprite.outlineMode = "block";
+		sprite.outlineWidth = 1;
+	}
+
+	public getPreviewRealPosition(): Point {
 		const process = GameProcess.getCurrentProcess();
-		return process.getLeftSideMiddle() - (this.getCurrentWidth() * process.field.realSectionSize) / 2;
-	}
-
-	public getPreviewRealY() {
-		return GameProcess.getCurrentProcess().field.getRealFieldPosition().y + 60;
+		const halfSectionSize = process.field.realSectionSize / 2;
+		return process.getPreviewCenterPosition().moveBy(-this.getCurrentWidth() * halfSectionSize, -this.getCurrentHeight() * halfSectionSize);
 	}
 
 	public getColor(): RGBColor {
@@ -159,20 +164,17 @@ export default class Figure implements Colorizable, Processable {
 		}
 	}
 
-	public drawAsPreview(context: CanvasRenderingContext2D) {
-		for(const block of this._blocks) {
-			block.drawAsPreview(context);
-		}
+	public drawPreview(context: CanvasRenderingContext2D) {
+		this.previewSprite.draw(context);
+	}
+
+	public drawShadow(context: CanvasRenderingContext2D) {
+		this.shadowSprite.draw(context);
 	}
 
 	public draw(context: CanvasRenderingContext2D) {
 		const drawShadow = this.needsToDrawShadow();
-		for(const block of this._blocks) {
-			block.draw(context);
-			if(drawShadow) {
-				block.drawShadow(context);
-			}
-		}
+		
 	}
 
 	private needsToDrawShadow(): boolean {
@@ -229,7 +231,7 @@ export class FigurePattern {
 				point.x = this.maxX - point.x;
 			});
 		}
-		const figure = Figure.createFromShape(finalShape);
+		const figure = new Figure(finalShape);
 		figure.rotationCenter = this.centerOfRotation.clone();
 		return figure;
 	}

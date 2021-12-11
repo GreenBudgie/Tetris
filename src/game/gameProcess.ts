@@ -1,4 +1,5 @@
 import Tetris from "../main/tetris.js";
+import Point from "../util/point.js";
 import Processable from "../util/processable.js";
 import Field from "./field.js";
 import Figure, {Figures} from "./figure.js";
@@ -10,7 +11,7 @@ export default class GameProcess implements Processable {
 
     public readonly level: Level;
     public readonly field: Field;
-    
+
     public points: number = 0;
     public filledRows: number = 0;
     public nextFigure: Figure;
@@ -69,13 +70,20 @@ export default class GameProcess implements Processable {
     }
 
     public getRightSideMiddle() {
-        const fieldEndX = this.field.getRealFieldX() + this.field.getRealFieldWidth();
+        const fieldEndX = this.field.getRealFieldPosition().x + this.field.getRealFieldWidth();
         return Math.round((fieldEndX + Tetris.instance.WINDOW_WIDTH) / 2);
     }
 
     public getLeftSideMiddle() {
-        return this.field.getRealFieldX() / 2;
+        return this.field.getRealFieldPosition().x / 2;
     }
+
+    public getPreviewCenterPosition() {
+        return new Point(
+            this.getLeftSideMiddle(),
+            this.field.getRealFieldPosition().y + 60
+        );
+	}
 
     private drawNextFigurePreview(context: CanvasRenderingContext2D) {
         context.font = "36px ft_default";
@@ -85,10 +93,10 @@ export default class GameProcess implements Processable {
         
         const leftMiddle = this.getLeftSideMiddle();
 
-        context.fillText("- Next -", leftMiddle, this.field.getRealFieldY());
+        context.fillText("- Next -", leftMiddle, this.field.getRealFieldPosition().x);
 
         if(this.nextFigure != null) {
-            this.nextFigure.drawAsPreview(context);
+            this.nextFigure.drawPreview(context);
         }
     }
 
@@ -99,7 +107,7 @@ export default class GameProcess implements Processable {
         context.textAlign = "center";
 
         const rightMiddle = this.getRightSideMiddle();
-        const pointsY = this.field.getRealFieldY();
+        const pointsY = this.field.getRealFieldPosition().y;
 
         context.fillText("- Points -", rightMiddle, pointsY);
         context.fillText(`${this.points} / ${this.level.requiredPoints}`, rightMiddle, pointsY + 45);
