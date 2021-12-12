@@ -90,7 +90,12 @@ export default class Effect {
     resume() {
         this._isPaused = false;
     }
-    interrupt(callback = true, setTargetValues = true) {
+    /**
+     * Interrupts the effect before its progress reaches 1
+     * @param setTargetValues Whether to set all the effect variables to their target values (false by default)
+     * @param callback Whether to invoke callback function of this effect (false by default)
+     */
+    interrupt(setTargetValues = false, callback = false) {
         if (!callback)
             this.callback = () => { };
         if (!setTargetValues)

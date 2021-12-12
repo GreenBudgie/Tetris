@@ -31,16 +31,16 @@ export default class StageButton {
         return ArcadeHandler.getHandler().hoveredButtonIndex == this.index;
     }
     playAppearEffect() {
-        this.fadeEffect?.interrupt(false, false);
-        this.moveEffect?.interrupt(false, false);
+        this.fadeEffect?.interrupt();
+        this.moveEffect?.interrupt();
         this.fadeEffect = new ColorFadeEffect(this.currentColor, this.grayscale, this.EFFECT_SPEED);
         this.moveEffect = new MoveEffect(this, this.endPos, this.EFFECT_SPEED);
         this.moveEffect.pause(this.EFFECT_SPEED);
         this.moveEffect.easing = easeInOutQuad;
     }
     playDisappearEffect() {
-        this.fadeEffect?.interrupt(false, false);
-        this.moveEffect?.interrupt(false, false);
+        this.fadeEffect?.interrupt();
+        this.moveEffect?.interrupt();
         this.moveEffect = new MoveEffect(this, this.startPos, this.EFFECT_SPEED);
         this.moveEffect.easing = easeInOutQuad;
         const zeroAlpha = this.currentColor.clone();
@@ -50,18 +50,18 @@ export default class StageButton {
         this.fadeEffect.callback = () => ArcadeHandler.getHandler().state = "hide";
     }
     hideWhenAnotherSelected() {
-        this.fadeEffect?.interrupt(false);
+        this.fadeEffect?.interrupt();
         const zeroAlpha = this.currentColor.clone();
         zeroAlpha.alpha = 0;
         this.fadeEffect = new ColorFadeEffect(this.currentColor, zeroAlpha, 10);
     }
     showWhenAnotherDeselected() {
-        this.fadeEffect?.interrupt(false);
+        this.fadeEffect?.interrupt();
         this.fadeEffect = new ColorFadeEffect(this.currentColor, this.grayscale, 10);
     }
     onSelect() {
-        this.moveEffect?.interrupt(false);
-        this.scaleTransition?.interrupt(false);
+        this.moveEffect?.interrupt();
+        this.scaleTransition?.interrupt();
         this.scaleTransition = new Transition(value => { this.scale = value; }, this.scale, this.targetScale, 12);
         this.scaleTransition.easing = easeInQuad;
         this.moveEffect = new MoveEffect(this, this.selectedPos, 12);
@@ -70,8 +70,8 @@ export default class StageButton {
         this.blocks[0].select();
     }
     onDeselect() {
-        this.moveEffect?.interrupt(false);
-        this.scaleTransition?.interrupt(false);
+        this.moveEffect?.interrupt();
+        this.scaleTransition?.interrupt();
         this.scaleTransition = new Transition(value => { this.scale = value; }, this.scale, 1, 12);
         this.scaleTransition.easing = easeOutQuad;
         this.moveEffect = new MoveEffect(this, this.endPos, 12);
@@ -79,11 +79,11 @@ export default class StageButton {
         this.blocks.forEach(block => block.onStageDeselected());
     }
     onHover() {
-        this.fadeEffect?.interrupt(false);
+        this.fadeEffect?.interrupt();
         this.fadeEffect = new ColorFadeEffect(this.currentColor, this.color, 8);
     }
     onUnhover() {
-        this.fadeEffect?.interrupt(false);
+        this.fadeEffect?.interrupt();
         this.fadeEffect = new ColorFadeEffect(this.currentColor, this.grayscale, 8);
     }
     update(delta) {

@@ -107,7 +107,12 @@ export default class Effect implements Processable {
         this._isPaused = false;
     }
 
-    public interrupt(callback: boolean = true, setTargetValues: boolean = true): void {
+    /**
+     * Interrupts the effect before its progress reaches 1
+     * @param setTargetValues Whether to set all the effect variables to their target values (false by default)
+     * @param callback Whether to invoke callback function of this effect (false by default)
+     */
+    public interrupt(setTargetValues: boolean = false, callback: boolean = false): void {
         if(!callback) this.callback = () => {};
         if(!setTargetValues) this.setTargetValues = () => {};
         this.end();
