@@ -19,7 +19,7 @@ export default class Sprite {
         return new Point(this._rotationCenter.x + this.position.x, this._rotationCenter.y + this.position.y);
     }
     set rotation(rotation) {
-        this._rotation = rotation % (2 * Math.PI);
+        this._rotation = rotation;
         this.rotationSinCos = [Math.sin(this._rotation), Math.cos(this._rotation)];
     }
     get rotation() {

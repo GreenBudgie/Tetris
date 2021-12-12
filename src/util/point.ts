@@ -85,7 +85,7 @@ export default class Point {
     }
 
     public subtract(point: Point): Point {
-        return this.moveBy(point.x, point.y);
+        return this.moveBy(-point.x, -point.y);
     }
 
     /**
@@ -120,6 +120,10 @@ export default class Point {
         this.x = rotatedX + origin.x;
         this.y = rotatedY + origin.y;
         return this;
+    }
+
+    public toString() {
+        return `Point(${this._x}, ${this._y})` + (this.immutable ? "(immutable)" : "");
     }
 
 }

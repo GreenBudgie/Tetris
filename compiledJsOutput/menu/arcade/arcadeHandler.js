@@ -54,7 +54,7 @@ export default class ArcadeHandler {
                 this.hoveredButtonIndex += 1;
             }
             if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_LEFT)) {
-                if (this.hoveredButtonIndex % 2 == 0) {
+                if (this.hoveredButtonIndex == 0) {
                     this.stopStageSelect();
                 }
                 else {

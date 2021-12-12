@@ -24,7 +24,7 @@ export default abstract class Sprite implements Drawable, Positionable, Coloriza
     }
 
     public set rotation(rotation: number) {
-        this._rotation = rotation % (2 * Math.PI);
+        this._rotation = rotation;
         this.rotationSinCos = [Math.sin(this._rotation), Math.cos(this._rotation)];
     }
 

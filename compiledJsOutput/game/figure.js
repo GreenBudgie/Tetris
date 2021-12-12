@@ -8,16 +8,13 @@ import SpriteFigure from "../sprite/spriteFigure.js";
 export default class Figure {
     constructor(shape, rotationCenter) {
         this.section = Point.zero();
-        this.maxFallingTime = 45;
+        this._blocks = [];
+        this.maxFallingTime = 1000; //45
         this.fallingTimer = this.maxFallingTime;
+        this._rotation = 0;
         this.rotationCenter = rotationCenter;
-        const blocks = [];
-        shape.forEach(point => blocks.push(new FigureBlock(point.clone())));
-        this._blocks = blocks;
         this.color = BlockColor.getRandomColor();
-        this._blocks.forEach(block => {
-            block.figure = this;
-        });
+        shape.forEach(point => this._blocks.push(new FigureBlock(point.clone(), this)));
         this.previewSprite = new SpriteFigure(shape);
         this.previewSprite.blockSize = GameProcess.getCurrentProcess().field.realSectionSize;
         this.previewSprite.rotationCenter.setPositionTo(this.rotationCenter);
@@ -33,6 +30,9 @@ export default class Figure {
     }
     getColor() {
         return this.color;
+    }
+    get rotation() {
+        return this._rotation;
     }
     get blocks() {
         return this._blocks;
@@ -58,6 +58,7 @@ export default class Figure {
             if (block.checkRotation() != MoveResult.ALLOW)
                 return;
         }
+        this._rotation = this._rotation + Math.PI / 2;
         this._blocks.forEach(block => block.rotateNoRestrictions());
     }
     moveRight() {

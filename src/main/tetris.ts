@@ -37,7 +37,8 @@ export default class Tetris {
 		this.fixCanvasScaling();
 		InputHandler.getHandler().registerListeners();
 		Levels.registerLevels();
-		StateHandler.getHandler().MENU.begin();
+		//StateHandler.getHandler().MENU.begin();
+		StateHandler.getHandler().GAME.begin();
 		requestAnimationFrame((timestamp) => this.gameLoop(timestamp));
 	}
 

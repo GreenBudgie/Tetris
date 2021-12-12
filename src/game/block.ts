@@ -60,40 +60,25 @@ export class FieldBlock extends AbstractBlock {
  */
 export class FigureBlock extends AbstractBlock {
 
-	private _figure: Figure;
+	public readonly figure: Figure;
 
 	private readonly shadow: SpriteBlock;
 
-	public get figure(): Figure {
-		return this._figure;
+	public constructor(section: Point, figure: Figure) {
+		super(section);
+		this.figure = figure;
+		this.sprite.getColor().setTo(this.figure.getColor());
+		this.sprite.rotationCenter.setPositionTo(this.figure.rotationCenter.clone().subtract(this.section).moveBy(0.5, 0.5));
 	}
 
-	public set figure(value: Figure) {
-		this._figure = value;
-		this.sprite.getColor().setTo(this._figure.getColor());
-		this.sprite.rotationCenter.setPositionTo(this._figure.rotationCenter.clone().add(this.section));
-	}
-
-	/**
-	 * Checks whether the block is able to move right
-	 * @returns ALLOW if the block is able to move right, BOUNDARY if a wall obstructs the movement, BLOCK if a block obstructs the movement
-	 */
 	public checkMoveRight(): MoveResult {
 		return this.checkMove(1, 0);
 	}
 
-	/**
-	 * Checks whether the block is able to move left
-	 * @returns ALLOW if the block is able to move left, BOUNDARY if a wall obstructs the movement, BLOCK if a block obstructs the movement
-	 */
 	public checkMoveLeft(): MoveResult {
 		return this.checkMove(-1, 0);
 	}
 
-	/**
-	 * Checks whether the block is able to move down
-	 * @returns ALLOW if the block is able to move down, BOUNDARY if a floor obstructs the movement, BLOCK if a block obstructs the movement
-	 */
 	public checkMoveDown(): MoveResult {
 		return this.checkMove(0, 1);
 	}
@@ -113,7 +98,7 @@ export class FigureBlock extends AbstractBlock {
 	}
 
 	public getFieldSection(): Point {
-		return this.section.clone().add(this._figure.section);
+		return this.section.clone().add(this.figure.section);
 	}
 
 	public getRealPosition(): Point {
@@ -125,7 +110,7 @@ export class FigureBlock extends AbstractBlock {
 	}
 
 	public getShadowSection(): Point {
-		return this._figure.getShadowSection().add(this._figure.section);
+		return this.figure.getShadowSection().add(this.figure.section);
 	}
 
 	public getRealShadowPosition(): Point {
@@ -138,7 +123,7 @@ export class FigureBlock extends AbstractBlock {
 
 	public checkRotation(): MoveResult {
 		const field = GameProcess.getCurrentProcess().field;
-		const rotatedFieldSection = this.findRotatedRelativeSection().add(this._figure.section);
+		const rotatedFieldSection = this.findRotatedRelativeSection().add(this.figure.section);
 		if(!field.isSectionInsideOrAbove(rotatedFieldSection)) return MoveResult.BOUNDARY;
 		for(const field_block of field.blocks) {
 			if(field_block.getFieldSection().equals(rotatedFieldSection)) return MoveResult.BLOCK;
@@ -147,9 +132,9 @@ export class FigureBlock extends AbstractBlock {
 	}
 
 	public findRotatedRelativeSection(): Point {
-		const origin = this.section.clone().subtract(this._figure.rotationCenter);
+		const origin = this.section.clone().subtract(this.figure.rotationCenter);
 		const rotatedOrigin = new Point(-origin.y, origin.x);
-		return rotatedOrigin.add(this._figure.rotationCenter);
+		return rotatedOrigin.add(this.figure.rotationCenter);
 	}
 
 	public rotateNoRestrictions() {
@@ -178,7 +163,7 @@ export class FigureBlock extends AbstractBlock {
 	private moveEffect: MoveEffect;
 
 	public moveSpriteWithEffect() {
-		if(this.moveEffect != null) this.moveEffect.interrupt();
+		this.moveEffect?.interrupt();
 		this.moveEffect = new MoveEffect(this.sprite, this.getRealPosition(), 20);
 		this.moveEffect.easing = easeOutQuad;
 	}
@@ -186,8 +171,8 @@ export class FigureBlock extends AbstractBlock {
 	private rotationEffect: Transition;
 
 	public rotateSpriteWithEffect() {
-		if(this.rotationEffect != null) this.rotationEffect.interrupt();
-		this.rotationEffect = new Transition(value => this.sprite.rotation = value, this.sprite.rotation, this.sprite.rotation + Math.PI / 2, 20);
+		this.rotationEffect?.interrupt();
+		this.rotationEffect = new Transition(value => this.sprite.rotation = value, this.sprite.rotation, this.figure.rotation, 20);
 		this.rotationEffect.easing = easeOutQuad;
 	}
 

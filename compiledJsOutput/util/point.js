@@ -68,7 +68,7 @@ export default class Point {
         return this.moveBy(point.x, point.y);
     }
     subtract(point) {
-        return this.moveBy(point.x, point.y);
+        return this.moveBy(-point.x, -point.y);
     }
     /**
      * Gets the SQUARED distance between this point and another one
@@ -100,6 +100,9 @@ export default class Point {
         this.x = rotatedX + origin.x;
         this.y = rotatedY + origin.y;
         return this;
+    }
+    toString() {
+        return `Point(${this._x}, ${this._y})` + (this.immutable ? "(immutable)" : "");
     }
 }
 export class PointArray {

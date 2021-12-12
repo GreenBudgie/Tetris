@@ -68,7 +68,6 @@ export default class SpriteBlock extends Sprite {
         const rotationCenter = this.getRealRotationCenter();
         inputCorners.forEach(corner => corner.rotate(this.rotation, rotationCenter));
         return inputCorners;
-        
     }
 
     private doFullOutline() {

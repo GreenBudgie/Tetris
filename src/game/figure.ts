@@ -6,7 +6,7 @@ import {FigureBlock, MoveResult} from "./block.js";
 import InputHandler, {KeyBindings} from "../main/inputHandler.js";
 import Tetris from "../main/tetris.js";
 import GameProcess from "./gameProcess.js";
-import Point, {PointArray} from "../util/point.js";
+import Point from "../util/point.js";
 import SpriteFigure from "../sprite/spriteFigure.js";
 
 export default class Figure implements Colorizable, Processable {
@@ -14,10 +14,11 @@ export default class Figure implements Colorizable, Processable {
 	public readonly section: Point = Point.zero();
 	public readonly rotationCenter: Point;
 
-	private _blocks: FigureBlock[];
+	private _blocks: FigureBlock[] = [];
 
-	private readonly maxFallingTime: number = 45;
+	private readonly maxFallingTime: number = 1000; //45
 	private fallingTimer: number = this.maxFallingTime;
+	private _rotation: number = 0;
 
 	private previewSprite: SpriteFigure;
 
@@ -25,13 +26,9 @@ export default class Figure implements Colorizable, Processable {
 
 	constructor(shape: Point[], rotationCenter: Point) {
 		this.rotationCenter = rotationCenter;
-		const blocks: FigureBlock[] = [];
-		shape.forEach(point => blocks.push(new FigureBlock(point.clone())));
-		this._blocks = blocks;
 		this.color = BlockColor.getRandomColor();
-		this._blocks.forEach(block => {
-			block.figure = this;
-		});
+
+		shape.forEach(point => this._blocks.push(new FigureBlock(point.clone(), this)));
 
 		this.previewSprite = new SpriteFigure(shape);
 		this.previewSprite.blockSize = GameProcess.getCurrentProcess().field.realSectionSize;
@@ -50,6 +47,10 @@ export default class Figure implements Colorizable, Processable {
 
 	public getColor(): RGBColor {
 		return this.color;
+	}
+
+	public get rotation(): number {
+		return this._rotation;
 	}
 
 	public get blocks() {
@@ -76,6 +77,7 @@ export default class Figure implements Colorizable, Processable {
 		for(const block of this._blocks) {
 			if(block.checkRotation() != MoveResult.ALLOW) return;
 		}
+		this._rotation = this._rotation + Math.PI / 2;
 		this._blocks.forEach(block => block.rotateNoRestrictions());
 	}
 
