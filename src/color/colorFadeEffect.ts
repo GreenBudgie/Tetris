@@ -20,7 +20,7 @@ export default class ColorFadeEffect extends Effect {
         this.colorToFade.setTo(fadedColor);
     }
 
-    public override onEnd() {
+    public override setTargetValues(): void {
         this.colorToFade.setTo(this.endColor);
     }
 

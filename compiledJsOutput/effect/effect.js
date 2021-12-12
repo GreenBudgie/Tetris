@@ -7,6 +7,7 @@ import EffectHandler from "./effectHandler.js";
  */
 export default class Effect {
     constructor(time, initialDelay) {
+        this._callEndingFunction = true;
         this._isInfinite = false;
         this._isActive = true;
         this._isPaused = false;
@@ -22,6 +23,12 @@ export default class Effect {
             this.pause(initialDelay);
         EffectHandler.getHandler().activeEffects.push(this);
     }
+    get callEndingFunction() {
+        return this._callEndingFunction;
+    }
+    set callEndingFunction(value) {
+        this._callEndingFunction = value;
+    }
     get isInfinite() {
         return this._isInfinite;
     }
@@ -34,6 +41,14 @@ export default class Effect {
     get isActive() {
         return this._isActive;
     }
+    /**
+     * Sets all the variables this effect handles to their target values.
+     * May be cancelled when the effect interrupts.
+     */
+    setTargetValues() { }
+    /**
+     * Called when effect has ended or interrupted
+     */
     onEnd() { }
     onUpdate(delta) { }
     onDraw(context) { }
@@ -75,17 +90,18 @@ export default class Effect {
     resume() {
         this._isPaused = false;
     }
-    interruptWithCallback() {
-        this.end();
-    }
-    interruptNoCallback() {
-        this.callback = () => { };
+    interrupt(callback = true, setTargetValues = true) {
+        if (!callback)
+            this.callback = () => { };
+        if (!setTargetValues)
+            this.setTargetValues = () => { };
         this.end();
     }
     end() {
         if (!this.isActive)
             return;
         this.onEnd();
+        this.setTargetValues();
         this.callback();
         this._isActive = false;
     }

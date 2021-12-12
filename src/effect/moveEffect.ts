@@ -19,7 +19,7 @@ export default class MoveEffect extends Effect {
         this.toMove.position.y = this.startPos.y + (this.targetPos.y - this.startPos.y) * this.progress;
     }
 
-    public override onEnd() {
+    public override setTargetValues(): void {
         this.toMove.position.setPositionTo(this.targetPos);
     }
 

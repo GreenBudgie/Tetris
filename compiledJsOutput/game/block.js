@@ -137,13 +137,13 @@ export class FigureBlock extends AbstractBlock {
     }
     moveSpriteWithEffect() {
         if (this.moveEffect != null)
-            this.moveEffect.interruptNoCallback();
+            this.moveEffect.interrupt();
         this.moveEffect = new MoveEffect(this.sprite, this.getRealPosition(), 20);
         this.moveEffect.easing = easeOutQuad;
     }
     rotateSpriteWithEffect() {
         if (this.rotationEffect != null)
-            this.rotationEffect.interruptNoCallback();
+            this.rotationEffect.interrupt();
         this.rotationEffect = new Transition(value => this.sprite.rotation = value, this.sprite.rotation, this.sprite.rotation + Math.PI / 2, 20);
         this.rotationEffect.easing = easeOutQuad;
     }

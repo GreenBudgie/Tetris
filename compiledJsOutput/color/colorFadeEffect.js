@@ -11,7 +11,7 @@ export default class ColorFadeEffect extends Effect {
         fadedColor.instantFadeTo(this.endColor, this.progress);
         this.colorToFade.setTo(fadedColor);
     }
-    onEnd() {
+    setTargetValues() {
         this.colorToFade.setTo(this.endColor);
     }
 }

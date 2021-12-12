@@ -25,7 +25,7 @@ export default class Transition extends Effect {
         this.transitionFunction(this.getCurrentValue());
     }
 
-    public override onEnd() {
+    public override setTargetValues(): void {
         this.transitionFunction(this.to);
     }
 

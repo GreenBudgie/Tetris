@@ -16,7 +16,7 @@ export default class Transition extends Effect {
     onUpdate() {
         this.transitionFunction(this.getCurrentValue());
     }
-    onEnd() {
+    setTargetValues() {
         this.transitionFunction(this.to);
     }
 }

@@ -5,12 +5,8 @@ import ButtonChallenge from "./buttonChallenge.js";
 import ButtonArcade from "./buttonArcade.js";
 import ButtonEndless from "./buttonEndless.js";
 import MenuButton from "./menuButton.js";
-import {easeInQuad, easeOutQuad} from "../effect/effectEasings.js";
 import ArcadeHandler from "./arcade/arcadeHandler.js";
-import SpriteFigure from "../sprite/spriteFigure.js";
-import Transition from "../effect/transition.js";
-import {PointArray} from "../util/point.js";
-import SpriteBlock from "../sprite/spriteBlock.js";
+import {easeInOutQuad, easeOutQuad} from "../effect/effectEasings.js";
 
 export default class Menu implements Processable {
 
@@ -18,8 +14,6 @@ export default class Menu implements Processable {
     private buttons: MenuButton[] = [];
     private _currentButtonIndex = 0;
     private _currentButton: MenuButton;
-
-    public isFading = false;
 
     private constructor() {
         Menu.instance = this;
@@ -46,20 +40,21 @@ export default class Menu implements Processable {
     }
 
     private changeCurrentButton(di: number) {
-        this.isFading = true;
-        const fadeTime = 12;
+        this._currentButton.deselectEffect?.interrupt(false, false);
+        this._currentButton.selectEffect?.interrupt(false, false);
 
-        new ColorFadeEffect(this.currentButton.sprite.getColor(), this.currentButton.grayColor, fadeTime);
+        const fadeTime = 20;
+
+        this._currentButton.deselectEffect = new ColorFadeEffect(this.currentButton.sprite.getColor(), this.currentButton.grayColor, fadeTime);
+        this._currentButton.deselectEffect.easing = easeOutQuad;
         this._currentButton.onDeselect();
 
         this._currentButtonIndex += di;
         this.updateCurrentButton();
         this._currentButton.onSelect();
 
-        const fadeEffect = new ColorFadeEffect(this.currentButton.sprite.getColor(), this.currentButton.getColor(), fadeTime);
-        fadeEffect.callback = () => {
-            this.isFading = false;
-        };
+        this._currentButton.selectEffect = new ColorFadeEffect(this.currentButton.sprite.getColor(), this.currentButton.getColor(), fadeTime);
+        this._currentButton.selectEffect.easing = easeOutQuad;
     }
 
     public update(delta: number): void {
@@ -67,23 +62,22 @@ export default class Menu implements Processable {
             button.update(delta);
         }
         const listenToInputs = ArcadeHandler.getHandler().state == "hide" || ArcadeHandler.getHandler().state == "show";
-        if(!this.isFading && listenToInputs) {
-            if(InputHandler.getHandler().isKeyBindingDown(KeyBindings.MENU_DOWN)) {
+        if(listenToInputs) {
+            if(InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_DOWN)) {
                 if(this._currentButtonIndex < this.buttons.length - 1) {
                     this.changeCurrentButton(1);
                     return;
                 }
             }
-            if(InputHandler.getHandler().isKeyBindingDown(KeyBindings.MENU_UP)) {
+            if(InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_UP)) {
                 if(this._currentButtonIndex > 0) {
                     this.changeCurrentButton(-1);
                 }
             }
-        }
-        if(listenToInputs && 
-            (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_SELECT) || 
-            InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_RIGHT))) {
-            this._currentButton.click();
+            if(InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_SELECT) || 
+                InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_RIGHT)) {
+                this._currentButton.click();
+            }
         }
     }
 

@@ -60,11 +60,9 @@ export default class StageButton implements Processable, Colorizable, Positionab
     private readonly EFFECT_SPEED = 10;
 
     public playAppearEffect(): void {
-        this.fadeEffect?.interruptNoCallback();
-        this.moveEffect?.interruptNoCallback();
+        this.fadeEffect?.interrupt(false, false);
+        this.moveEffect?.interrupt(false, false);
 
-        this.currentColor.alpha = 0;
-        this.position.setPositionTo(this.startPos);
         this.fadeEffect = new ColorFadeEffect(this.currentColor, this.grayscale, this.EFFECT_SPEED);
         this.moveEffect = new MoveEffect(this, this.endPos, this.EFFECT_SPEED);
         this.moveEffect.pause(this.EFFECT_SPEED);
@@ -72,10 +70,9 @@ export default class StageButton implements Processable, Colorizable, Positionab
     }
 
     public playDisappearEffect(): void {
-        this.fadeEffect?.interruptNoCallback();
-        this.moveEffect?.interruptNoCallback();
+        this.fadeEffect?.interrupt(false, false);
+        this.moveEffect?.interrupt(false, false);
 
-        this.position.setPositionTo(this.endPos)
         this.moveEffect = new MoveEffect(this, this.startPos, this.EFFECT_SPEED);
         this.moveEffect.easing = easeInOutQuad;
         const zeroAlpha = this.currentColor.clone();
@@ -86,20 +83,20 @@ export default class StageButton implements Processable, Colorizable, Positionab
     }
 
     public hideWhenAnotherSelected(): void {
-        this.fadeEffect?.interruptNoCallback();
+        this.fadeEffect?.interrupt(false);
         const zeroAlpha = this.currentColor.clone();
         zeroAlpha.alpha = 0;
         this.fadeEffect = new ColorFadeEffect(this.currentColor, zeroAlpha, 10);
     }
 
     public showWhenAnotherDeselected(): void {
-        this.fadeEffect?.interruptNoCallback();
+        this.fadeEffect?.interrupt(false);
         this.fadeEffect = new ColorFadeEffect(this.currentColor, this.grayscale, 10);
     }
 
     public onSelect(): void {
-        this.moveEffect?.interruptNoCallback();
-        this.scaleTransition?.interruptNoCallback();
+        this.moveEffect?.interrupt(false);
+        this.scaleTransition?.interrupt(false);
 
         this.scaleTransition = new Transition(value => {this.scale = value}, this.scale, this.targetScale, 12);
         this.scaleTransition.easing = easeInQuad;
@@ -112,8 +109,8 @@ export default class StageButton implements Processable, Colorizable, Positionab
     }
 
     public onDeselect(): void {
-        this.moveEffect?.interruptNoCallback();
-        this.scaleTransition?.interruptNoCallback();
+        this.moveEffect?.interrupt(false);
+        this.scaleTransition?.interrupt(false);
 
         this.scaleTransition = new Transition(value => {this.scale = value}, this.scale, 1, 12);
         this.scaleTransition.easing = easeOutQuad;
@@ -125,12 +122,12 @@ export default class StageButton implements Processable, Colorizable, Positionab
     }
 
     public onHover(): void {
-        this.fadeEffect?.interruptWithCallback();
+        this.fadeEffect?.interrupt(false);
         this.fadeEffect = new ColorFadeEffect(this.currentColor, this.color, 8);
     }
 
     public onUnhover(): void {
-        this.fadeEffect?.interruptWithCallback();
+        this.fadeEffect?.interrupt(false);
         this.fadeEffect = new ColorFadeEffect(this.currentColor, this.grayscale, 8);
     }
 

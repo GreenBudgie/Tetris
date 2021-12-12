@@ -12,6 +12,7 @@ export default class Effect implements Processable {
     public readonly maxTime: number;
     public time: number;
 
+    private _callEndingFunction: boolean = true;
     private _isInfinite: boolean = false;
     private _isActive: boolean = true;
     private _isPaused: boolean = false;
@@ -27,6 +28,14 @@ export default class Effect implements Processable {
         if(time <= 0) this._isInfinite = true;
         if(initialDelay != null && initialDelay != undefined) this.pause(initialDelay);
         EffectHandler.getHandler().activeEffects.push(this);
+    }
+
+    public get callEndingFunction(): boolean {
+        return this._callEndingFunction;
+    }
+
+    public set callEndingFunction(value: boolean) {
+        this._callEndingFunction = value;
     }
 
     public get isInfinite(): boolean {
@@ -45,6 +54,15 @@ export default class Effect implements Processable {
         return this._isActive;
     }
 
+    /**
+     * Sets all the variables this effect handles to their target values.
+     * May be cancelled when the effect interrupts.
+     */
+    public setTargetValues(): void {}
+    
+    /**
+     * Called when effect has ended or interrupted
+     */
     public onEnd(): void {}
     public onUpdate(delta: number): void {}
     public onDraw(context: CanvasRenderingContext2D): void {}
@@ -89,18 +107,16 @@ export default class Effect implements Processable {
         this._isPaused = false;
     }
 
-    public interruptWithCallback(): void {
-        this.end();
-    }
-
-    public interruptNoCallback(): void {
-        this.callback = () => {};
+    public interrupt(callback: boolean = true, setTargetValues: boolean = true): void {
+        if(!callback) this.callback = () => {};
+        if(!setTargetValues) this.setTargetValues = () => {};
         this.end();
     }
 
     private end(): void {
         if(!this.isActive) return;
         this.onEnd();
+        this.setTargetValues();
         this.callback();
         this._isActive = false;
     }
@@ -129,5 +145,5 @@ export default class Effect implements Processable {
         if(!this._isActive) return;
         this.onDraw(context);
     }
-    
+
 }

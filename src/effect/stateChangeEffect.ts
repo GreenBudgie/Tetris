@@ -71,7 +71,7 @@ export default class StateChangeEffect extends Effect {
                 }
             } break;
             case "interrupt": {
-                this.interruptWithCallback();
+                this.interrupt();
             } break;
         }
     }

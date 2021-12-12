@@ -1,3 +1,4 @@
+import ColorFadeEffect from "../color/colorFadeEffect.js";
 import Colorizable from "../color/colorizable.js";
 import RGBColor from "../color/rgbColor.js";
 import Tetris from "../main/tetris.js";
@@ -15,6 +16,9 @@ export default abstract class MenuButton implements Colorizable, Processable {
     public readonly textCenterPosition: Point;
 
     public readonly grayColor = RGBColor.grayscale(200);
+
+    public selectEffect: ColorFadeEffect;
+    public deselectEffect: ColorFadeEffect;
 
     public constructor(index: number) {
         this.index = index;

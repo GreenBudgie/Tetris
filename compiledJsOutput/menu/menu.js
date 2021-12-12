@@ -4,11 +4,11 @@ import ButtonChallenge from "./buttonChallenge.js";
 import ButtonArcade from "./buttonArcade.js";
 import ButtonEndless from "./buttonEndless.js";
 import ArcadeHandler from "./arcade/arcadeHandler.js";
+import { easeOutQuad } from "../effect/effectEasings.js";
 export default class Menu {
     constructor() {
         this.buttons = [];
         this._currentButtonIndex = 0;
-        this.isFading = false;
         Menu.instance = this;
         this.buttons = [
             new ButtonArcade(0),
@@ -30,40 +30,39 @@ export default class Menu {
         return Menu.instance;
     }
     changeCurrentButton(di) {
-        this.isFading = true;
-        const fadeTime = 12;
-        new ColorFadeEffect(this.currentButton.sprite.getColor(), this.currentButton.grayColor, fadeTime);
+        this._currentButton.deselectEffect?.interrupt(false, false);
+        this._currentButton.selectEffect?.interrupt(false, false);
+        const fadeTime = 20;
+        this._currentButton.deselectEffect = new ColorFadeEffect(this.currentButton.sprite.getColor(), this.currentButton.grayColor, fadeTime);
+        this._currentButton.deselectEffect.easing = easeOutQuad;
         this._currentButton.onDeselect();
         this._currentButtonIndex += di;
         this.updateCurrentButton();
         this._currentButton.onSelect();
-        const fadeEffect = new ColorFadeEffect(this.currentButton.sprite.getColor(), this.currentButton.getColor(), fadeTime);
-        fadeEffect.callback = () => {
-            this.isFading = false;
-        };
+        this._currentButton.selectEffect = new ColorFadeEffect(this.currentButton.sprite.getColor(), this.currentButton.getColor(), fadeTime);
+        this._currentButton.selectEffect.easing = easeOutQuad;
     }
     update(delta) {
         for (const button of this.buttons) {
             button.update(delta);
         }
         const listenToInputs = ArcadeHandler.getHandler().state == "hide" || ArcadeHandler.getHandler().state == "show";
-        if (!this.isFading && listenToInputs) {
-            if (InputHandler.getHandler().isKeyBindingDown(KeyBindings.MENU_DOWN)) {
+        if (listenToInputs) {
+            if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_DOWN)) {
                 if (this._currentButtonIndex < this.buttons.length - 1) {
                     this.changeCurrentButton(1);
                     return;
                 }
             }
-            if (InputHandler.getHandler().isKeyBindingDown(KeyBindings.MENU_UP)) {
+            if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_UP)) {
                 if (this._currentButtonIndex > 0) {
                     this.changeCurrentButton(-1);
                 }
             }
-        }
-        if (listenToInputs &&
-            (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_SELECT) ||
-                InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_RIGHT))) {
-            this._currentButton.click();
+            if (InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_SELECT) ||
+                InputHandler.getHandler().isKeyBindingPressed(KeyBindings.MENU_RIGHT)) {
+                this._currentButton.click();
+            }
         }
     }
     updateCurrentButton() {

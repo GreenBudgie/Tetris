@@ -34,12 +34,12 @@ export default class StageBlock implements Processable, Colorizable, Positionabl
     private textAlphaTransition: Transition;
 
     public onStageSelected(): void {
-        this.textAlphaTransition?.interruptNoCallback();
+        this.textAlphaTransition?.interrupt();
         this.textAlphaTransition = new Transition(value => this.textAlpha = value, this.textAlpha, 1, 12);
     }
 
     public onStageDeselected(): void {
-        this.textAlphaTransition?.interruptNoCallback();
+        this.textAlphaTransition?.interrupt();
         this.textAlphaTransition = new Transition(value => this.textAlpha = value, this.textAlpha, 0, 12);
         if(this.isSelected) this.deselect();
     }
@@ -47,14 +47,14 @@ export default class StageBlock implements Processable, Colorizable, Positionabl
     private selectionSizeTransition: Transition;
 
     public select(): void {
-        this.selectionSizeTransition?.interruptNoCallback();
+        this.selectionSizeTransition?.interrupt();
         this.selectionSizeTransition = new Transition(value => this.selectionSize = value, this.selectionSize, 0.9, 8);
         this.selectionSizeTransition.easing = easeInOutQuad;
         this.isSelected = true;
     }
 
     public deselect(): void {
-        this.selectionSizeTransition?.interruptNoCallback();
+        this.selectionSizeTransition?.interrupt();
         this.selectionSizeTransition = new Transition(value => this.selectionSize = value, this.selectionSize, 1, 8);
         this.selectionSizeTransition.easing = easeInOutQuad;
         this.isSelected = false;

@@ -17,23 +17,23 @@ export default class StageBlock {
         return this._position;
     }
     onStageSelected() {
-        this.textAlphaTransition?.interruptNoCallback();
+        this.textAlphaTransition?.interrupt();
         this.textAlphaTransition = new Transition(value => this.textAlpha = value, this.textAlpha, 1, 12);
     }
     onStageDeselected() {
-        this.textAlphaTransition?.interruptNoCallback();
+        this.textAlphaTransition?.interrupt();
         this.textAlphaTransition = new Transition(value => this.textAlpha = value, this.textAlpha, 0, 12);
         if (this.isSelected)
             this.deselect();
     }
     select() {
-        this.selectionSizeTransition?.interruptNoCallback();
+        this.selectionSizeTransition?.interrupt();
         this.selectionSizeTransition = new Transition(value => this.selectionSize = value, this.selectionSize, 0.9, 8);
         this.selectionSizeTransition.easing = easeInOutQuad;
         this.isSelected = true;
     }
     deselect() {
-        this.selectionSizeTransition?.interruptNoCallback();
+        this.selectionSizeTransition?.interrupt();
         this.selectionSizeTransition = new Transition(value => this.selectionSize = value, this.selectionSize, 1, 8);
         this.selectionSizeTransition.easing = easeInOutQuad;
         this.isSelected = false;

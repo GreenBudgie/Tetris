@@ -10,7 +10,7 @@ export default class MoveEffect extends Effect {
         this.toMove.position.x = this.startPos.x + (this.targetPos.x - this.startPos.x) * this.progress;
         this.toMove.position.y = this.startPos.y + (this.targetPos.y - this.startPos.y) * this.progress;
     }
-    onEnd() {
+    setTargetValues() {
         this.toMove.position.setPositionTo(this.targetPos);
     }
 }
