@@ -82,7 +82,7 @@ export default class GameProcess implements Processable {
     public getPreviewCenterPosition() {
         return new Point(
             this.getLeftSideMiddle(),
-            this.field.getRealFieldPosition().y + 60
+            this.field.getRealFieldPosition().y + 80
         );
 	}
 

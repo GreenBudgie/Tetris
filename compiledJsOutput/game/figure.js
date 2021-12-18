@@ -1,20 +1,30 @@
 import BlockColor from "../color/blockColor.js";
-import { FigureBlock, MoveResult } from "./block.js";
+import { FigureBlock, MoveResult } from "./figureBlock.js";
 import InputHandler, { KeyBindings } from "../main/inputHandler.js";
 import Tetris from "../main/tetris.js";
 import GameProcess from "./gameProcess.js";
 import Point from "../util/point.js";
 import SpriteFigure from "../sprite/spriteFigure.js";
+import MoveEffect from "../effect/moveEffect.js";
+import Transition from "../effect/transition.js";
+import { easeOutQuad } from "../effect/effectEasings.js";
 export default class Figure {
     constructor(shape, rotationCenter) {
         this.section = Point.zero();
         this._blocks = [];
-        this.maxFallingTime = 1000; //45
+        this.maxFallingTime = 45;
         this.fallingTimer = this.maxFallingTime;
         this._rotation = 0;
         this.rotationCenter = rotationCenter;
         this.color = BlockColor.getRandomColor();
         shape.forEach(point => this._blocks.push(new FigureBlock(point.clone(), this)));
+        this.sprite = new SpriteFigure(shape);
+        this.sprite.blockSize = GameProcess.getCurrentProcess().field.realSectionSize;
+        this.sprite.rotationCenter.setPositionTo(this.rotationCenter.clone().moveBy(0.5, 0.5));
+        this.sprite.outlineMode = "block";
+        this.sprite.outlineWidth = 1;
+        this.sprite.getColor().setTo(this.color);
+        this.sprite.position.setPositionTo(this.getPreviewRealPosition());
         this.previewSprite = new SpriteFigure(shape);
         this.previewSprite.blockSize = GameProcess.getCurrentProcess().field.realSectionSize;
         this.previewSprite.rotationCenter.setPositionTo(this.rotationCenter);
@@ -60,6 +70,7 @@ export default class Figure {
         }
         this._rotation = this._rotation + Math.PI / 2;
         this._blocks.forEach(block => block.rotateNoRestrictions());
+        this.rotateSpriteWithEffect();
     }
     moveRight() {
         this.moveIfPossibleOrStop(1, 0);
@@ -101,7 +112,7 @@ export default class Figure {
      */
     moveNoRestrictions(dx, dy) {
         this.section.moveBy(dx, dy);
-        this._blocks.forEach(block => block.moveSpriteWithEffect());
+        this.moveSpriteWithEffect();
     }
     /**
      * Interrupts the falling
@@ -136,7 +147,7 @@ export default class Figure {
         this.previewSprite.draw(context);
     }
     draw(context) {
-        this._blocks.forEach(block => block.draw(context));
+        this.sprite.draw(context);
     }
     needsToDrawShadow() {
         for (const currentBlock of this._blocks) {
@@ -156,6 +167,16 @@ export default class Figure {
                 }
             }
         }
+    }
+    moveSpriteWithEffect() {
+        this.moveEffect?.interrupt();
+        this.moveEffect = new MoveEffect(this.sprite, this.getRealPosition(), 8);
+        this.moveEffect.easing = easeOutQuad;
+    }
+    rotateSpriteWithEffect() {
+        this.rotationTransition?.interrupt();
+        this.rotationTransition = new Transition(value => this.sprite.rotation = value, this.sprite.rotation, this._rotation, 8);
+        this.rotationTransition.easing = easeOutQuad;
     }
 }
 export class FigurePattern {
@@ -204,4 +225,4 @@ Figures.L_SHAPE = Figures.register(FigurePattern.builder().block(0, 0).block(1, 
 Figures.I_SHAPE = Figures.register(FigurePattern.builder().block(0, 0).block(1, 0).block(2, 0).block(3, 0).rotationCenter(1.5, 0.5));
 Figures.Z_SHAPE = Figures.register(FigurePattern.builder().block(0, 0).block(1, 0).block(1, 1).block(2, 1).rotationCenter(1, 0));
 Figures.CORNER_SHAPE = Figures.register(FigurePattern.builder().block(0, 0).block(1, 0).block(1, 1).rotationCenter(0.5, 0.5));
-//# sourceMappingURL=Figure.js.map
+//# sourceMappingURL=figure.js.map

@@ -55,7 +55,7 @@ export default class GameProcess {
         return this.field.getRealFieldPosition().x / 2;
     }
     getPreviewCenterPosition() {
-        return new Point(this.getLeftSideMiddle(), this.field.getRealFieldPosition().y + 60);
+        return new Point(this.getLeftSideMiddle(), this.field.getRealFieldPosition().y + 80);
     }
     drawNextFigurePreview(context) {
         context.font = "36px ft_default";

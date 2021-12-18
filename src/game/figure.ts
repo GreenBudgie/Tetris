@@ -2,12 +2,15 @@ import BlockColor from "../color/blockColor.js";
 import Colorizable from "../color/colorizable.js";
 import RGBColor from "../color/rgbColor.js";
 import Processable from "../util/processable.js";
-import {FigureBlock, MoveResult} from "./block.js";
+import {FigureBlock, MoveResult} from "./figureBlock.js";
 import InputHandler, {KeyBindings} from "../main/inputHandler.js";
 import Tetris from "../main/tetris.js";
 import GameProcess from "./gameProcess.js";
 import Point from "../util/point.js";
 import SpriteFigure from "../sprite/spriteFigure.js";
+import MoveEffect from "../effect/moveEffect.js";
+import Transition from "../effect/transition.js";
+import {easeInOutQuad, easeInQuad, easeOutQuad} from "../effect/effectEasings.js";
 
 export default class Figure implements Colorizable, Processable {
 	
@@ -16,11 +19,12 @@ export default class Figure implements Colorizable, Processable {
 
 	private _blocks: FigureBlock[] = [];
 
-	private readonly maxFallingTime: number = 1000; //45
+	private readonly maxFallingTime: number = 45;
 	private fallingTimer: number = this.maxFallingTime;
 	private _rotation: number = 0;
 
-	private previewSprite: SpriteFigure;
+	public readonly sprite: SpriteFigure;
+	public readonly previewSprite: SpriteFigure;
 
 	public color: RGBColor;
 
@@ -29,6 +33,14 @@ export default class Figure implements Colorizable, Processable {
 		this.color = BlockColor.getRandomColor();
 
 		shape.forEach(point => this._blocks.push(new FigureBlock(point.clone(), this)));
+
+		this.sprite = new SpriteFigure(shape);
+		this.sprite.blockSize = GameProcess.getCurrentProcess().field.realSectionSize;
+		this.sprite.rotationCenter.setPositionTo(this.rotationCenter.clone().moveBy(0.5, 0.5));
+		this.sprite.outlineMode = "block";
+		this.sprite.outlineWidth = 1;
+		this.sprite.getColor().setTo(this.color);
+		this.sprite.position.setPositionTo(this.getPreviewRealPosition());
 
 		this.previewSprite = new SpriteFigure(shape);
 		this.previewSprite.blockSize = GameProcess.getCurrentProcess().field.realSectionSize;
@@ -79,6 +91,7 @@ export default class Figure implements Colorizable, Processable {
 		}
 		this._rotation = this._rotation + Math.PI / 2;
 		this._blocks.forEach(block => block.rotateNoRestrictions());
+		this.rotateSpriteWithEffect();
 	}
 
 	public moveRight() {
@@ -128,7 +141,7 @@ export default class Figure implements Colorizable, Processable {
 	 */
 	public moveNoRestrictions(dx: number, dy: number) {
 		this.section.moveBy(dx, dy);
-		this._blocks.forEach(block => block.moveSpriteWithEffect());
+		this.moveSpriteWithEffect();
 	}
 
 	/**
@@ -168,7 +181,7 @@ export default class Figure implements Colorizable, Processable {
 	}
 
 	public draw(context: CanvasRenderingContext2D) {
-		this._blocks.forEach(block => block.draw(context));
+		this.sprite.draw(context);
 	}
 
 	private needsToDrawShadow(): boolean {
@@ -189,6 +202,21 @@ export default class Figure implements Colorizable, Processable {
 				}
 			}
 		}
+	}
+
+	private moveEffect: MoveEffect;
+	private rotationTransition: Transition;
+
+	private moveSpriteWithEffect() {
+		this.moveEffect?.interrupt();
+		this.moveEffect = new MoveEffect(this.sprite, this.getRealPosition(), 8);
+		this.moveEffect.easing = easeOutQuad;
+	}
+
+	private rotateSpriteWithEffect() {
+		this.rotationTransition?.interrupt();
+		this.rotationTransition = new Transition(value => this.sprite.rotation = value, this.sprite.rotation, this._rotation, 8);
+		this.rotationTransition.easing = easeOutQuad;
 	}
 
 }

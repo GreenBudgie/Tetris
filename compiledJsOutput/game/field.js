@@ -57,16 +57,16 @@ export default class Field {
             const process = GameProcess.getCurrentProcess();
             process.points += this.sectionX;
             process.filledRows++;
-            this.blocks = this.blocks.filter(block => block.getFieldSection().y != y);
+            this.blocks = this.blocks.filter(block => block.section.y != y);
             for (const block of this.blocks) {
-                if (block.getFieldSection().y < y)
+                if (block.section.y < y)
                     block.moveDown();
             }
         }
     }
     getBlockAt(sectionX, sectionY) {
         for (const block of this.blocks) {
-            if (block.getFieldSection().x == sectionX && block.getFieldSection().x == sectionY)
+            if (block.section.x == sectionX && block.section.x == sectionY)
                 return block;
         }
         return null;

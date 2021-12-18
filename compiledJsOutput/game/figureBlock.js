@@ -1,52 +1,13 @@
-import { easeOutQuad } from "../effect/effectEasings.js";
-import MoveEffect from "../effect/moveEffect.js";
-import Transition from "../effect/transition.js";
-import SpriteBlock from "../sprite/spriteBlock.js";
 import Point from "../util/point.js";
+import { FieldBlock } from "./fieldBlock.js";
 import GameProcess from "./gameProcess.js";
-export class AbstractBlock {
-    constructor(section) {
-        this.section = section;
-        this.sprite = new SpriteBlock();
-        this.sprite.size = GameProcess.getCurrentProcess().field.realSectionSize;
-        this.sprite.outline = true;
-        this.sprite.outlineWidth = 1;
-    }
-    update(delta) { }
-    draw(context) {
-        this.sprite.draw(context);
-    }
-}
-/**
- * Represents a block that takes place at the field
- */
-export class FieldBlock extends AbstractBlock {
-    constructor(section) {
-        super(section);
-        this.setSpritePosition();
-    }
-    getFieldSection() {
-        return this.section;
-    }
-    moveDown() {
-        this.section.y += 1;
-        this.setSpritePosition();
-    }
-    setSpritePosition() {
-        const process = GameProcess.getCurrentProcess();
-        this.sprite.position.x = process.field.getRealFieldPosition().x + this.section.x * process.field.realSectionSize;
-        this.sprite.position.y = process.field.getRealFieldPosition().y + this.section.y * process.field.realSectionSize;
-    }
-}
 /**
  * Represents a block that is attached to a figure
  */
-export class FigureBlock extends AbstractBlock {
-    constructor(section, figure) {
-        super(section);
+export class FigureBlock {
+    constructor(relativePosition, figure) {
+        this.relativePosition = relativePosition;
         this.figure = figure;
-        this.sprite.getColor().setTo(this.figure.getColor());
-        this.sprite.rotationCenter.setPositionTo(this.figure.rotationCenter.clone().subtract(this.section).moveBy(0.5, 0.5));
     }
     checkMoveRight() {
         return this.checkMove(1, 0);
@@ -65,7 +26,7 @@ export class FigureBlock extends AbstractBlock {
         const field = GameProcess.getCurrentProcess().field;
         const newSection = this.getFieldSection().clone().moveBy(dx, dy);
         for (const block of field.blocks) {
-            if (newSection.x == block.getFieldSection().x && newSection.y == block.getFieldSection().y)
+            if (newSection.x == block.section.x && newSection.y == block.section.y)
                 return MoveResult.BLOCK;
         }
         if (field.isSectionInside(newSection))
@@ -73,7 +34,7 @@ export class FigureBlock extends AbstractBlock {
         return MoveResult.BOUNDARY;
     }
     getFieldSection() {
-        return this.section.clone().add(this.figure.section);
+        return this.relativePosition.clone().add(this.figure.section);
     }
     getRealPosition() {
         const field = GameProcess.getCurrentProcess().field;
@@ -92,22 +53,21 @@ export class FigureBlock extends AbstractBlock {
         if (!field.isSectionInsideOrAbove(rotatedFieldSection))
             return MoveResult.BOUNDARY;
         for (const field_block of field.blocks) {
-            if (field_block.getFieldSection().equals(rotatedFieldSection))
+            if (field_block.section.equals(rotatedFieldSection))
                 return MoveResult.BLOCK;
         }
         return MoveResult.ALLOW;
     }
     findRotatedRelativeSection() {
-        const origin = this.section.clone().subtract(this.figure.rotationCenter);
+        const origin = this.relativePosition.clone().subtract(this.figure.rotationCenter);
         const rotatedOrigin = new Point(-origin.y, origin.x);
         return rotatedOrigin.add(this.figure.rotationCenter);
     }
     rotateNoRestrictions() {
-        this.section.setPositionTo(this.findRotatedRelativeSection());
-        this.rotateSpriteWithEffect();
+        this.relativePosition.setPositionTo(this.findRotatedRelativeSection());
     }
     getRelativeSection() {
-        return this.section;
+        return this.relativePosition;
     }
     /**
      * Creates a field block with the same coordinates and color
@@ -115,30 +75,8 @@ export class FigureBlock extends AbstractBlock {
      */
     toFieldBlock() {
         const fieldBlock = new FieldBlock(this.getFieldSection());
-        fieldBlock.sprite.getColor().setTo(this.sprite.getColor());
+        fieldBlock.sprite.getColor().setTo(this.figure.sprite.getColor());
         return fieldBlock;
-    }
-    updateSpritePosition() {
-        this.sprite.position.setPositionTo(this.getRealPosition());
-    }
-    moveSpriteWithEffect() {
-        this.moveEffect?.interrupt();
-        this.moveEffect = new MoveEffect(this.sprite, this.getRealPosition(), 20);
-        this.moveEffect.easing = easeOutQuad;
-    }
-    rotateSpriteWithEffect() {
-        this.rotationEffect?.interrupt();
-        this.rotationEffect = new Transition(value => this.sprite.rotation = value, this.sprite.rotation, this.figure.rotation, 20);
-        this.rotationEffect.easing = easeOutQuad;
-    }
-    draw(context) {
-        super.draw(context);
-        const pos = this.sprite.getRealRotationCenter();
-        context.fillStyle = "black";
-        context.fillRect(pos.x - 2, pos.y - 2, 4, 4);
-        const pos2 = this.sprite.position;
-        context.fillStyle = "red";
-        context.fillRect(pos2.x - 3, pos2.y - 3, 6, 6);
     }
 }
 export var MoveResult;
@@ -156,4 +94,4 @@ export var MoveResult;
      */
     MoveResult[MoveResult["BLOCK"] = 2] = "BLOCK";
 })(MoveResult || (MoveResult = {}));
-//# sourceMappingURL=block.js.map
+//# sourceMappingURL=figureBlock.js.map

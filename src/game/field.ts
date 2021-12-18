@@ -1,9 +1,9 @@
 import Processable from "../util/processable.js";
-import {FieldBlock} from "./block.js";
 import Figure, {Figures} from "./figure.js";
 import Tetris from "../main/tetris.js";
 import GameProcess from "./gameProcess.js";
 import Point from "../util/point.js";
+import {FieldBlock} from "./fieldBlock.js";
 
 /**
  * A field is a game element that stores and renders all the blocks and figures inside it
@@ -84,16 +84,16 @@ export default class Field implements Processable {
 			const process = GameProcess.getCurrentProcess();
 			process.points += this.sectionX;
 			process.filledRows++;
-			this.blocks = this.blocks.filter(block => block.getFieldSection().y != y);
+			this.blocks = this.blocks.filter(block => block.section.y != y);
 			for(const block of this.blocks) {
-				if(block.getFieldSection().y < y) block.moveDown();
+				if(block.section.y < y) block.moveDown();
 			}
 		}
 	}
 
 	public getBlockAt(sectionX: number, sectionY: number): FieldBlock | null {
 		for(const block of this.blocks) {
-			if(block.getFieldSection().x == sectionX && block.getFieldSection().x == sectionY) return block;
+			if(block.section.x == sectionX && block.section.x == sectionY) return block;
 		}
 		return null;
 	}
