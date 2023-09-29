@@ -80,6 +80,10 @@ export default class Point {
         return this;
     }
 
+    /**
+     * Change coordinates by (point.x; point.y)
+     * @param point end point
+     */
     public add(point: Point): Point {
         return this.moveBy(point.x, point.y);
     }
